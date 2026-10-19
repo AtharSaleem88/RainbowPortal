@@ -1,3 +1,5 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -297,6 +299,7 @@ import { MASTER_CATEGORIES, SUB_CATEGORIES, SUB_SUB_CATEGORIES, SubSubCategory, 
   `]
 })
 export class SubSubCategoryList implements OnInit {
+  title = 'Sub-Sub Categories';
   private route = inject(ActivatedRoute);
   private modalService = inject(NgbModal);
 
@@ -471,8 +474,8 @@ export class SubSubCategoryList implements OnInit {
     this.triggerToast(`"${item.name}" status updated to ${item.status}`);
   }
 
-  deleteSubSub(item: SubSubCategory): void {
-    if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
+  async deleteSubSub(item: SubSubCategory): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete "${item.name}"?`)) {
       this.allSubSubCategories = this.allSubSubCategories.filter(i => i.id !== item.id);
       this.triggerToast(`"${item.name}" deleted successfully`);
     }
@@ -515,7 +518,7 @@ export class SubSubCategoryList implements OnInit {
 
   saveSubSub(modal: any) {
     if (!this.subSubForm.name) {
-      alert('Please enter a sub-sub category name.');
+      void showSaveValidation('Please enter a sub-sub category name.');
       return;
     }
     const parentSub = this.subCategories.find(s => s.id === this.subSubForm.subCategoryId);
@@ -539,7 +542,7 @@ export class SubSubCategoryList implements OnInit {
         status: (this.subSubForm.status as 'Active' | 'Inactive') || 'Active'
       };
       this.allSubSubCategories.unshift(newEntry);
-      this.triggerToast(`"${newEntry.name}" created successfully`);
+      void showSaveSuccess(`"${newEntry.name}" created successfully`);
     } else {
       const index = this.allSubSubCategories.findIndex(i => i.id === this.subSubForm.id);
       if (index !== -1) {
@@ -554,7 +557,7 @@ export class SubSubCategoryList implements OnInit {
           tags: this.allSubSubCategories[index].tags || [],
           status: (this.subSubForm.status as 'Active' | 'Inactive') || 'Active'
         };
-        this.triggerToast(`"${this.subSubForm.name}" updated successfully`);
+        void showSaveSuccess(`"${this.subSubForm.name}" updated successfully`);
       }
     }
 

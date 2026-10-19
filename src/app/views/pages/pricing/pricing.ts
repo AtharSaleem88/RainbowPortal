@@ -9,6 +9,6 @@ import { PricingPlans } from './data'
   styles: ``
 })
 export class Pricing {
-  title="Pricing"
+  title = 'Simple Pricing Plans';
   plans = PricingPlans
 }

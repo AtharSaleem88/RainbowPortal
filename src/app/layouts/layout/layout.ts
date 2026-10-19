@@ -23,7 +23,12 @@ import { changesidebarsize } from '@store/layout/layout-action';
   providers: [NgbActiveOffcanvas],
 })
 export class Layout implements OnInit {
-  title!: string;
+  private activePage: { title?: string; pageTitle?: string } | undefined;
+  private routeTitle = '';
+
+  get title(): string {
+    return this.activePage?.pageTitle || this.activePage?.title || this.routeTitle;
+  }
   layoutType: any;
 
   private router = inject(Router);
@@ -96,7 +101,14 @@ export class Layout implements OnInit {
   }
 
   onActivate(componentReference: any) {
-    this.title = componentReference.title;
+    this.activePage = componentReference;
+    let route = this.router.routerState.snapshot.root;
+    this.routeTitle = '';
+    while (route) {
+      this.routeTitle = route.data['title'] || this.routeTitle;
+      if (!route.firstChild) break;
+      route = route.firstChild;
+    }
     this.cdr.detectChanges();
   }
 

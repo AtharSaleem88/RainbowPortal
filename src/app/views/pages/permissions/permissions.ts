@@ -1,3 +1,4 @@
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -331,7 +332,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   `]
 })
 export class Permissions implements OnInit {
-  title = 'Staff Roles & Permission Access Control';
+  title = 'Roles & Permission Access Control';
 
   // State stats
   stats = permissionState;
@@ -501,7 +502,7 @@ export class Permissions implements OnInit {
   // Save Role Permissions
   saveRolePermissions() {
     const activeCount = this.getRoleActiveCount(this.selectedRoleName);
-    this.showNotification(`Role permissions for "${this.selectedRoleName}" updated (${activeCount}/${this.totalPermissionsCount} permissions granted).`);
+    void showSaveSuccess(`Role permissions for "${this.selectedRoleName}" updated (${activeCount}/${this.totalPermissionsCount} permissions granted).`);
   }
 
   // Check user permission (user override or base role)
@@ -539,7 +540,7 @@ export class Permissions implements OnInit {
     if (this.modalSelectedUser) {
       this.modalSelectedUser.lastUpdated = 'Just now (Customized)';
       const count = this.getUserActiveCount(this.modalSelectedUser.staffId);
-      this.showNotification(`Custom permissions saved for ${this.modalSelectedUser.staffName} (${count}/${this.totalPermissionsCount} authorized).`);
+      void showSaveSuccess(`Custom permissions saved for ${this.modalSelectedUser.staffName} (${count}/${this.totalPermissionsCount} authorized).`);
     }
     if (modalRef) {
       modalRef.close();

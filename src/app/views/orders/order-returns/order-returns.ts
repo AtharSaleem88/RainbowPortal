@@ -302,7 +302,7 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
   `]
 })
 export class OrderReturns implements OnInit {
-  title = 'Order Returns Management';
+  title = 'Returns & Refund Claims Console';
   returns: RainbowOrderReturn[] = RAINBOW_RETURNS;
 
   authService = inject(AuthenticationService);

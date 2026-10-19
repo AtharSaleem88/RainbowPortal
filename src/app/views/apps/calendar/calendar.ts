@@ -1,3 +1,4 @@
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, inject, ViewChild, type TemplateRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators, type UntypedFormGroup } from '@angular/forms';
 import type { CalendarOptions,EventClickArg, EventInput } from '@fullcalendar/core/index.js'
@@ -182,6 +183,7 @@ export class Calendar {
     this.formData.reset();
     this.modalService.dismissAll();
     this.isEditMode = false;
+    void showSaveSuccess('Calendar event saved successfully.');
   }
 
   // Delete Event

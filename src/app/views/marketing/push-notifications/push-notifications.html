@@ -1,14 +1,7 @@
 <!-- ========================================================
      Executive Page Header & Navigation
      ======================================================== -->
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <div>
-    <h4 class="fs-18 fw-bold text-dark mb-1 font-jost d-flex align-items-center gap-2">
-      <iconify-icon icon="solar:bell-bing-bold-duotone" class="text-primary fs-20"></iconify-icon>
-      Push Notifications Hub
-    </h4>
-  </div>
-
+<div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
   <div class="d-flex align-items-center gap-2 flex-wrap">
     <!-- Hub Navigation Segmented Control -->
     <div class="filter-segmented-control">
@@ -42,7 +35,7 @@
 <!-- ========================================================
      Executive Metrics Cards (4 Minimal Cards)
      ======================================================== -->
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-3">
   <!-- Card 1: Total Push Sent -->
   <div class="col-6 col-lg-3">
     <div class="cat-metric-card">
@@ -103,24 +96,23 @@
 <!-- ========================================================
      Composer & Dispatch Engine (Full-Width Sleek Console)
      ======================================================== -->
-<div class="cat-main-card mb-4.5">
+<div class="cat-main-card mb-4">
   <!-- Composer Header -->
-  <div class="p-4 border-bottom bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
-    <div class="d-flex align-items-center gap-2.5">
+  <div class="py-3 px-3 border-bottom bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-3">
       <div class="cat-metric-icon bg-primary-subtle text-primary" style="width: 38px; height: 38px; font-size: 19px;">
         <iconify-icon icon="solar:pen-new-square-bold"></iconify-icon>
       </div>
       <div>
         <h5 class="fs-15 fw-bold text-dark mb-0 font-jost">Composer &amp; Dispatch Engine</h5>
-        <span class="text-muted fs-11">Target individual shoppers, branch patrons, or broadcast nationwide</span>
       </div>
     </div>
   </div>
 
-  <div class="p-4 p-md-5">
+  <div class="p-3">
     <!-- Step 1: Target Audience Selection -->
     <div>
-      <div class="d-flex align-items-center justify-content-between mb-2.5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
         <label class="form-label fw-bold text-dark fs-12 text-uppercase mb-0" style="letter-spacing: 0.5px;">
           1. Target Audience <span class="text-danger">*</span>
         </label>
@@ -176,16 +168,16 @@
       </div>
 
       <!-- Branch Selector (if targetType === 'branch') -->
-      <div *ngIf="formTargetType === 'branch'" class="mt-3.5">
-        <label class="form-label fw-semibold fs-12 text-dark mb-1.5">Select Rainbow Superstore Branch</label>
+      <div *ngIf="formTargetType === 'branch'" class="mt-3">
+        <label class="form-label fw-semibold fs-12 text-dark mb-2">Select Rainbow Superstore Branch</label>
         <select class="form-select form-control-sleek" [(ngModel)]="formTargetBranch">
           <option *ngFor="let b of branches" [value]="b.name">{{ b.name }} ({{ b.city }})</option>
         </select>
       </div>
 
       <!-- Segment Selector (if targetType === 'segment') -->
-      <div *ngIf="formTargetType === 'segment'" class="mt-3.5">
-        <label class="form-label fw-semibold fs-12 text-dark mb-1.5">Select Customer Segment</label>
+      <div *ngIf="formTargetType === 'segment'" class="mt-3">
+        <label class="form-label fw-semibold fs-12 text-dark mb-2">Select Customer Segment</label>
         <select class="form-select form-control-sleek" [(ngModel)]="formTargetSegment">
           <option value="Repeat Buyers">Repeat Buyers (10,804 customers with &gt; 1 order)</option>
           <option value="VIP Customers">VIP Shoppers (Customers marked with VIP badge)</option>
@@ -196,9 +188,9 @@
       </div>
 
       <!-- Individual Customer Picker (if targetType === 'individual') -->
-      <div *ngIf="formTargetType === 'individual'" class="mt-3.5">
-        <label class="form-label fw-semibold fs-12 text-dark mb-1.5">Search &amp; Select Individual Customer</label>
-        <div class="row g-2.5 align-items-center mb-3">
+      <div *ngIf="formTargetType === 'individual'" class="mt-3">
+        <label class="form-label fw-semibold fs-12 text-dark mb-2">Search &amp; Select Individual Customer</label>
+        <div class="row g-3 align-items-center mb-3">
           <div class="col-md-5">
             <input type="text"
                    class="form-control form-control-sleek"
@@ -220,7 +212,7 @@
           <div class="row g-3 align-items-center">
             <!-- Left: Wallet Block -->
             <div class="col-sm-auto col-12">
-              <div class="d-flex align-items-center gap-2.5 p-2 px-3 rounded-2" style="background: #eef2ff; border: 1px solid #c7d2fe; min-width: 170px;">
+              <div class="d-flex align-items-center gap-3 p-2 px-3 rounded-2" style="background: #eef2ff; border: 1px solid #c7d2fe; min-width: 170px;">
                 <iconify-icon icon="solar:wallet-money-bold" class="fs-22 text-primary"></iconify-icon>
                 <div>
                   <div class="text-muted fs-10 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Wallet Balance</div>
@@ -247,23 +239,23 @@
     </div>
 
     <!-- Section Divider -->
-    <div class="border-top my-4.5" style="border-color: #f1f5f9 !important;"></div>
+    <div class="border-top my-3" style="border-color: #f1f5f9 !important;"></div>
 
     <!-- Step 2: Notification Content -->
     <div>
-      <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-2">
         <label class="form-label fw-bold text-dark fs-12 text-uppercase mb-0" style="letter-spacing: 0.5px;">
           2. Notification Content <span class="text-danger">*</span>
         </label>
       </div>
 
       <!-- Title with Emoji bar -->
-      <div class="mb-3.5">
-        <div class="d-flex align-items-center justify-content-between mb-1.5 flex-wrap gap-2">
+      <div class="mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
           <label class="form-label fw-semibold text-dark fs-12 mb-0">Notification Title <span class="text-danger">*</span></label>
           <!-- Emoji quick buttons -->
-          <div class="d-flex gap-1.5 align-items-center">
-            <span class="text-muted fs-11 me-1">Quick Emoji:</span>
+          <div class="emoji-toolbar">
+            <span class="text-muted fs-11">Quick Emoji:</span>
             <button type="button" class="emoji-chip" (click)="addEmoji('⚡')" title="Lightning">⚡</button>
             <button type="button" class="emoji-chip" (click)="addEmoji('🛒')" title="Cart">🛒</button>
             <button type="button" class="emoji-chip" (click)="addEmoji('🎁')" title="Gift">🎁</button>
@@ -281,7 +273,7 @@
 
       <!-- Message Body -->
       <div>
-        <div class="d-flex align-items-center justify-content-between mb-1.5">
+        <div class="d-flex align-items-center justify-content-between mb-2">
           <label class="form-label fw-semibold text-dark fs-12 mb-0">Notification Message / Body <span class="text-danger">*</span></label>
           <span class="fs-11" [ngClass]="formMessage.length > 220 ? 'text-danger fw-semibold' : 'text-muted'">{{ formMessage.length }} / 250 characters</span>
         </div>
@@ -294,11 +286,11 @@
     </div>
 
     <!-- Section Divider -->
-    <div class="border-top my-4.5" style="border-color: #f1f5f9 !important;"></div>
+    <div class="border-top my-3" style="border-color: #f1f5f9 !important;"></div>
 
     <!-- Step 3: Scheduling & Delivery -->
     <div>
-      <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-2">
         <label class="form-label fw-bold text-dark fs-12 text-uppercase mb-0" style="letter-spacing: 0.5px;">
           3. Delivery Timing <span class="text-danger">*</span>
         </label>
@@ -314,7 +306,7 @@
               </div>
               <div>
                 <div class="fw-bold fs-13 text-dark">Broadcast Live Now</div>
-                <div class="text-muted fs-11 mt-0.5">Send instant push notification to customers immediately</div>
+                <div class="text-muted fs-11 mt-1">Send instant push notification to customers immediately</div>
               </div>
             </div>
           </div>
@@ -329,7 +321,7 @@
               </div>
               <div>
                 <div class="fw-bold fs-13 text-dark">Schedule for Later</div>
-                <div class="text-muted fs-11 mt-0.5">Pick future delivery date and exact dispatch time</div>
+                <div class="text-muted fs-11 mt-1">Pick future delivery date and exact dispatch time</div>
               </div>
             </div>
           </div>
@@ -337,14 +329,14 @@
       </div>
 
       <!-- Scheduled Date & Time Pickers (Visible when scheduled) -->
-      <div *ngIf="formTiming === 'scheduled'" class="mt-3.5 p-3.5 bg-light bg-opacity-50 rounded-3 border" style="border-color: #e2e8f0 !important;">
+      <div *ngIf="formTiming === 'scheduled'" class="mt-3 p-3 bg-light bg-opacity-50 rounded-3 border" style="border-color: #e2e8f0 !important;">
         <div class="row g-3 align-items-center">
           <div class="col-md-5 col-sm-6">
-            <label class="form-label fw-semibold text-dark fs-12 mb-1.5">Scheduled Date <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold text-dark fs-12 mb-2">Scheduled Date <span class="text-danger">*</span></label>
             <input type="date" class="form-control form-control-sleek bg-white" [(ngModel)]="formScheduleDate">
           </div>
           <div class="col-md-5 col-sm-6">
-            <label class="form-label fw-semibold text-dark fs-12 mb-1.5">Scheduled Time <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold text-dark fs-12 mb-2">Scheduled Time <span class="text-danger">*</span></label>
             <input type="time" class="form-control form-control-sleek bg-white" [(ngModel)]="formScheduleTime">
           </div>
           <div class="col-md-2 col-12 d-flex align-items-end">
@@ -358,12 +350,12 @@
     </div>
 
     <!-- Submit Button & Target Summary -->
-    <div class="d-flex align-items-center justify-content-between pt-4 mt-4.5 border-top flex-wrap gap-3" style="border-color: #f1f5f9 !important;">
+    <div class="d-flex align-items-center justify-content-between pt-3 mt-3 border-top flex-wrap gap-3" style="border-color: #f1f5f9 !important;">
       <div class="text-muted fs-12">
         Target Audience: <strong class="text-dark">{{ formTargetType === 'all' ? 'All Customers (Nationwide)' : (formTargetType === 'branch' ? formTargetBranch : (formTargetType === 'segment' ? formTargetSegment : selectedCustomerDetail?.name)) }}</strong> &bull;
         Estimated Reach: <strong class="text-primary">{{ estimatedRecipientsCount | number }} App Devices</strong>
       </div>
-      <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 px-3.5 py-2 fw-semibold shadow-sm"
+      <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm"
               style="background: #2e3192; border-color: #2e3192; border-radius: 8px; font-size: 13px;"
               (click)="sendPushNotification()">
         <iconify-icon [icon]="formTiming === 'scheduled' ? 'solar:calendar-bold' : 'solar:plain-bold'" class="fs-16"></iconify-icon>
@@ -462,7 +454,7 @@
 
   <!-- Table Body -->
   <div class="table-responsive">
-    <table class="table table-clean align-middle mb-0">
+    <table class="table table-clean campaign-table align-middle mb-0">
       <thead>
         <tr>
           <th>NOTIFICATION DETAILS</th>
@@ -479,8 +471,8 @@
             <!-- Col 1: Notification Details -->
             <td>
               <div>
-                <div class="fw-bold text-dark fs-13 mb-1">{{ item.title }}</div>
-                <div class="text-muted fs-11" style="max-width: 320px; line-height: 1.4;">{{ item.message }}</div>
+                <div class="campaign-title fw-bold text-dark fs-13 mb-1" [title]="item.title">{{ item.title }}</div>
+                <div class="campaign-message text-muted fs-11" [title]="item.message">{{ item.message }}</div>
               </div>
             </td>
 
@@ -490,28 +482,28 @@
                 <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1 fs-11">
                   <iconify-icon icon="solar:users-group-two-rounded-bold" class="align-middle me-1"></iconify-icon> All Customers
                 </span>
-                <div class="text-muted fs-11 mt-0.5">Nationwide App Users</div>
+                <div class="text-muted fs-11 mt-1">Nationwide App Users</div>
               </div>
 
               <div *ngIf="item.targetType === 'branch'">
                 <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1 fs-11">
                   <iconify-icon icon="solar:shop-2-bold" class="align-middle me-1"></iconify-icon> Branch Specific
                 </span>
-                <div class="fw-medium text-dark fs-11 mt-0.5">{{ item.targetBranch }}</div>
+                <div class="fw-medium text-dark fs-11 mt-1">{{ item.targetBranch }}</div>
               </div>
 
               <div *ngIf="item.targetType === 'segment'">
                 <span class="badge bg-warning-subtle text-warning-emphasis fw-semibold px-2 py-1 fs-11">
                   <iconify-icon icon="solar:pie-chart-2-bold" class="align-middle me-1"></iconify-icon> {{ item.targetSegment }}
                 </span>
-                <div class="text-muted fs-11 mt-0.5">Customer Cohort</div>
+                <div class="text-muted fs-11 mt-1">Customer Cohort</div>
               </div>
 
               <div *ngIf="item.targetType === 'individual'">
                 <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1 fs-11">
                   <iconify-icon icon="solar:user-bold" class="align-middle me-1"></iconify-icon> Individual
                 </span>
-                <div class="fw-bold text-dark fs-11 mt-0.5">{{ item.targetCustomerName }}</div>
+                <div class="fw-bold text-dark fs-11 mt-1">{{ item.targetCustomerName }}</div>
                 <div class="text-muted fs-10">{{ item.targetCustomerPhone }}</div>
               </div>
             </td>
@@ -543,11 +535,11 @@
 
             <!-- Col 6: Actions -->
             <td class="text-end">
-              <div class="d-flex gap-1.5 justify-content-end">
-                <button type="button" class="cat-action-btn" (click)="openDetailsModal(item, detailsModal)" ngbTooltip="View Campaign Details">
+              <div class="d-flex gap-2 justify-content-end">
+                <button type="button" class="cat-action-btn" (click)="openDetailsModal(item, detailsModal)" ngbTooltip="View Campaign Details" aria-label="View campaign details">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
                 </button>
-                <button *ngIf="item.status === 'Scheduled'" type="button" class="cat-action-btn btn-delete" (click)="cancelScheduledNotification(item)" ngbTooltip="Cancel Scheduled Dispatch">
+                <button *ngIf="item.status === 'Scheduled'" type="button" class="cat-action-btn btn-delete" (click)="cancelScheduledNotification(item)" ngbTooltip="Cancel Scheduled Dispatch" aria-label="Cancel scheduled dispatch">
                   <iconify-icon icon="solar:close-circle-linear" class="fs-15"></iconify-icon>
                 </button>
               </div>
@@ -589,7 +581,7 @@
 
   <div class="modal-body p-4" *ngIf="selectedNotification">
     <!-- Notification Content Card -->
-    <div class="card border rounded-3 p-3.5 mb-3 bg-light bg-opacity-50">
+    <div class="card border rounded-3 p-3 mb-3 bg-light bg-opacity-50">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <span class="badge bg-white text-muted border text-uppercase fs-10 fw-bold" style="letter-spacing: 0.5px;">Notification Content</span>
         <span class="badge px-2 py-1 fs-11"
@@ -603,7 +595,7 @@
     </div>
 
     <!-- Audience & Timing Configuration Card -->
-    <div class="card border rounded-3 p-3.5 mb-0 bg-white">
+    <div class="card border rounded-3 p-3 mb-0 bg-white">
       <div class="mb-3">
         <span class="badge bg-light text-muted border text-uppercase fs-10 fw-bold" style="letter-spacing: 0.5px;">Campaign Configuration</span>
       </div>
@@ -655,7 +647,7 @@
     </div>
   </div>
 
-  <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-end">
+  <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-end">
     <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">
       Close
     </button>

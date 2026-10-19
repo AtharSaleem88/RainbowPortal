@@ -1,4 +1,4 @@
-<div class="main-nav">
+<nav class="main-nav rainbow-sidebar" aria-label="Main navigation">
   
   <app-logo-box className="logo-box" [size]="true" />
 
@@ -40,19 +40,19 @@
     </ul>
   </ngx-simplebar>
 
-</div>
+</nav>
 
 <ng-template #MenuItemWithChildren let-menu="menu" let-itemClassName="itemClassName" let-linkClassName="linkClassName" let-subMenuClassNames="subMenuClassNames">
   <li [class]="itemClassName" [ngClass]="{ active: activeMenuItems.includes(menu.key) }">
-    <a [class]="linkClassName" [ngClass]="{ active: activeMenuItems.includes(menu.key) }" (click)="toggleMenuItem(menu, collapse)" role="button" [attr.aria-expanded]="!menu.collapsed" [attr.aria-controls]="menu.key">
+    <button type="button" [class]="linkClassName" [ngClass]="{ active: activeMenuItems.includes(menu.key) }" (click)="toggleMenuItem(menu, collapse)" [attr.aria-label]="menu.label" [attr.aria-expanded]="!menu.collapsed" [attr.aria-controls]="menu.key">
       @if (menu.icon) {
       <span class="nav-icon">
         <iconify-icon [icon]="menu.icon"></iconify-icon>
       </span>
       }
       <span class="nav-text"> {{ menu.label }} </span>
-    </a>
-    <div #collapse="ngbCollapse" [(ngbCollapse)]="menu.collapsed" class="collapse" id="sidebarDashboards">
+    </button>
+    <div #collapse="ngbCollapse" [(ngbCollapse)]="menu.collapsed" class="collapse" [id]="menu.key">
       <ul [class]="subMenuClassNames">
         @for (child of menu.subMenu; track child.label) {
         @if (hasSubmenu(child)) {
@@ -94,7 +94,7 @@
 </ng-template>
 
 <ng-template #MenuItemLink let-menu="menu" let-className="className">
-  <a [routerLink]="menu.link" [class]="className" [ngClass]="{ active: activeMenuItems.includes(menu.key) }" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" [attr.aria-controls]="menu.key">
+  <a [routerLink]="menu.link" [class]="className" [ngClass]="{ active: activeMenuItems.includes(menu.key) }" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{exact: false}" [attr.aria-label]="menu.label">
     @if (menu.icon) {
     <span class="nav-icon">
       <iconify-icon [icon]="menu.icon"></iconify-icon>

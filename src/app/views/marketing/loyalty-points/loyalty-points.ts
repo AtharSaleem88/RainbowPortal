@@ -1,3 +1,4 @@
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -373,6 +374,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   `]
 })
 export class LoyaltyPoints implements OnInit {
+  title = 'Customer Loyalty Points Hub';
   config: LoyaltyProgramConfig = MOCK_LOYALTY_CONFIG;
   customers: CustomerLoyaltyRecord[] = MOCK_CUSTOMER_LOYALTY_RECORDS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
@@ -482,7 +484,7 @@ export class LoyaltyPoints implements OnInit {
   }
 
   saveRules() {
-    this.showNotification('Loyalty Points Earning & Redemption rules saved successfully.');
+    void showSaveSuccess('Loyalty Points Earning & Redemption rules saved successfully.');
   }
 
   toggleProgramStatus() {

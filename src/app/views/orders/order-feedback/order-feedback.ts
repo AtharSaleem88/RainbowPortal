@@ -229,6 +229,46 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
     }
 
     /* Action Buttons */
+    .feedback-table {
+      table-layout: fixed;
+      min-width: 1120px;
+
+      th { padding: 14px 16px; font-size: 10px; }
+      th:nth-child(1) { width: 14%; }
+      th:nth-child(2) { width: 21%; }
+      th:nth-child(3) { width: 14%; }
+      th:nth-child(4) { width: 27%; }
+      th:nth-child(5), th:nth-child(6) { width: 12%; }
+      td { padding: 16px; line-height: 1.5; }
+      .text-dark { color: #334155 !important; }
+      .feedback-date { white-space: nowrap; }
+      .feedback-rating {
+        white-space: nowrap;
+        iconify-icon { flex-shrink: 0; }
+      }
+      .badge {
+        padding: 4px 7px;
+        line-height: 1.4;
+        white-space: nowrap;
+      }
+      .feedback-comment {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+      }
+      .cat-action-btn {
+        flex: 0 0 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    :host-context(html[data-bs-theme="dark"]) .feedback-table {
+      .text-dark { color: #dde4f0 !important; }
+    }
+
     .cat-action-btn {
       width: 30px;
       height: 30px;
@@ -301,7 +341,7 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
   `]
 })
 export class OrderFeedback implements OnInit {
-  title = 'Customer Order Feedback & Moderation';
+  title = 'Customer Feedback & Reviews Console';
   feedbacks: RainbowOrderFeedback[] = RAINBOW_FEEDBACK;
 
   authService = inject(AuthenticationService);

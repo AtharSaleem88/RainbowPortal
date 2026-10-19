@@ -1,3 +1,5 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -296,7 +298,7 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
   `]
 })
 export class RoleList implements OnInit {
-  title = 'Branch Staff & Role Management';
+  title = 'Staff Management & Branch Personnel';
   staffMembers: BranchStaff[] = RAINBOW_STAFF_MEMBERS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
 
@@ -534,11 +536,11 @@ export class RoleList implements OnInit {
 
   saveStaff() {
     if (!this.formStaff.name?.trim()) {
-      alert('Please enter staff full name.');
+      void showSaveValidation('Please enter staff full name.');
       return;
     }
     if (!this.formStaff.phone?.trim()) {
-      alert('Please enter contact phone number.');
+      void showSaveValidation('Please enter contact phone number.');
       return;
     }
 
@@ -551,7 +553,7 @@ export class RoleList implements OnInit {
           ...this.staffMembers[idx],
           ...this.formStaff,
         } as BranchStaff;
-        this.showNotification(`Staff member "${this.formStaff.name}" updated successfully.`);
+        void showSaveSuccess(`Staff member "${this.formStaff.name}" updated successfully.`);
       }
     } else {
       const rolePrefix = this.formStaff.role === 'Branch Manager' ? 'MGR' : this.formStaff.role === 'Moderator' ? 'MOD' : 'RDR';
@@ -580,7 +582,7 @@ export class RoleList implements OnInit {
       };
 
       this.staffMembers.unshift(newStaff);
-      this.showNotification(`New ${newStaff.role} "${newStaff.name}" assigned to ${newStaff.branchName}.`);
+      void showSaveSuccess(`New ${newStaff.role} "${newStaff.name}" assigned to ${newStaff.branchName}.`);
     }
 
     if (this.activeModalRef) {
@@ -598,8 +600,8 @@ export class RoleList implements OnInit {
     }
   }
 
-  deleteStaff(staff: BranchStaff) {
-    if (confirm(`Are you sure you want to remove ${staff.name} (${staff.role} - ${staff.branchName})?`)) {
+  async deleteStaff(staff: BranchStaff): Promise<void> {
+    if (await confirmAction(`Are you sure you want to remove ${staff.name} (${staff.role} - ${staff.branchName})?`)) {
       this.staffMembers = this.staffMembers.filter(s => s.id !== staff.id);
       this.showNotification(`${staff.name} removed from branch staff.`);
     }

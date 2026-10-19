@@ -1,7 +1,9 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, MasterCategory } from '../data';
 
 @Component({
@@ -11,6 +13,10 @@ import { MASTER_CATEGORIES, MasterCategory } from '../data';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './category-add.html',
   styles: [`
+    .modal-body {
+      max-height: calc(100dvh - 160px);
+      overflow-y: auto;
+    }
     .cat-form-card {
       background: #ffffff;
       border: 1px solid #eaedf1;
@@ -32,8 +38,18 @@ import { MASTER_CATEGORIES, MasterCategory } from '../data';
   `]
 })
 export class CategoryAdd {
-  title = 'Create Category';
+  title = 'Create Master Category';
   private router = inject(Router);
+  activeModal = inject(NgbActiveModal, { optional: true });
+  saving = false;
+
+  cancel(): void {
+    if (this.activeModal) {
+      this.activeModal.dismiss();
+    } else {
+      void this.router.navigate(['/category/list']);
+    }
+  }
 
   category: Partial<MasterCategory> = {
     id: `CAT-${(MASTER_CATEGORIES.length + 1).toString().padStart(2, '0')}`,
@@ -69,9 +85,10 @@ export class CategoryAdd {
     }
   }
 
-  saveCategory(): void {
-    if (!this.category.name) {
-      alert('Please fill in Category Title.');
+  async saveCategory(): Promise<void> {
+    if (this.saving) return;
+    if (!this.category.name?.trim()) {
+      void showSaveValidation('Please fill in Category Title.');
       return;
     }
 
@@ -94,7 +111,14 @@ export class CategoryAdd {
       createdBy: 'Admin'
     };
 
+    this.saving = true;
     MASTER_CATEGORIES.unshift(newCat);
+    if (this.activeModal) {
+      this.activeModal.close(newCat);
+      await showSaveSuccess('Master category saved successfully.');
+      return;
+    }
+    await showSaveSuccess('Master category saved successfully.');
     this.router.navigate(['/category/list']);
   }
 }

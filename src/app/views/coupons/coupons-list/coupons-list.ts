@@ -1,3 +1,5 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -499,7 +501,7 @@ export class CouponsList implements OnInit {
 
   saveCoupon() {
     if (!this.formCoupon.code?.trim()) {
-      alert('Please enter a coupon code.');
+      void showSaveValidation('Please enter a coupon code.');
       return;
     }
 
@@ -512,7 +514,7 @@ export class CouponsList implements OnInit {
     } else {
       targetedIds = this.branches.filter(b => this.selectedBranchMap[b.id]).map(b => b.id);
       if (targetedIds.length === 0) {
-        alert('Please select at least one branch for this coupon.');
+        void showSaveValidation('Please select at least one branch for this coupon.');
         return;
       }
       if (targetedIds.length === this.branches.length) {
@@ -538,7 +540,7 @@ export class CouponsList implements OnInit {
           targetBranchNames: targetedNames,
           status: computedStatus,
         } as CustomerCoupon;
-        this.showNotification(`Coupon "${couponCode}" updated successfully.`);
+        void showSaveSuccess(`Coupon "${couponCode}" updated successfully.`);
       }
     } else {
       const newCoupon: CustomerCoupon = {
@@ -564,7 +566,7 @@ export class CouponsList implements OnInit {
         createdAt: new Date().toLocaleDateString(),
       };
       this.coupons.unshift(newCoupon);
-      this.showNotification(`Coupon "${newCoupon.code}" created successfully for customers.`);
+      void showSaveSuccess(`Coupon "${newCoupon.code}" created successfully for customers.`);
     }
 
     if (this.activeModalRef) {
@@ -582,8 +584,8 @@ export class CouponsList implements OnInit {
     }
   }
 
-  deleteCoupon(c: CustomerCoupon) {
-    if (confirm(`Are you sure you want to delete coupon code "${c.code}"?`)) {
+  async deleteCoupon(c: CustomerCoupon): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete coupon code "${c.code}"?`)) {
       this.coupons = this.coupons.filter(item => item.id !== c.id);
       this.showNotification(`Coupon "${c.code}" deleted.`);
     }

@@ -1,3 +1,4 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +15,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MarketingFlashDeals implements OnInit {
+  title = 'Flash Sales & Super Savers';
   deals: FlashDeal[] = MOCK_FLASH_DEALS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
 
@@ -78,7 +80,7 @@ export class MarketingFlashDeals implements OnInit {
 
   saveDeal(modal: any) {
     if (!this.newDeal.title?.trim()) {
-      alert('Please enter a flash deal title.');
+      void showSaveValidation('Please enter a flash deal title.');
       return;
     }
 
@@ -99,7 +101,7 @@ export class MarketingFlashDeals implements OnInit {
     };
 
     this.deals.unshift(deal);
-    this.showNotification(`Flash Deal "${deal.title}" created successfully!`);
+    void showSaveSuccess(`Flash Deal "${deal.title}" created successfully!`);
     modal.close();
   }
 

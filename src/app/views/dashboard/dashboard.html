@@ -97,24 +97,24 @@
   <!-- ========================================================
        Row 1: Catalog Scale & Core Volume (4 KPI Cards)
        ======================================================== -->
-  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+  <div class="kpi-heading d-flex align-items-center justify-content-between px-1">
     <span class="section-label">Catalog Overview & Volume Metrics</span>
   </div>
-  <div class="row g-3.5 mb-4">
+  <div class="row g-3 mb-3">
     <!-- Card 1: Total Products (Required) -->
     <div class="col-xl-3 col-md-6 col-12">
-      <a routerLink="/product/list" class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <a routerLink="/product/list" class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Total Products</span>
           <div class="stat-icon" style="background: rgba(46, 49, 146, 0.08); color: #2e3192;">
             <iconify-icon icon="solar:box-minimalistic-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalProducts | number }}</h2>
           <span class="fs-12 fw-semibold text-muted">SKUs</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
           <span class="text-muted">{{ catalogStats.inStockProducts | number }} In Stock &bull; {{ catalogStats.lowStockProducts }} Low</span>
           <span class="text-primary fw-semibold d-inline-flex align-items-center">Manage &rarr;</span>
         </div>
@@ -123,19 +123,19 @@
 
     <!-- Card 2: Total Categories (Required) -->
     <div class="col-xl-3 col-md-6 col-12">
-      <a routerLink="/category/list" class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <a routerLink="/category/list" class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Total Categories</span>
           <div class="stat-icon" style="background: rgba(37, 170, 225, 0.1); color: #25aae1;">
             <iconify-icon icon="solar:widget-2-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalCategories }}</h2>
           <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">100% Active</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
-          <span class="text-muted">20 Master Departments</span>
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
+          <span class="text-muted">{{ catalogStats.totalCategories }} Master Departments</span>
           <span class="text-primary fw-semibold d-inline-flex align-items-center">Explore &rarr;</span>
         </div>
       </a>
@@ -143,19 +143,19 @@
 
     <!-- Card 3: Total Sub Categories (Required) -->
     <div class="col-xl-3 col-md-6 col-12">
-      <a routerLink="/category/sub-category" class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <a routerLink="/category/sub-category" class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Total Sub Categories</span>
           <div class="stat-icon" style="background: rgba(147, 51, 234, 0.08); color: #9333ea;">
             <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalSubCategories }}</h2>
           <span class="badge bg-primary-subtle text-primary fs-11 fw-semibold py-1 px-2">Mapped</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
-          <span class="text-muted">Across 20 Departments</span>
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
+          <span class="text-muted">Across {{ catalogStats.totalCategories }} Departments</span>
           <span class="text-primary fw-semibold d-inline-flex align-items-center">Configure &rarr;</span>
         </div>
       </a>
@@ -163,18 +163,18 @@
 
     <!-- Card 4: Orders & Revenue for Selected Date Range -->
     <div class="col-xl-3 col-md-6 col-12">
-      <div class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Period Revenue</span>
           <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
             <iconify-icon icon="solar:dollar-minimalistic-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">PKR {{ kpiStats.sales | number }}</h2>
           <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">{{ kpiStats.salesGrowth }}</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
           <span class="text-muted">{{ kpiStats.orders | number }} Total Orders</span>
           <span class="text-muted">AOV: PKR {{ kpiStats.avgOrderValue | number }}</span>
         </div>
@@ -185,21 +185,21 @@
   <!-- ========================================================
        Row 2: Operational Health, New Customers & Exceptions (4 Cards)
        ======================================================== -->
-  <div class="row g-3.5 mb-4">
+  <div class="row g-3 mb-3">
     <!-- Card 1: New Customers -->
     <div class="col-xl-3 col-md-6 col-12">
-      <div class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">New Customers</span>
           <div class="stat-icon" style="background: rgba(37, 170, 225, 0.1); color: #25aae1;">
             <iconify-icon icon="solar:user-plus-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.newCustomers | number }}</h2>
           <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">{{ exceptionStats.newCustomerGrowth }}</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
           <span class="text-muted">Acquisition Pace</span>
           <span class="fw-semibold text-dark">{{ exceptionStats.repeatRate }} Repeat</span>
         </div>
@@ -208,58 +208,58 @@
 
     <!-- Card 2: Rejected Orders -->
     <div class="col-xl-3 col-md-6 col-12">
-      <div class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Rejected Orders</span>
           <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
             <iconify-icon icon="solar:close-circle-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.rejectedOrders | number }}</h2>
           <span class="badge bg-danger-subtle text-danger fs-11 fw-semibold py-1 px-2">{{ exceptionStats.rejectedRate }} Rate</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
           <span class="text-muted">Primary Reason:</span>
-          <span class="fw-semibold text-danger text-truncate" style="max-width: 140px;">{{ exceptionStats.rejectedTopReason }}</span>
+          <span class="fw-semibold text-danger" [title]="exceptionStats.rejectedTopReason">{{ exceptionStats.rejectedTopReason }}</span>
         </div>
       </div>
     </div>
 
     <!-- Card 3: Cancelled Orders -->
     <div class="col-xl-3 col-md-6 col-12">
-      <div class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Cancelled Orders</span>
           <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
             <iconify-icon icon="solar:shield-warning-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.cancelledOrders | number }}</h2>
           <span class="badge bg-warning-subtle text-warning fs-11 fw-semibold py-1 px-2">{{ exceptionStats.cancelledRate }} Rate</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
           <span class="text-muted">Top Driver:</span>
-          <span class="fw-semibold text-dark text-truncate" style="max-width: 140px;">{{ exceptionStats.cancelledTopReason }}</span>
+          <span class="fw-semibold text-dark" [title]="exceptionStats.cancelledTopReason">{{ exceptionStats.cancelledTopReason }}</span>
         </div>
       </div>
     </div>
 
     <!-- Card 4: Store Fulfillment Rate & Fleet -->
     <div class="col-xl-3 col-md-6 col-12">
-      <div class="kpi-card p-3.5 p-xl-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-heading d-flex align-items-center justify-content-between">
           <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Fulfillment Rate</span>
           <div class="stat-icon" style="background: rgba(46, 49, 146, 0.08); color: #2e3192;">
             <iconify-icon icon="solar:check-circle-bold-duotone" class="fs-22"></iconify-icon>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ kpiStats.fulfillmentRate }}</h2>
           <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">Optimal</span>
         </div>
-        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
           <span class="text-muted">Dispatch: {{ exceptionStats.avgDispatchMinutes }}</span>
           <span class="fw-semibold text-primary">{{ kpiStats.activeRiders }} Active Riders</span>
         </div>
