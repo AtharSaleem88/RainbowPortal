@@ -1,0 +1,80 @@
+// 
+// _light-mode.scss
+// 
+
+
+/* Root Prefix Variable */
+:root {
+    --#{$prefix}logo-lg-height:                42px;
+    --#{$prefix}logo-sm-height:                34px;
+
+    --#{$prefix}main-nav-width:               280px;
+    --#{$prefix}main-nav-width-sm:             75px; 
+    --#{$prefix}main-nav-item-icon-size:       22px;
+    --#{$prefix}main-nav-item-font-size:       15px;
+    --#{$prefix}main-nav-item-padding-x:       25px;
+    --#{$prefix}main-nav-item-padding-y:       10px;
+
+    --#{$prefix}topbar-height:                 90px;
+    --#{$prefix}footer-height:                 60px;
+    
+    // Heading Variable
+    --#{$prefix}headings-color:                #2e3192;
+
+    --#{$prefix}input-border-color:             #d8dfe7;
+    --#{$prefix}input-focus-border-color:       #25aae1;
+}
+
+
+/* Color system - Dark Mode only */
+html[data-bs-theme="dark"], [data-bs-theme="dark"] {
+
+    --#{$prefix}border-color:                   #{$border-color-dark};
+
+    --#{$prefix}light:                     #{$body-tertiary-bg-dark};
+    --#{$prefix}dark:                      #{$body-tertiary-color-dark};
+    
+    --#{$prefix}light-rgb:                 #{to-rgb($body-tertiary-bg-dark)};
+    --#{$prefix}dark-rgb:                  #{to-rgb($body-tertiary-color-dark)};
+
+    // Heading Variable
+    --#{$prefix}headings-color:            #25aae1;
+
+    --#{$prefix}input-border-color:             #{$border-color-dark};
+    --#{$prefix}input-focus-border-color:       #25aae1;
+}
+
+
+/* Main Menu Light (Clean White Sidebar with Navy Text & Sky-Blue Accents) */
+html[data-menu-color="light"]:not([data-bs-theme="dark"]) {
+    --#{$prefix}main-nav-bg:                               #ffffff;
+    --#{$prefix}main-nav-item-color:                       #334155;
+    --#{$prefix}main-nav-item-hover-bg:                    rgba(37, 170, 225, 0.1);
+    --#{$prefix}main-nav-item-hover-color:                 #25aae1;
+    --#{$prefix}main-nav-border-color:                     #e2e8f0;
+}
+
+/* Main Menu Dark (Rainbow Primary Navy) */
+html[data-menu-color="dark"],
+html[data-bs-theme="dark"] {
+    --#{$prefix}main-nav-bg:                               #2e3192;
+    --#{$prefix}main-nav-item-color:                       #d6d9f7;
+    --#{$prefix}main-nav-item-hover-bg:                    rgba(37, 170, 225, 0.16);
+    --#{$prefix}main-nav-item-hover-color:                 #25aae1;
+    --#{$prefix}main-nav-border-color:                     rgba(37, 170, 225, 0.2);
+}
+
+/* Topbar Light */
+html[data-topbar-color="light"] {
+    --#{$prefix}topbar-bg:                                 #ffffff;
+    --#{$prefix}topbar-item-color:                         #2e3192;
+    --#{$prefix}topbar-search-bg:                          #f2f6fc;
+}
+
+/* Topbar Dark (Rainbow Primary Blue #2e3192) */
+html[data-topbar-color="dark"], 
+html[data-bs-theme="dark"][data-topbar-color="light"]{
+    --#{$prefix}topbar-bg:                                 #2e3192;
+    --#{$prefix}topbar-item-color:                         #ffffff;
+    --#{$prefix}topbar-search-bg:                          rgba(255, 255, 255, 0.15);
+}

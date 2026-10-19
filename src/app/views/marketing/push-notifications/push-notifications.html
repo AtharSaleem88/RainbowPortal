@@ -1,0 +1,663 @@
+<!-- ========================================================
+     Executive Page Header & Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div>
+    <h4 class="fs-18 fw-bold text-dark mb-1 font-jost d-flex align-items-center gap-2">
+      <iconify-icon icon="solar:bell-bing-bold-duotone" class="text-primary fs-20"></iconify-icon>
+      Push Notifications Hub
+    </h4>
+  </div>
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <!-- Hub Navigation Segmented Control -->
+    <div class="filter-segmented-control">
+      <a routerLink="/marketing/push-notifications" class="segment-btn active text-decoration-none">
+        <iconify-icon icon="solar:bell-bing-bold" class="fs-14"></iconify-icon>
+        <span>Push Notifications</span>
+      </a>
+      <a routerLink="/marketing/loyalty-points" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:medal-star-bold" class="fs-14"></iconify-icon>
+        <span>Loyalty Points</span>
+      </a>
+      <a routerLink="/marketing/wallets" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:wallet-money-bold" class="fs-14"></iconify-icon>
+        <span>Customer Wallets</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Operational Feedback Toast Alert
+     ======================================================== -->
+@if (actionFeedback) {
+  <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-4 border fs-12 shadow-sm alert-success border-success-subtle bg-success-subtle text-success">
+    <iconify-icon icon="solar:check-circle-bold" class="fs-16 flex-shrink-0"></iconify-icon>
+    <div class="flex-grow-1 fw-medium">{{ actionFeedback }}</div>
+    <button type="button" class="btn-close p-2 fs-10" (click)="actionFeedback = null"></button>
+  </div>
+}
+
+<!-- ========================================================
+     Executive Metrics Cards (4 Minimal Cards)
+     ======================================================== -->
+<div class="row g-3 mb-4">
+  <!-- Card 1: Total Push Sent -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Push Sent</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:bell-bing-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">142,500</div>
+      <small class="text-muted fs-11"><span class="text-success fw-semibold">+12.4%</span> this month</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Delivery Rate -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Avg Delivery</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:check-read-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">98.4%</div>
+      <small class="text-muted fs-11">FCM &amp; APNs Gateway</small>
+    </div>
+  </div>
+
+  <!-- Card 3: Delivered Messages -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Delivered Messages</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:chat-round-check-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">140,220</div>
+      <small class="text-muted fs-11">Successfully pushed</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Branch Targeting -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Active Branch Hubs</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:shop-2-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ branches.length }} Branches</div>
+      <small class="text-muted fs-11">Hyper-local supermarket targeting</small>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Composer & Dispatch Engine (Full-Width Sleek Console)
+     ======================================================== -->
+<div class="cat-main-card mb-4.5">
+  <!-- Composer Header -->
+  <div class="p-4 border-bottom bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2.5">
+      <div class="cat-metric-icon bg-primary-subtle text-primary" style="width: 38px; height: 38px; font-size: 19px;">
+        <iconify-icon icon="solar:pen-new-square-bold"></iconify-icon>
+      </div>
+      <div>
+        <h5 class="fs-15 fw-bold text-dark mb-0 font-jost">Composer &amp; Dispatch Engine</h5>
+        <span class="text-muted fs-11">Target individual shoppers, branch patrons, or broadcast nationwide</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 p-md-5">
+    <!-- Step 1: Target Audience Selection -->
+    <div>
+      <div class="d-flex align-items-center justify-content-between mb-2.5">
+        <label class="form-label fw-bold text-dark fs-12 text-uppercase mb-0" style="letter-spacing: 0.5px;">
+          1. Target Audience <span class="text-danger">*</span>
+        </label>
+        <span class="badge bg-light text-muted border fs-11 py-1 px-2">
+          Estimated Reach: <strong class="text-dark">{{ estimatedRecipientsCount | number }} Devices</strong>
+        </span>
+      </div>
+
+      <div class="row g-3">
+        <!-- All Customers -->
+        <div class="col-6 col-md-3">
+          <div class="audience-option-card" [class.selected]="formTargetType === 'all'" (click)="formTargetType = 'all'" role="button">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <iconify-icon icon="solar:users-group-two-rounded-bold" class="fs-18 text-primary"></iconify-icon>
+              <span class="fw-bold fs-12 text-dark">All Users</span>
+            </div>
+            <div class="text-muted fs-11">Nationwide (30,278 Users)</div>
+          </div>
+        </div>
+
+        <!-- Branch Customers -->
+        <div class="col-6 col-md-3">
+          <div class="audience-option-card" [class.selected]="formTargetType === 'branch'" (click)="formTargetType = 'branch'" role="button">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <iconify-icon icon="solar:shop-2-bold" class="fs-18 text-success"></iconify-icon>
+              <span class="fw-bold fs-12 text-dark">Branch Specific</span>
+            </div>
+            <div class="text-muted fs-11">Hyper-local Store Patrons</div>
+          </div>
+        </div>
+
+        <!-- Customer Segment -->
+        <div class="col-6 col-md-3">
+          <div class="audience-option-card" [class.selected]="formTargetType === 'segment'" (click)="formTargetType = 'segment'" role="button">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <iconify-icon icon="solar:pie-chart-2-bold" class="fs-18 text-warning"></iconify-icon>
+              <span class="fw-bold fs-12 text-dark">Smart Segment</span>
+            </div>
+            <div class="text-muted fs-11">VIP / Repeat / Abandoners</div>
+          </div>
+        </div>
+
+        <!-- Individual Customer -->
+        <div class="col-6 col-md-3">
+          <div class="audience-option-card" [class.selected]="formTargetType === 'individual'" (click)="formTargetType = 'individual'" role="button">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <iconify-icon icon="solar:user-bold" class="fs-18 text-info"></iconify-icon>
+              <span class="fw-bold fs-12 text-dark">Individual Shopper</span>
+            </div>
+            <div class="text-muted fs-11">Single Customer Message</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Branch Selector (if targetType === 'branch') -->
+      <div *ngIf="formTargetType === 'branch'" class="mt-3.5">
+        <label class="form-label fw-semibold fs-12 text-dark mb-1.5">Select Rainbow Superstore Branch</label>
+        <select class="form-select form-control-sleek" [(ngModel)]="formTargetBranch">
+          <option *ngFor="let b of branches" [value]="b.name">{{ b.name }} ({{ b.city }})</option>
+        </select>
+      </div>
+
+      <!-- Segment Selector (if targetType === 'segment') -->
+      <div *ngIf="formTargetType === 'segment'" class="mt-3.5">
+        <label class="form-label fw-semibold fs-12 text-dark mb-1.5">Select Customer Segment</label>
+        <select class="form-select form-control-sleek" [(ngModel)]="formTargetSegment">
+          <option value="Repeat Buyers">Repeat Buyers (10,804 customers with &gt; 1 order)</option>
+          <option value="VIP Customers">VIP Shoppers (Customers marked with VIP badge)</option>
+          <option value="Cart Abandoners">Cart Abandoners (349 users with pending cart items)</option>
+          <option value="Dormant Customers">Dormant Shoppers (No orders in last 60 days)</option>
+          <option value="New Customers">New Customers (Signed up in last 30 days)</option>
+        </select>
+      </div>
+
+      <!-- Individual Customer Picker (if targetType === 'individual') -->
+      <div *ngIf="formTargetType === 'individual'" class="mt-3.5">
+        <label class="form-label fw-semibold fs-12 text-dark mb-1.5">Search &amp; Select Individual Customer</label>
+        <div class="row g-2.5 align-items-center mb-3">
+          <div class="col-md-5">
+            <input type="text"
+                   class="form-control form-control-sleek"
+                   [(ngModel)]="formCustomerSearch"
+                   placeholder="Search by name, phone or code...">
+          </div>
+          <div class="col-md-7">
+            <select class="form-select form-control-sleek" [(ngModel)]="formTargetCustomerId">
+              <option value="" disabled>-- Select Customer from List --</option>
+              <option *ngFor="let c of filteredCustomersList" [value]="c.id">
+                {{ c.name }} ({{ c.customerCode || c.id }}) - {{ c.phone }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Selected Customer Profile Card with Left-Side Wallet -->
+        <div *ngIf="selectedCustomerDetail" class="p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+          <div class="row g-3 align-items-center">
+            <!-- Left: Wallet Block -->
+            <div class="col-sm-auto col-12">
+              <div class="d-flex align-items-center gap-2.5 p-2 px-3 rounded-2" style="background: #eef2ff; border: 1px solid #c7d2fe; min-width: 170px;">
+                <iconify-icon icon="solar:wallet-money-bold" class="fs-22 text-primary"></iconify-icon>
+                <div>
+                  <div class="text-muted fs-10 text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Wallet Balance</div>
+                  <div class="fw-bold text-dark fs-14">Rs. {{ (selectedCustomerDetail.walletBalance | number) || '0' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customer Details -->
+            <div class="col">
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="fw-bold text-dark fs-13">{{ selectedCustomerDetail.name }}</span>
+                <span class="badge bg-light text-muted border fs-10 font-monospace">{{ selectedCustomerDetail.customerCode || selectedCustomerDetail.id }}</span>
+              </div>
+              <div class="d-flex align-items-center gap-3 text-muted fs-11 flex-wrap">
+                <span><iconify-icon icon="solar:phone-bold" class="align-middle me-1 text-primary"></iconify-icon>{{ selectedCustomerDetail.phone }}</span>
+                <span><iconify-icon icon="solar:shop-2-bold" class="align-middle me-1 text-success"></iconify-icon>{{ selectedCustomerDetail.preferredBranch }}</span>
+                <span *ngIf="selectedCustomerDetail.email"><iconify-icon icon="solar:letter-bold" class="align-middle me-1 text-muted"></iconify-icon>{{ selectedCustomerDetail.email }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Divider -->
+    <div class="border-top my-4.5" style="border-color: #f1f5f9 !important;"></div>
+
+    <!-- Step 2: Notification Content -->
+    <div>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <label class="form-label fw-bold text-dark fs-12 text-uppercase mb-0" style="letter-spacing: 0.5px;">
+          2. Notification Content <span class="text-danger">*</span>
+        </label>
+      </div>
+
+      <!-- Title with Emoji bar -->
+      <div class="mb-3.5">
+        <div class="d-flex align-items-center justify-content-between mb-1.5 flex-wrap gap-2">
+          <label class="form-label fw-semibold text-dark fs-12 mb-0">Notification Title <span class="text-danger">*</span></label>
+          <!-- Emoji quick buttons -->
+          <div class="d-flex gap-1.5 align-items-center">
+            <span class="text-muted fs-11 me-1">Quick Emoji:</span>
+            <button type="button" class="emoji-chip" (click)="addEmoji('⚡')" title="Lightning">⚡</button>
+            <button type="button" class="emoji-chip" (click)="addEmoji('🛒')" title="Cart">🛒</button>
+            <button type="button" class="emoji-chip" (click)="addEmoji('🎁')" title="Gift">🎁</button>
+            <button type="button" class="emoji-chip" (click)="addEmoji('🔥')" title="Fire">🔥</button>
+            <button type="button" class="emoji-chip" (click)="addEmoji('🥩')" title="Meat">🥩</button>
+            <button type="button" class="emoji-chip" (click)="addEmoji('🥛')" title="Dairy">🥛</button>
+            <button type="button" class="emoji-chip" (click)="addEmoji('🎉')" title="Celebration">🎉</button>
+          </div>
+        </div>
+        <input type="text"
+               class="form-control form-control-sleek"
+               [(ngModel)]="formTitle"
+               placeholder="e.g. ⚡ Flash Weekend Super Savers at Rainbow!">
+      </div>
+
+      <!-- Message Body -->
+      <div>
+        <div class="d-flex align-items-center justify-content-between mb-1.5">
+          <label class="form-label fw-semibold text-dark fs-12 mb-0">Notification Message / Body <span class="text-danger">*</span></label>
+          <span class="fs-11" [ngClass]="formMessage.length > 220 ? 'text-danger fw-semibold' : 'text-muted'">{{ formMessage.length }} / 250 characters</span>
+        </div>
+        <textarea class="form-control form-control-sleek"
+                  rows="3"
+                  [(ngModel)]="formMessage"
+                  maxlength="250"
+                  placeholder="Type the message that will pop up on customer mobile screens..."></textarea>
+      </div>
+    </div>
+
+    <!-- Section Divider -->
+    <div class="border-top my-4.5" style="border-color: #f1f5f9 !important;"></div>
+
+    <!-- Step 3: Scheduling & Delivery -->
+    <div>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <label class="form-label fw-bold text-dark fs-12 text-uppercase mb-0" style="letter-spacing: 0.5px;">
+          3. Delivery Timing <span class="text-danger">*</span>
+        </label>
+      </div>
+
+      <div class="row g-3">
+        <!-- Option 1: Broadcast Live Now -->
+        <div class="col-12 col-md-6">
+          <div class="timing-option-card" [class.selected]="formTiming === 'immediate'" (click)="formTiming = 'immediate'" role="button">
+            <div class="d-flex align-items-center gap-3">
+              <div class="timing-icon-box" [ngClass]="formTiming === 'immediate' ? 'bg-primary text-white' : 'bg-light text-muted'">
+                <iconify-icon icon="solar:bolt-bold" class="fs-20"></iconify-icon>
+              </div>
+              <div>
+                <div class="fw-bold fs-13 text-dark">Broadcast Live Now</div>
+                <div class="text-muted fs-11 mt-0.5">Send instant push notification to customers immediately</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Schedule for Later -->
+        <div class="col-12 col-md-6">
+          <div class="timing-option-card" [class.selected]="formTiming === 'scheduled'" (click)="formTiming = 'scheduled'" role="button">
+            <div class="d-flex align-items-center gap-3">
+              <div class="timing-icon-box" [ngClass]="formTiming === 'scheduled' ? 'bg-primary text-white' : 'bg-light text-muted'">
+                <iconify-icon icon="solar:calendar-date-bold" class="fs-20"></iconify-icon>
+              </div>
+              <div>
+                <div class="fw-bold fs-13 text-dark">Schedule for Later</div>
+                <div class="text-muted fs-11 mt-0.5">Pick future delivery date and exact dispatch time</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scheduled Date & Time Pickers (Visible when scheduled) -->
+      <div *ngIf="formTiming === 'scheduled'" class="mt-3.5 p-3.5 bg-light bg-opacity-50 rounded-3 border" style="border-color: #e2e8f0 !important;">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-5 col-sm-6">
+            <label class="form-label fw-semibold text-dark fs-12 mb-1.5">Scheduled Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control form-control-sleek bg-white" [(ngModel)]="formScheduleDate">
+          </div>
+          <div class="col-md-5 col-sm-6">
+            <label class="form-label fw-semibold text-dark fs-12 mb-1.5">Scheduled Time <span class="text-danger">*</span></label>
+            <input type="time" class="form-control form-control-sleek bg-white" [(ngModel)]="formScheduleTime">
+          </div>
+          <div class="col-md-2 col-12 d-flex align-items-end">
+            <div class="text-muted fs-11 pb-1">
+              <iconify-icon icon="solar:clock-circle-bold" class="text-primary me-1 align-middle"></iconify-icon>
+              Auto-broadcast
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button & Target Summary -->
+    <div class="d-flex align-items-center justify-content-between pt-4 mt-4.5 border-top flex-wrap gap-3" style="border-color: #f1f5f9 !important;">
+      <div class="text-muted fs-12">
+        Target Audience: <strong class="text-dark">{{ formTargetType === 'all' ? 'All Customers (Nationwide)' : (formTargetType === 'branch' ? formTargetBranch : (formTargetType === 'segment' ? formTargetSegment : selectedCustomerDetail?.name)) }}</strong> &bull;
+        Estimated Reach: <strong class="text-primary">{{ estimatedRecipientsCount | number }} App Devices</strong>
+      </div>
+      <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 px-3.5 py-2 fw-semibold shadow-sm"
+              style="background: #2e3192; border-color: #2e3192; border-radius: 8px; font-size: 13px;"
+              (click)="sendPushNotification()">
+        <iconify-icon [icon]="formTiming === 'scheduled' ? 'solar:calendar-bold' : 'solar:plain-bold'" class="fs-16"></iconify-icon>
+        <span>{{ formTiming === 'scheduled' ? 'Schedule Push Campaign' : 'Broadcast Live Now' }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Main Campaigns Console Card (History & Analytics)
+     ======================================================== -->
+<div class="cat-main-card overflow-hidden mb-4">
+  <!-- Header Toolbar: Status Tabs + Search Box -->
+  <div class="p-3 border-bottom bg-white">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <!-- Status Filter Segmented Control -->
+      <div class="filter-segmented-control">
+        <button type="button" class="segment-btn" [class.active]="filterStatus === 'all'" (click)="setStatusTab('all')">
+          <span>All Campaigns</span>
+          <span class="count-pill">{{ counts.all }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="filterStatus === 'Sent'" (click)="setStatusTab('Sent')">
+          <span>Sent</span>
+          <span class="count-pill">{{ counts.sent }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="filterStatus === 'Scheduled'" (click)="setStatusTab('Scheduled')">
+          <span>Scheduled</span>
+          <span class="count-pill">{{ counts.scheduled }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="filterStatus === 'Draft'" (click)="setStatusTab('Draft')">
+          <span>Drafts</span>
+          <span class="count-pill">{{ counts.draft }}</span>
+        </button>
+      </div>
+
+      <!-- Search Box with Clear Button -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <div class="search-box-wrapper">
+          <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
+                 class="form-control search-input shadow-none"
+                 placeholder="Search campaign, message...">
+          @if (searchTerm) {
+            <button class="clear-search-btn" type="button" (click)="clearSearch()" title="Clear search">
+              <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Filter Strip -->
+  <div class="filter-bar-strip d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <!-- Audience Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Audience:</span>
+        <select class="filter-dropdown" [(ngModel)]="filterAudience" (change)="currentPage = 1">
+          <option value="all">All Audiences</option>
+          <option value="all">Nationwide Users</option>
+          <option value="branch">Branch Only</option>
+          <option value="segment">Smart Segment</option>
+          <option value="individual">Individual Shopper</option>
+        </select>
+      </div>
+
+      <!-- Branch Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Branch:</span>
+        <select class="filter-dropdown" [(ngModel)]="filterBranch" (change)="currentPage = 1">
+          <option value="all">All Branches</option>
+          <option value="Clifton">Clifton, Karachi</option>
+          <option value="Valencia">Valencia, Lahore</option>
+          <option value="Wapda Town">Wapda Town, Lahore</option>
+          <option value="Gulshan">Gulshan-e-Iqbal, Karachi</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Filter Counter & Reset -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted fs-11">
+        Found <strong>{{ filteredNotifications.length }}</strong> campaigns
+      </span>
+      @if (searchTerm || filterAudience !== 'all' || filterBranch !== 'all' || filterStatus !== 'all') {
+        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fs-11 text-danger d-inline-flex align-items-center gap-1"
+                (click)="resetFilters()">
+          <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
+          <span>Reset</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Table Body -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th>NOTIFICATION DETAILS</th>
+          <th>TARGET AUDIENCE</th>
+          <th>DISPATCH / SCHEDULE</th>
+          <th>RECIPIENTS</th>
+          <th class="text-center">STATUS</th>
+          <th class="text-end">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(item of paginatedNotifications; track item.id) {
+          <tr>
+            <!-- Col 1: Notification Details -->
+            <td>
+              <div>
+                <div class="fw-bold text-dark fs-13 mb-1">{{ item.title }}</div>
+                <div class="text-muted fs-11" style="max-width: 320px; line-height: 1.4;">{{ item.message }}</div>
+              </div>
+            </td>
+
+            <!-- Col 2: Target Audience -->
+            <td>
+              <div *ngIf="item.targetType === 'all'">
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1 fs-11">
+                  <iconify-icon icon="solar:users-group-two-rounded-bold" class="align-middle me-1"></iconify-icon> All Customers
+                </span>
+                <div class="text-muted fs-11 mt-0.5">Nationwide App Users</div>
+              </div>
+
+              <div *ngIf="item.targetType === 'branch'">
+                <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1 fs-11">
+                  <iconify-icon icon="solar:shop-2-bold" class="align-middle me-1"></iconify-icon> Branch Specific
+                </span>
+                <div class="fw-medium text-dark fs-11 mt-0.5">{{ item.targetBranch }}</div>
+              </div>
+
+              <div *ngIf="item.targetType === 'segment'">
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-semibold px-2 py-1 fs-11">
+                  <iconify-icon icon="solar:pie-chart-2-bold" class="align-middle me-1"></iconify-icon> {{ item.targetSegment }}
+                </span>
+                <div class="text-muted fs-11 mt-0.5">Customer Cohort</div>
+              </div>
+
+              <div *ngIf="item.targetType === 'individual'">
+                <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1 fs-11">
+                  <iconify-icon icon="solar:user-bold" class="align-middle me-1"></iconify-icon> Individual
+                </span>
+                <div class="fw-bold text-dark fs-11 mt-0.5">{{ item.targetCustomerName }}</div>
+                <div class="text-muted fs-10">{{ item.targetCustomerPhone }}</div>
+              </div>
+            </td>
+
+            <!-- Col 3: Date & Time -->
+            <td>
+              <div class="fs-12 text-dark fw-medium">{{ item.sentAt || item.scheduledAt }}</div>
+              <span class="text-muted fs-11">
+                {{ item.status === 'Scheduled' ? 'Pending schedule' : 'Dispatched live' }}
+              </span>
+            </td>
+
+            <!-- Col 4: Recipients -->
+            <td>
+              <div class="fw-bold text-dark fs-13">{{ item.recipientsCount | number }}</div>
+              <div class="text-muted fs-11" *ngIf="item.deliveredCount > 0">
+                Delivered: <span class="text-success fw-semibold">{{ item.deliveredCount | number }}</span>
+              </div>
+            </td>
+
+            <!-- Col 5: Status -->
+            <td class="text-center">
+              <span class="badge px-2 py-1 fs-11"
+                    [ngClass]="item.status === 'Sent' ? 'bg-success-subtle text-success' : (item.status === 'Scheduled' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary')">
+                <iconify-icon [icon]="item.status === 'Sent' ? 'solar:check-circle-bold' : (item.status === 'Scheduled' ? 'solar:clock-circle-bold' : 'solar:document-text-bold')" class="align-middle me-1"></iconify-icon>
+                {{ item.status }}
+              </span>
+            </td>
+
+            <!-- Col 6: Actions -->
+            <td class="text-end">
+              <div class="d-flex gap-1.5 justify-content-end">
+                <button type="button" class="cat-action-btn" (click)="openDetailsModal(item, detailsModal)" ngbTooltip="View Campaign Details">
+                  <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
+                </button>
+                <button *ngIf="item.status === 'Scheduled'" type="button" class="cat-action-btn btn-delete" (click)="cancelScheduledNotification(item)" ngbTooltip="Cancel Scheduled Dispatch">
+                  <iconify-icon icon="solar:close-circle-linear" class="fs-15"></iconify-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <iconify-icon icon="solar:bell-bing-bold" class="fs-36 text-muted mb-2"></iconify-icon>
+              <h6 class="text-dark font-jost fs-14 fw-bold">No campaigns match criteria</h6>
+              <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing audience and status filters.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Footer -->
+  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="text-muted fs-12">
+      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredNotifications.length }}</strong> campaigns
+    </div>
+    <ngb-pagination [collectionSize]="filteredNotifications.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5" class="pagination-sm mb-0">
+    </ngb-pagination>
+  </div>
+</div>
+
+<!-- ========================================================
+     Notification Details Modal
+     ======================================================== -->
+<ng-template #detailsModal let-modal>
+  <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+    <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+      Notification Details
+    </h5>
+    <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-4" *ngIf="selectedNotification">
+    <!-- Notification Content Card -->
+    <div class="card border rounded-3 p-3.5 mb-3 bg-light bg-opacity-50">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="badge bg-white text-muted border text-uppercase fs-10 fw-bold" style="letter-spacing: 0.5px;">Notification Content</span>
+        <span class="badge px-2 py-1 fs-11"
+              [ngClass]="selectedNotification.status === 'Sent' ? 'bg-success-subtle text-success' : (selectedNotification.status === 'Scheduled' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary')">
+          <iconify-icon [icon]="selectedNotification.status === 'Sent' ? 'solar:check-circle-bold' : (selectedNotification.status === 'Scheduled' ? 'solar:clock-circle-bold' : 'solar:document-text-bold')" class="align-middle me-1"></iconify-icon>
+          {{ selectedNotification.status }}
+        </span>
+      </div>
+      <h6 class="fw-bold text-dark fs-14 mb-2">{{ selectedNotification.title }}</h6>
+      <p class="text-muted fs-12 mb-0" style="white-space: pre-wrap; line-height: 1.6;">{{ selectedNotification.message }}</p>
+    </div>
+
+    <!-- Audience & Timing Configuration Card -->
+    <div class="card border rounded-3 p-3.5 mb-0 bg-white">
+      <div class="mb-3">
+        <span class="badge bg-light text-muted border text-uppercase fs-10 fw-bold" style="letter-spacing: 0.5px;">Campaign Configuration</span>
+      </div>
+      <div class="row g-3 fs-12">
+        <div class="col-md-6">
+          <span class="text-muted fs-11 d-block mb-1">Target Audience</span>
+          <div *ngIf="selectedNotification.targetType === 'all'" class="fw-bold text-dark">
+            <iconify-icon icon="solar:users-group-two-rounded-bold" class="text-primary me-1 align-middle"></iconify-icon>
+            All Customers (Nationwide)
+          </div>
+          <div *ngIf="selectedNotification.targetType === 'branch'" class="fw-bold text-success">
+            <iconify-icon icon="solar:shop-2-bold" class="text-success me-1 align-middle"></iconify-icon>
+            {{ selectedNotification.targetBranch }}
+          </div>
+          <div *ngIf="selectedNotification.targetType === 'segment'" class="fw-bold text-warning-emphasis">
+            <iconify-icon icon="solar:pie-chart-2-bold" class="text-warning me-1 align-middle"></iconify-icon>
+            {{ selectedNotification.targetSegment }}
+          </div>
+          <div *ngIf="selectedNotification.targetType === 'individual'" class="fw-bold text-info">
+            <iconify-icon icon="solar:user-bold" class="text-info me-1 align-middle"></iconify-icon>
+            {{ selectedNotification.targetCustomerName }} <span *ngIf="selectedNotification.targetCustomerPhone" class="text-muted fw-normal">({{ selectedNotification.targetCustomerPhone }})</span>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <span class="text-muted fs-11 d-block mb-1">Delivery Timing</span>
+          <div class="fw-bold text-dark">
+            <iconify-icon [icon]="selectedNotification.status === 'Scheduled' ? 'solar:calendar-date-bold' : 'solar:bolt-bold'"
+                          [class]="selectedNotification.status === 'Scheduled' ? 'text-primary me-1 align-middle' : 'text-warning me-1 align-middle'"></iconify-icon>
+            <span>{{ selectedNotification.sentAt || selectedNotification.scheduledAt }}</span>
+          </div>
+          <span class="text-muted fs-11">{{ selectedNotification.status === 'Scheduled' ? 'Scheduled for later' : 'Broadcasted live' }}</span>
+        </div>
+
+        <div class="col-md-6">
+          <span class="text-muted fs-11 d-block mb-1">Estimated Reach / Recipients</span>
+          <div class="fw-bold text-dark fs-13">
+            {{ selectedNotification.recipientsCount | number }} Devices
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <span class="text-muted fs-11 d-block mb-1">Delivered Count</span>
+          <div class="fw-bold text-success fs-13">
+            {{ (selectedNotification.deliveredCount | number) || 'Pending' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-end">
+    <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">
+      Close
+    </button>
+  </div>
+</ng-template>

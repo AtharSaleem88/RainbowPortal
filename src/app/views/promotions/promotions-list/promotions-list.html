@@ -1,0 +1,702 @@
+<!-- ========================================================
+     Executive Page Header & Actions
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+  <div>
+    <h4 class="fs-18 fw-bold text-dark mb-1 font-jost">Product Promotions & Discount Deals</h4>
+    <p class="text-muted fs-12 mb-0">Manage individual SKU deals, category discounts, and branch-specific promotional pricing</p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer"
+            (click)="resetFilters()" ngbTooltip="Reset all filters">
+      <iconify-icon icon="solar:restart-linear" class="fs-15"></iconify-icon>
+      <span>Reset Filters</span>
+    </button>
+
+    <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
+            style="background: #2e3192; border-color: #2e3192;"
+            (click)="openCreateModal(promoModal)">
+      <iconify-icon icon="solar:add-circle-bold" class="fs-16"></iconify-icon>
+      <span>+ Create Promotion</span>
+    </button>
+  </div>
+</div>
+
+<!-- ========================================================
+     Operational Feedback Alert
+     ======================================================== -->
+@if (actionFeedback) {
+  <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-3 border fs-12 shadow-sm alert-success border-success-subtle bg-success-subtle text-success">
+    <iconify-icon icon="solar:check-circle-bold" class="fs-16 flex-shrink-0"></iconify-icon>
+    <div class="flex-grow-1 fw-medium">{{ actionFeedback }}</div>
+    <button type="button" class="btn-close p-2 fs-10" (click)="actionFeedback = null"></button>
+  </div>
+}
+
+<!-- ========================================================
+     Executive Metrics Cards (4 Minimal Cards)
+     ======================================================== -->
+<div class="row g-3 mb-3">
+  <!-- Card 1: Total Campaigns -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">All Campaigns</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:tag-price-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.all }}</div>
+      <small class="text-muted fs-11">{{ counts.individual }} Individual &bull; {{ counts.bulk }} Bulk</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Active Deals -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Active Deals</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:fire-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.active }} <span class="fs-13 text-muted fw-normal">Live</span></div>
+      <small class="text-muted fs-11">Published on storefront</small>
+    </div>
+  </div>
+
+  <!-- Card 3: Scheduled -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Scheduled</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:calendar-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.scheduled }} <span class="fs-13 text-muted fw-normal">Upcoming</span></div>
+      <small class="text-muted fs-11">Ready to activate</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Customer Savings Awarded -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Customer Savings</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:wallet-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">Rs. {{ counts.totalSavings | number }}</div>
+      <small class="text-muted fs-11">Total discounts awarded</small>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Main Promotions Console Card
+     ======================================================== -->
+<div class="cat-main-card overflow-hidden mb-4">
+  
+  <!-- Header Toolbar: 2-Row Unified Layout -->
+  <div class="p-3 border-bottom bg-white">
+    <!-- Top Row: Status Tabs + Scope Tabs + Search -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      
+      <!-- Left: Status Filter Segmented Control -->
+      <div class="filter-segmented-control">
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'all'" (click)="setStatusTab('all')">
+          <span>All Deals</span>
+          <span class="count-pill">{{ counts.all }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Active'" (click)="setStatusTab('Active')">
+          <span>Active</span>
+          <span class="count-pill">{{ counts.active }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Scheduled'" (click)="setStatusTab('Scheduled')">
+          <span>Scheduled</span>
+          <span class="count-pill">{{ counts.scheduled }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Expired'" (click)="setStatusTab('Expired')">
+          <span>Expired</span>
+          <span class="count-pill">{{ counts.expired }}</span>
+        </button>
+      </div>
+
+      <!-- Right: Scope Filter & Search Box -->
+      <div class="d-flex align-items-center gap-2 ms-auto flex-wrap" style="gap: 12px;">
+        <!-- Scope Pills -->
+        <div class="d-inline-flex align-items-center gap-1 bg-light p-1 rounded-2 border">
+          <button type="button" class="scope-pill-btn" [class.active]="selectedScope === 'all'" (click)="setScopeTab('all')">
+            All Scopes
+          </button>
+          <button type="button" class="scope-pill-btn" [class.active]="selectedScope === 'individual'" (click)="setScopeTab('individual')">
+            Individual SKU
+          </button>
+          <button type="button" class="scope-pill-btn" [class.active]="selectedScope === 'bulk'" (click)="setScopeTab('bulk')">
+            Bulk Category/Brand
+          </button>
+        </div>
+
+        <!-- Search Box with Clear Button -->
+        <div class="search-box-wrapper">
+          <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
+                 class="form-control search-input shadow-none"
+                 placeholder="Search campaign, SKU, brand...">
+          @if (searchTerm) {
+            <button class="clear-search-btn" type="button" (click)="clearSearch()" title="Clear search">
+              <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Secondary Filter Strip: Branch, Discount Type & Reset -->
+    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-3 mt-3 rounded-2">
+      
+      <!-- Branch Selector -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Branch:</span>
+        <select [(ngModel)]="selectedBranch" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 230px; max-width: 280px;">
+          <option value="all">Consolidated (All 10 Superstores)</option>
+          @for (b of branches; track b.id) {
+            <option [value]="b.id">{{ b.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Discount Type Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Discount Type:</span>
+        <select [(ngModel)]="selectedDiscountType" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 180px;">
+          <option value="all">All Discount Types</option>
+          <option value="percentage">Percentage</option>
+          <option value="fixed_amount">Fixed Amount</option>
+        </select>
+      </div>
+
+      <!-- Reset Action Button -->
+      <button type="button" class="btn btn-sm btn-light border text-muted fs-12 ms-auto d-inline-flex align-items-center gap-1.5 px-2.5 py-1 cursor-pointer"
+              (click)="resetFilters()">
+        <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+        <span>Reset Filters</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Promotions Table -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th style="min-width: 220px;">Promotion Title</th>
+          <th style="min-width: 230px;">Product Info</th>
+          <th style="min-width: 170px;">Price & Discount</th>
+          <th style="min-width: 200px;">Branch Covered</th>
+          <th style="width: 100px;" class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (promo of paginatedPromotions; track promo.id) {
+          <tr>
+            <!-- 1. Promotion Details: Title Only -->
+            <td>
+              <span class="fw-bold text-dark fs-13 d-block" [title]="promo.title">
+                {{ promo.title }}
+              </span>
+            </td>
+
+            <!-- 2. Product Info (No Image, No SKU Sub-label) -->
+            <td>
+              @if (promo.scope === 'individual') {
+                <div class="overflow-hidden">
+                  <span class="fw-semibold text-dark fs-12 d-block text-truncate" style="max-width: 240px;" [title]="promo.productName">
+                    {{ promo.productName }}
+                  </span>
+                </div>
+              } @else {
+                <div class="d-flex align-items-center gap-1.5">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10">
+                    {{ promo.bulkTargetType === 'subcategory' ? 'Sub Category' : (promo.bulkTargetType === 'subsubcategory' ? 'Sub Sub Category' : (promo.bulkTargetType | titlecase)) }}
+                  </span>
+                  <span class="fw-semibold text-dark fs-12">{{ promo.bulkTargetValue }}</span>
+                </div>
+              }
+            </td>
+
+            <!-- 3. Price & Discount (Clean Price & Discount, No Sub-labels) -->
+            <td>
+              @if (promo.scope === 'individual' && promo.originalPrice && promo.promoPrice) {
+                <div class="d-flex align-items-baseline gap-1.5" [title]="promo.discountType === 'percentage' ? promo.discountValue + '% OFF' : 'Save Rs. ' + (promo.discountValue | number)">
+                  <span class="fw-bold text-dark fs-14 font-jost">Rs. {{ promo.promoPrice | number }}</span>
+                  <span class="text-muted text-decoration-line-through fs-11">Rs. {{ promo.originalPrice | number }}</span>
+                </div>
+              } @else {
+                <div>
+                  <span class="fw-bold text-success fs-14 font-jost d-block">
+                    @if (promo.discountType === 'percentage') {
+                      {{ promo.discountValue }}% OFF Flat
+                    } @else {
+                      Rs. {{ promo.discountValue | number }} OFF Flat
+                    }
+                  </span>
+                </div>
+              }
+            </td>
+
+            <!-- 4. Branch Covered (Only Total Branch Covered, No Sub-label) -->
+            <td>
+              @if (promo.branchSelection === 'all') {
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 d-inline-flex align-items-center gap-1">
+                  <iconify-icon icon="solar:shop-2-bold" class="fs-12"></iconify-icon>
+                  <span>All 10 Superstores</span>
+                </span>
+              } @else {
+                <span class="badge bg-info-subtle text-info border border-info-subtle fs-11 d-inline-flex align-items-center gap-1"
+                      [title]="promo.targetBranchNames.join(', ')">
+                  <iconify-icon icon="solar:buildings-bold" class="fs-12"></iconify-icon>
+                  <span>{{ promo.targetBranchIds.length }} Branches</span>
+                </span>
+              }
+            </td>
+
+            <!-- 5. Actions (Edit & Delete only, no play/pause) -->
+            <td class="text-end">
+              <div class="d-flex align-items-center justify-content-end gap-1.5">
+                <!-- Edit Promotion -->
+                <button type="button" 
+                        (click)="openEditModal(promo, promoModal)" 
+                        class="cat-action-btn cursor-pointer"
+                        ngbTooltip="Edit Promotion">
+                  <iconify-icon icon="solar:pen-2-broken" class="fs-15"></iconify-icon>
+                </button>
+
+                <!-- Delete Promotion -->
+                <button type="button" 
+                        (click)="deletePromotion(promo)" 
+                        class="cat-action-btn btn-delete cursor-pointer"
+                        ngbTooltip="Delete Promotion">
+                  <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-15"></iconify-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <div class="d-flex flex-column align-items-center justify-content-center">
+                <div class="rounded-circle p-3 bg-light text-muted mb-2">
+                  <iconify-icon icon="solar:tag-price-bold-duotone" class="fs-32"></iconify-icon>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">No Promotions Found</h6>
+                <p class="text-muted fs-12 mb-3">No promotional campaigns match the selected branch, scope, or status filters.</p>
+                <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" (click)="resetFilters()">
+                  Reset All Filters
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer Pagination -->
+  <div class="p-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="fs-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredPromotions.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredPromotions.length }}</span> Promotions
+    </div>
+
+    @if (filteredPromotions.length > pageSize) {
+      <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="filteredPromotions.length"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="onPageChange($event)"
+        class="pagination-sm mb-0 cursor-pointer">
+      </ngb-pagination>
+    }
+  </div>
+
+</div>
+
+<!-- ============================================================== -->
+<!-- CREATE / EDIT PROMOTION MODAL (Enterprise Non-AI Popup)        -->
+<!-- ============================================================== -->
+<ng-template #promoModal let-modal>
+  <!-- Modal Header -->
+  <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+    <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+      {{ isEditing ? 'Edit Promotion' : 'Create New Promotion' }}
+    </h5>
+    <button type="button" class="btn-close cursor-pointer" (click)="modal.dismiss()" aria-label="Close"></button>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body p-4">
+    
+    <!-- Promotion Scope Selector (Individual vs Bulk) -->
+    <div class="mb-3">
+      <div class="d-flex gap-2">
+        <button type="button" 
+                class="btn flex-fill py-2 fs-12 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 cursor-pointer border"
+                [class]="formPromo.scope === 'individual' ? 'btn-primary shadow-sm' : 'btn-light text-muted'"
+                [style.background]="formPromo.scope === 'individual' ? '#2e3192' : ''"
+                [style.border-color]="formPromo.scope === 'individual' ? '#2e3192' : '#e2e8f0'"
+                (click)="formPromo.scope = 'individual'; calculatePromoPrice()">
+          <iconify-icon icon="solar:box-minimalistic-bold" class="fs-16"></iconify-icon>
+          <span>Individual Product Promotion</span>
+        </button>
+
+        <button type="button" 
+                class="btn flex-fill py-2 fs-12 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 cursor-pointer border"
+                [class]="formPromo.scope === 'bulk' ? 'btn-primary shadow-sm' : 'btn-light text-muted'"
+                [style.background]="formPromo.scope === 'bulk' ? '#2e3192' : ''"
+                [style.border-color]="formPromo.scope === 'bulk' ? '#2e3192' : '#e2e8f0'"
+                (click)="formPromo.scope = 'bulk'">
+          <iconify-icon icon="solar:layers-minimalistic-bold" class="fs-16"></iconify-icon>
+          <span>Bulk Category / Brand Deal</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Basic Campaign Information -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-8">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Promotion Title <span class="text-danger">*</span></label>
+        <input type="text" [(ngModel)]="formPromo.title" class="form-control form-control-sm form-control-sleek" 
+               placeholder="e.g. Weekend Poultry Flash Deal, Ramadan Oil Promotion">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Badge Tag Label</label>
+        <input type="text" [(ngModel)]="formPromo.badgeText" class="form-control form-control-sm form-control-sleek" 
+               placeholder="e.g. 15% OFF, SAVE RS. 120">
+      </div>
+    </div>
+
+    <!-- Target Configuration (Conditional on Scope) -->
+    @if (formPromo.scope === 'individual') {
+      <div class="p-3 bg-light rounded-3 border mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="fs-11 text-uppercase text-muted fw-bold">Individual Product Selection (Cascading Catalog)</span>
+          <span class="badge bg-light text-secondary border fs-10">Category &rarr; Sub Category &rarr; Sub Sub Category &rarr; Brand &rarr; Product</span>
+        </div>
+
+        <!-- Row 1: Category & Sub Category -->
+        <div class="row g-2 mb-2">
+          <div class="col-md-6">
+            <label class="form-label fs-11 text-muted mb-1">1. Master Category</label>
+            <select [(ngModel)]="individualCategory" (change)="onIndividualCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              @for (cat of masterCategories; track cat.id) {
+                <option [value]="cat.name">{{ cat.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fs-11 text-muted mb-1">2. Sub Category</label>
+            <select [(ngModel)]="individualSubCategory" (change)="onIndividualSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              @for (sub of individualFilteredSubCategories; track sub.id) {
+                <option [value]="sub.name">{{ sub.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 2: Sub-Sub Category & Brand -->
+        <div class="row g-2 mb-2.5">
+          <div class="col-md-6">
+            <label class="form-label fs-11 text-muted mb-1">3. Sub-Sub Category</label>
+            <select [(ngModel)]="individualSubSubCategory" (change)="onIndividualSubSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              @for (ssc of individualFilteredSubSubCategories; track ssc.id) {
+                <option [value]="ssc.name">{{ ssc.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fs-11 text-muted mb-1">4. Brand</label>
+            <select [(ngModel)]="individualBrand" (change)="onIndividualBrandChange()" class="form-select form-select-sm form-control-sleek">
+              @for (b of individualFilteredBrands; track b.id) {
+                <option [value]="b.name">{{ b.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 3: Product SKU & Live Card Preview -->
+        <div class="row g-2 align-items-center">
+          <div class="col-md-7">
+            <label class="form-label fs-11 text-muted mb-1">
+              5. Select Product (SKU) <span class="badge bg-white text-muted border font-monospace ms-1">{{ individualFilteredProducts.length }} available</span>
+            </label>
+            <select [(ngModel)]="formPromo.productId" (change)="onProductSelectChange()" class="form-select form-select-sm form-control-sleek">
+              @for (prod of individualFilteredProducts; track prod.id) {
+                <option [value]="prod.id">{{ prod.name }} &bull; Rs. {{ (prod.sellingPrice || prod.price) | number }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-5">
+            <div class="d-flex align-items-center gap-2 p-2 bg-white rounded-2 border">
+              <div class="rounded border bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+                   style="width: 40px; height: 40px; overflow: hidden;">
+                @if (formPromo.productImage) {
+                  <img [src]="formPromo.productImage" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                } @else {
+                  <iconify-icon icon="solar:gallery-wide-linear" class="text-muted fs-18"></iconify-icon>
+                }
+              </div>
+              <div class="overflow-hidden">
+                <span class="fw-semibold text-dark fs-12 d-block text-truncate" style="max-width: 160px;" [title]="formPromo.productName">
+                  {{ formPromo.productName || 'Select product' }}
+                </span>
+                <span class="text-muted fs-11">Selling: <strong class="text-dark">Rs. {{ (formPromo.originalPrice || 0) | number }}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="p-3 bg-light rounded-3 border mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="fs-11 text-uppercase text-muted fw-bold">Bulk Target Configuration (Cascading Hierarchy)</span>
+          <span class="badge bg-light text-secondary border fs-10">
+            {{ formPromo.bulkTargetType === 'category' ? 'Category Level' : formPromo.bulkTargetType === 'subcategory' ? 'Sub Category Level' : formPromo.bulkTargetType === 'subsubcategory' ? 'Sub Sub Category Level' : 'Brand Level' }}
+          </span>
+        </div>
+
+        <!-- Row 1: Target Level & Est. SKUs Summary -->
+        <!-- Row 1: Target Level Selector -->
+        <div class="row g-2 mb-2.5">
+          <div class="col-12">
+            <label class="form-label fs-11 text-muted mb-1">1. Apply Bulk Promotion To</label>
+            <select [(ngModel)]="formPromo.bulkTargetType" (change)="onBulkTargetTypeChange()" class="form-select form-select-sm form-control-sleek">
+              <option value="category">Category Level</option>
+              <option value="subcategory">Sub Category Level</option>
+              <option value="subsubcategory">Sub Sub Category Level</option>
+              <option value="brand">Brand Level</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 2: Cascading Target Selectors (Spacious & Clean Layout) -->
+        @if (formPromo.bulkTargetType === 'category') {
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label fs-11 text-muted mb-1">2. Select Target Category</label>
+              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (cat of masterCategories; track cat.id) {
+                  <option [value]="cat.name">{{ cat.name }} ({{ cat.totalProducts }} items)</option>
+                }
+              </select>
+            </div>
+          </div>
+        } @else if (formPromo.bulkTargetType === 'subcategory') {
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label fs-11 text-muted mb-1">2. Parent Category</label>
+              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (cat of masterCategories; track cat.id) {
+                  <option [value]="cat.name">{{ cat.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fs-11 text-muted mb-1">3. Select Target Sub Category</label>
+              <select [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (sub of bulkFilteredSubCategories; track sub.id) {
+                  <option [value]="sub.name">{{ sub.name }} ({{ sub.totalProducts }} items)</option>
+                }
+              </select>
+            </div>
+          </div>
+        } @else if (formPromo.bulkTargetType === 'subsubcategory') {
+          <div class="row g-2">
+            <div class="col-md-4">
+              <label class="form-label fs-11 text-muted mb-1">2. Parent Category</label>
+              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (cat of masterCategories; track cat.id) {
+                  <option [value]="cat.name">{{ cat.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fs-11 text-muted mb-1">3. Sub Category</label>
+              <select [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (sub of bulkFilteredSubCategories; track sub.id) {
+                  <option [value]="sub.name">{{ sub.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fs-11 text-muted mb-1">4. Select Target Sub-Sub Category</label>
+              <select [(ngModel)]="bulkSubSubCategory" (change)="onBulkSubSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (ssc of bulkFilteredSubSubCategories; track ssc.id) {
+                  <option [value]="ssc.name">{{ ssc.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        } @else if (formPromo.bulkTargetType === 'brand') {
+          <div class="row g-2">
+            <div class="col-md-4">
+              <label class="form-label fs-11 text-muted mb-1">2. Category Filter</label>
+              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (cat of masterCategories; track cat.id) {
+                  <option [value]="cat.name">{{ cat.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fs-11 text-muted mb-1">3. Sub Category Filter</label>
+              <select [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+                @for (sub of bulkFilteredSubCategories; track sub.id) {
+                  <option [value]="sub.name">{{ sub.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fs-11 text-muted mb-1">4. Select Target Brand</label>
+              <select [(ngModel)]="bulkBrand" (change)="onBulkBrandChange()" class="form-select form-select-sm form-control-sleek">
+                @for (b of bulkFilteredBrands; track b.id) {
+                  <option [value]="b.name">{{ b.name }} ({{ b.totalProducts }} items)</option>
+                }
+              </select>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Discount Formula & Resulting Price -->
+    <div class="p-3 bg-white rounded-3 border mb-3">
+      <span class="fs-11 text-uppercase text-muted fw-bold d-block mb-2">Discount Formula & Pricing</span>
+      <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+          <label class="form-label fs-11 text-muted mb-1">Discount Type</label>
+          <select [(ngModel)]="formPromo.discountType" (change)="calculatePromoPrice()" class="form-select form-select-sm form-control-sleek">
+            <option value="percentage">Percentage Discount</option>
+            <option value="fixed_amount">Fixed Amount Discount</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fs-11 text-muted mb-1">Discount Value</label>
+          <div class="input-group input-group-sm">
+            <input type="number" [(ngModel)]="formPromo.discountValue" (input)="calculatePromoPrice()" 
+                   class="form-control form-control-sleek font-jost fw-bold" placeholder="e.g. 15">
+            <span class="input-group-text bg-light text-muted fw-semibold">
+              {{ formPromo.discountType === 'percentage' ? '%' : 'PKR' }}
+            </span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          @if (formPromo.scope === 'individual') {
+            <div class="p-2 rounded-2 bg-success-subtle border border-success-subtle text-center">
+              <span class="text-success fs-10 fw-semibold d-block">Resulting Promo Price</span>
+              <span class="fw-bold text-success fs-15 font-jost">Rs. {{ formPromo.promoPrice | number }}</span>
+            </div>
+          } @else {
+            <div class="p-2 rounded-2 bg-info-subtle border border-info-subtle text-center">
+              <span class="text-info fs-10 fw-semibold d-block">Bulk Application</span>
+              <span class="fw-bold text-info fs-13 font-jost">{{ formPromo.discountValue }}{{ formPromo.discountType === 'percentage' ? '%' : ' Rs.' }} OFF all items</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Branch Applicability -->
+    <div class="p-3 bg-light rounded-3 border mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fs-11 text-uppercase text-muted fw-bold d-inline-flex align-items-center gap-1">
+          <iconify-icon icon="solar:point-on-map-bold-duotone" class="text-primary fs-14"></iconify-icon>
+          <span>Branch Geolocation Applicability</span>
+        </span>
+        @if (formPromo.branchSelection === 'specific') {
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" (click)="selectAllBranches(true)" class="btn btn-xs btn-outline-primary py-0.5 px-2.5 fs-10 cursor-pointer">
+              Select All
+            </button>
+            <button type="button" (click)="selectAllBranches(false)" class="btn btn-xs btn-outline-secondary py-0.5 px-2.5 fs-10 cursor-pointer">
+              Clear All
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="d-flex gap-3 mb-2">
+        <div class="form-check cursor-pointer">
+          <input class="form-check-input cursor-pointer" type="radio" name="branchSelectionType" id="branchAll" value="all" [(ngModel)]="formPromo.branchSelection">
+          <label class="form-check-label fs-12 fw-medium text-dark cursor-pointer" for="branchAll">
+            Consolidated (All 10 Superstores)
+          </label>
+        </div>
+        <div class="form-check cursor-pointer">
+          <input class="form-check-input cursor-pointer" type="radio" name="branchSelectionType" id="branchSpecific" value="specific" [(ngModel)]="formPromo.branchSelection">
+          <label class="form-check-label fs-12 fw-medium text-dark cursor-pointer" for="branchSpecific">
+            Specific Branch / Multi-Branch
+          </label>
+        </div>
+      </div>
+
+      <!-- Specific Branch Checkboxes -->
+      @if (formPromo.branchSelection === 'specific') {
+        <div class="row g-2 mt-1 p-2 bg-white rounded-2 border" style="max-height: 140px; overflow-y: auto;">
+          @for (b of branches; track b.id) {
+            <div class="col-md-6">
+              <div class="form-check cursor-pointer">
+                <input class="form-check-input cursor-pointer" type="checkbox" [id]="'branchCheck_' + b.id" [(ngModel)]="selectedBranchMap[b.id]">
+                <label class="form-check-label fs-11 text-dark cursor-pointer" [for]="'branchCheck_' + b.id">
+                  {{ b.name }}
+                </label>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Validity Schedule (Status automatically driven by active dates) -->
+    <div class="p-3 bg-white rounded-3 border">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-11 text-uppercase text-muted fw-bold d-inline-flex align-items-center gap-1">
+          <iconify-icon icon="solar:calendar-bold-duotone" class="text-primary fs-14"></iconify-icon>
+          <span>Validity Schedule</span>
+        </span>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fs-11 text-muted mb-1">Start Date <span class="text-danger">*</span></label>
+          <input type="date" [(ngModel)]="formPromo.startDate" class="form-control form-control-sm form-control-sleek">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fs-11 text-muted mb-1">End Date <span class="text-danger">*</span></label>
+          <input type="date" [(ngModel)]="formPromo.endDate" class="form-control form-control-sm form-control-sleek">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex align-items-center justify-content-end gap-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary px-3 cursor-pointer" (click)="modal.dismiss()">
+      Cancel
+    </button>
+    <button type="button" class="btn btn-sm btn-primary px-3 cursor-pointer shadow-sm d-flex align-items-center gap-1.5"
+            style="background: #2e3192; border-color: #2e3192;"
+            (click)="savePromotion()">
+      <iconify-icon icon="solar:check-circle-bold" class="fs-16"></iconify-icon>
+      <span>{{ isEditing ? 'Update Promotion' : 'Publish Promotion' }}</span>
+    </button>
+  </div>
+</ng-template>

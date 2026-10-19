@@ -1,0 +1,144 @@
+<div class="card border-0 shadow-sm" style="border-radius: 16px;">
+  <div class="card-header bg-white border-bottom p-0">
+    <!-- Tabs matching Image 3 + Multi-Branch Geolocation Inventory -->
+    <ul class="nav nav-tabs nav-tabs-custom border-bottom-0 px-3 pt-2" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link fw-semibold fs-14 py-3 px-4" [ngClass]="{ 'active text-primary border-primary border-bottom-2': activeTab === 'desc' }" (click)="activeTab = 'desc'">
+          Product Description
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link fw-semibold fs-14 py-3 px-4" [ngClass]="{ 'active text-primary border-primary border-bottom-2': activeTab === 'specs' }" (click)="activeTab = 'specs'">
+          Specifications & Info
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link fw-semibold fs-14 py-3 px-4" [ngClass]="{ 'active text-primary border-primary border-bottom-2': activeTab === 'branches' }" (click)="activeTab = 'branches'">
+          <iconify-icon icon="solar:point-on-map-bold-duotone" class="align-middle me-1 text-primary"></iconify-icon>
+          Multi-Branch Geolocation Stock (10 Stores)
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card-body p-4">
+    <!-- Tab 1: Product Description (Image 3) -->
+    @if(activeTab === 'desc'){
+    <div>
+      <p class="fs-15 text-dark mb-3">
+        Quality product sourced carefully for Rainbow Cash & Carry customers. Hand-skewered tender chicken cubes marinated in authentic spices and garden-fresh bell peppers and onions.
+      </p>
+      <div class="row g-3 mt-2">
+        <div class="col-md-4">
+          <div class="border rounded-3 p-3 bg-light-subtle">
+            <h6 class="fw-bold text-dark mb-1">Preparation Guide:</h6>
+            <p class="text-muted fs-13 mb-0">Thaw for 10 minutes at room temperature. Grill, air fry at 180°C for 12 minutes, or shallow fry on medium heat until golden brown.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded-3 p-3 bg-light-subtle">
+            <h6 class="fw-bold text-dark mb-1">Cold-Chain Guarantee:</h6>
+            <p class="text-muted fs-13 mb-0">Transported in temperature-controlled refrigerated vans maintained at -18°C across all Rainbow branch delivery routes.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded-3 p-3 bg-light-subtle">
+            <h6 class="fw-bold text-dark mb-1">Halal Assurance:</h6>
+            <p class="text-muted fs-13 mb-0">100% Halal slaughtered chicken under strict veterinary and sanitary supervision in certified processing facilities.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Tab 2: Specifications & Info (Image 3) -->
+    @if(activeTab === 'specs'){
+    <div class="table-responsive">
+      <table class="table table-bordered mb-0 align-middle">
+        <tbody>
+          <tr>
+            <th class="bg-light fw-semibold" style="width: 250px;">Storage Condition</th>
+            <td>Keep frozen below -18°C</td>
+          </tr>
+          <tr>
+            <th class="bg-light fw-semibold">Shelf Life</th>
+            <td>10 Days from delivery</td>
+          </tr>
+          <tr>
+            <th class="bg-light fw-semibold">Brand / Manufacturer</th>
+            <td>Rainbow Frozen Division (In-House Label)</td>
+          </tr>
+          <tr>
+            <th class="bg-light fw-semibold">Net Weight</th>
+            <td>500 Grams (6 Skewers)</td>
+          </tr>
+          <tr>
+            <th class="bg-light fw-semibold">Origin</th>
+            <td>Karachi, Pakistan</td>
+          </tr>
+          <tr>
+            <th class="bg-light fw-semibold">Halal Certified</th>
+            <td>Yes - 100% Halal Certified Slaughter</td>
+          </tr>
+          <tr>
+            <th class="bg-light fw-semibold">Price Match Guarantee</th>
+            <td>&#x2713; Lower than Imtiaz (Guaranteed Price Match)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    }
+
+    <!-- Tab 3: Multi-Branch Geolocation Inventory -->
+    @if(activeTab === 'branches'){
+    <div>
+      <div class="alert alert-primary-subtle border-0 mb-3 d-flex align-items-center gap-2">
+        <iconify-icon icon="solar:info-circle-bold" class="fs-20 text-primary"></iconify-icon>
+        <span class="fs-13">Customer app matches user geolocation to the nearest store within its delivery radius. Stock availability is controlled per branch below:</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-sm align-middle table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th>Superstore Branch</th>
+              <th>Zone / City</th>
+              <th>GPS Geolocation</th>
+              <th>Delivery Radius</th>
+              <th>Stock (Qty)</th>
+              <th>Status</th>
+              <th class="text-end">App Toggle</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(b of product.branchStock; track b.branchId){
+            <tr>
+              <td>
+                <strong class="text-dark">{{b.branchName}}</strong>
+                <small class="text-muted d-block font-monospace">ID: {{b.branchId}}</small>
+              </td>
+              <td><span class="badge bg-light text-dark border">{{b.city}}</span></td>
+              <td><span class="text-muted font-monospace fs-12">{{b.latitude}}, {{b.longitude}}</span></td>
+              <td><span class="badge bg-info-subtle text-info border border-info-subtle">{{b.deliveryRadiusKm}} km</span></td>
+              <td>
+                <input type="number" [(ngModel)]="b.stockQty" [disabled]="!b.inStock" class="form-control form-control-sm text-center fw-bold" style="width: 75px;" min="0">
+              </td>
+              <td>
+                <span class="badge" [ngClass]="b.inStock && b.stockQty > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                  {{ b.inStock && b.stockQty > 0 ? 'Available' : 'Out of Stock' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="form-check form-switch cursor-pointer d-inline-block">
+                  <input class="form-check-input" type="checkbox" role="switch" [checked]="b.inStock" (change)="toggleBranchStock(b)">
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }
+  </div>
+</div>

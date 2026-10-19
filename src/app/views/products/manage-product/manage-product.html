@@ -1,0 +1,415 @@
+<!-- ========================================================
+     Executive Page Header & Actions
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div>
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <a routerLink="/product/list" class="text-primary text-decoration-none fs-12 fw-medium d-inline-flex align-items-center gap-1 cursor-pointer">
+        <iconify-icon icon="solar:arrow-left-linear" class="fs-14"></iconify-icon>
+        Back to Products
+      </a>
+      <span class="text-muted fs-12">&bull;</span>
+      <span class="badge bg-light text-muted border fs-11">{{ isEditMode ? 'Edit SKU Mode' : 'New Catalog SKU' }}</span>
+    </div>
+    <h4 class="fs-18 fw-bold text-dark mb-0 font-jost">{{ pageTitle }}</h4>
+    <p class="text-muted fs-12 mb-0">Configure SKU details, pricing, customer storefront labels, and competitor price-match</p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <a routerLink="/product/list" class="btn btn-sm btn-outline-secondary fs-12 px-3 cursor-pointer">
+      Cancel
+    </a>
+    <button type="button" (click)="saveProduct()" class="btn btn-sm btn-primary fs-12 px-3 cursor-pointer shadow-sm d-flex align-items-center gap-1.5"
+            style="background: #2e3192; border-color: #2e3192;">
+      <iconify-icon icon="solar:check-circle-bold" class="fs-16"></iconify-icon>
+      <span>{{ isEditMode ? 'Update Product' : 'Save & Publish Product' }}</span>
+    </button>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12">
+    
+    <!-- Card 1: Department, Subcategory & Brand -->
+    <div class="manage-card">
+      <div class="card-header-sleek">
+        <div class="header-title-wrap">
+          <div class="header-icon">
+            <iconify-icon icon="solar:layers-minimalistic-bold-duotone"></iconify-icon>
+          </div>
+          <h5>Category & Brand Classification</h5>
+        </div>
+      </div>
+      <div class="card-body-sleek">
+        <div class="row g-3">
+          <!-- Master Category -->
+          <div class="col-md-4">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Master Category <span class="text-danger">*</span></label>
+            <select [(ngModel)]="product.category" (change)="onCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              @for(cat of masterCategories; track cat.id){
+                <option [value]="cat.name">{{ cat.name }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Sub Category -->
+          <div class="col-md-4">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Sub Category <span class="text-danger">*</span></label>
+            <select [(ngModel)]="product.subCategory" (change)="onSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              @for(sub of filteredSubCategories; track sub.id){
+                <option [value]="sub.name">{{ sub.name }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Associated Brand -->
+          <div class="col-md-4">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Associated Brand <span class="text-danger">*</span></label>
+            <select [(ngModel)]="product.brand" class="form-select form-select-sm form-control-sleek fw-semibold text-primary">
+              @for(b of availableBrands; track b.id){
+                <option [value]="b.name">{{ b.name }} {{ b.isInHouse ? '(In-House)' : '' }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Product Essentials (ONLY Product Name, Barcode, Image, Description) -->
+    <div class="manage-card">
+      <div class="card-header-sleek">
+        <div class="header-title-wrap">
+          <div class="header-icon">
+            <iconify-icon icon="solar:box-bold-duotone"></iconify-icon>
+          </div>
+          <h5>Product Essentials</h5>
+        </div>
+        <span class="header-desc">Core item details</span>
+      </div>
+      <div class="card-body-sleek">
+        <div class="row g-3">
+          <!-- Product Name -->
+          <div class="col-md-7">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Product Name <span class="text-danger">*</span></label>
+            <input type="text" [(ngModel)]="product.name" class="form-control form-control-sm form-control-sleek" placeholder="e.g. Olper's Full Cream Milk 1L, Chicken Shashlik">
+          </div>
+
+          <!-- Product Barcode -->
+          <div class="col-md-5">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Product Barcode <span class="text-danger">*</span></label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted border-end-0">
+                <iconify-icon icon="solar:barcode-linear"></iconify-icon>
+              </span>
+              <input type="text" [(ngModel)]="product.barcode" class="form-control form-control-sleek border-start-0 font-monospace" placeholder="e.g. 8964000123456">
+            </div>
+          </div>
+
+          <!-- Large Product Image Showcase & Upload Section -->
+          <div class="col-12">
+            <label class="form-label fs-12 fw-semibold text-dark mb-2">Product Photo & Media</label>
+            <div class="product-media-wrapper p-3 p-md-4 rounded-3 border">
+              <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-4">
+                
+                <!-- Left: Large Product Image Preview Box (165x165px, clean cover fit, NO Ready badge) -->
+                <div class="product-image-preview-card flex-shrink-0" [class.has-image]="!!product.image">
+                  @if (product.image) {
+                    <img [src]="product.image" alt="Product Preview" (error)="onImageError($event)">
+                    <div class="image-hover-actions">
+                      <button type="button" class="btn btn-sm btn-light shadow-sm text-dark px-2.5 py-1.5 d-inline-flex align-items-center gap-1.5 cursor-pointer"
+                              (click)="fileInput.click()" title="Change Image">
+                        <iconify-icon icon="solar:camera-bold" class="fs-14"></iconify-icon>
+                        <span class="fs-11 fw-semibold">Change</span>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-danger shadow-sm px-2.5 py-1.5 d-inline-flex align-items-center gap-1.5 cursor-pointer"
+                              (click)="removeImage()" title="Remove Image">
+                        <iconify-icon icon="solar:trash-bin-minimalistic-bold" class="fs-14"></iconify-icon>
+                        <span class="fs-11 fw-semibold">Remove</span>
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="no-image-placeholder text-center p-3 cursor-pointer" (click)="fileInput.click()">
+                      <div class="placeholder-icon mb-2">
+                        <iconify-icon icon="solar:gallery-add-bold-duotone" class="fs-32 text-muted opacity-75"></iconify-icon>
+                      </div>
+                      <span class="fs-12 fw-semibold text-dark d-block">No Product Image</span>
+                      <span class="fs-11 text-muted d-block mt-0.5">Click to upload photo</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Right: Action Buttons, Drag & Drop Upload Zone & URL Input with generous spacing -->
+                <div class="flex-grow-1">
+                  
+                  <!-- Top Row: Upload / Change & Remove Buttons + File Specs -->
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 px-3 py-1.5 cursor-pointer shadow-sm"
+                              style="background: #2e3192; border-color: #2e3192;"
+                              (click)="fileInput.click()">
+                        <iconify-icon icon="solar:upload-track-2-bold" class="fs-16"></iconify-icon>
+                        <span class="fw-semibold">{{ product.image ? 'Change Product Photo' : 'Upload Product Photo' }}</span>
+                      </button>
+
+                      @if (product.image) {
+                        <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 px-2.5 py-1.5 cursor-pointer"
+                                (click)="removeImage()">
+                          <iconify-icon icon="solar:trash-bin-trash-bold" class="fs-15"></iconify-icon>
+                          <span>Remove</span>
+                        </button>
+                      }
+
+                      <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" class="d-none">
+                    </div>
+
+                    <span class="text-muted fs-11">Recommended: 600&times;600 px &bull; PNG, JPG, WEBP (Max 5MB)</span>
+                  </div>
+
+                  <!-- Middle: Drag & Drop Dropzone Box with comfortable breathing room -->
+                  <div class="image-dropzone-box py-3 px-3.5 mb-3 cursor-pointer"
+                       (click)="fileInput.click()"
+                       (dragover)="onDragOver($event)"
+                       (dragleave)="onDragLeave($event)"
+                       (drop)="onDropFile($event)"
+                       [class.dragover]="isDraggingOver">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="dropzone-icon-circle flex-shrink-0">
+                        <iconify-icon icon="solar:cloud-upload-bold-duotone" class="fs-22 text-primary" style="color: #2e3192 !important;"></iconify-icon>
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="fs-12 fw-semibold text-dark">
+                          Click to browse or drag & drop photo here
+                        </div>
+                        <div class="fs-11 text-muted">
+                          Upload high-resolution image from your computer
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom: Direct Image URL Input (clearly separated with pt-3 and border-top) -->
+                  <div class="url-input-section pt-3">
+                    <label class="form-label fs-11 fw-semibold text-muted text-uppercase mb-2 d-flex align-items-center gap-1.5">
+                      <iconify-icon icon="solar:link-minimalistic-2-linear" class="fs-13 text-primary"></iconify-icon>
+                      <span>Or specify direct image URL</span>
+                    </label>
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text bg-light border-end-0 text-muted">
+                        <iconify-icon icon="solar:link-linear" class="fs-14"></iconify-icon>
+                      </span>
+                      <input type="text" [(ngModel)]="product.image" class="form-control form-control-sm form-control-sleek border-start-0" 
+                             placeholder="https://images.unsplash.com/... or hosted CDN image link">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Description -->
+          <div class="col-12">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Description</label>
+            <textarea [(ngModel)]="product.description" rows="3" class="form-control form-control-sm form-control-sleek" 
+                      placeholder="Product details, packaging specifications, and manufacturer information..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Pricing (Sell Price & Discount Price ONLY, NO MRP!) -->
+    <div class="manage-card">
+      <div class="card-header-sleek">
+        <div class="header-title-wrap">
+          <div class="header-icon">
+            <iconify-icon icon="solar:tag-price-bold-duotone"></iconify-icon>
+          </div>
+          <h5>Pricing</h5>
+        </div>
+      </div>
+      <div class="card-body-sleek">
+        <div class="row g-3">
+          <!-- Selling Price -->
+          <div class="col-md-6">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Selling Price (Rs.) <span class="text-danger">*</span></label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted fw-semibold">PKR</span>
+              <input type="number" [(ngModel)]="product.sellingPrice" class="form-control form-control-sleek fs-13 fw-bold text-dark font-jost" placeholder="e.g. 850">
+            </div>
+            <small class="text-muted fs-11 mt-1 d-block">Regular customer selling price.</small>
+          </div>
+
+          <!-- Discount Price (if any) -->
+          <div class="col-md-6">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Discount Price (Rs.) <span class="text-muted fw-normal fs-11">(Optional)</span></label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted fw-semibold">PKR</span>
+              <input type="number" [(ngModel)]="product.discountPrice" class="form-control form-control-sleek fs-13 fw-bold text-danger font-jost" placeholder="e.g. 780 (leave blank if none)">
+            </div>
+            <small class="text-muted fs-11 mt-1 d-block">Promotional discounted price if active on sale.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Competitor Price Match Guarantee (Multiple Competitors) -->
+    <div class="manage-card">
+      <div class="card-header-sleek">
+        <div class="header-title-wrap">
+          <div class="header-icon" style="color: #059669; background: #ecfdf5;">
+            <iconify-icon icon="solar:shield-check-bold-duotone"></iconify-icon>
+          </div>
+          <h5>Competitor Price Match Guarantee</h5>
+        </div>
+        <div class="form-check form-switch m-0 cursor-pointer">
+          <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="priceMatchToggle" 
+                 [(ngModel)]="product.priceMatch">
+          <label class="form-check-label fs-12 fw-semibold text-dark cursor-pointer ms-1" for="priceMatchToggle">
+            {{ product.priceMatch ? 'Price Match Enabled' : 'Disabled' }}
+          </label>
+        </div>
+      </div>
+
+      @if (product.priceMatch) {
+        <div class="card-body-sleek">
+          <label class="form-label fs-12 fw-semibold text-dark mb-2 d-block">
+            Guaranteed Lower Price than Competitor Superstores:
+          </label>
+          <div class="d-flex flex-wrap gap-2">
+            @for(comp of competitors; track comp){
+              <div class="competitor-pill-modern" 
+                   [class.active]="isCompetitorSelected(comp)"
+                   (click)="toggleCompetitor(comp)">
+                <iconify-icon [icon]="isCompetitorSelected(comp) ? 'solar:check-circle-bold' : 'solar:shop-linear'" class="fs-14"></iconify-icon>
+                <span>{{ comp }}</span>
+              </div>
+            }
+          </div>
+          <small class="text-muted fs-11 d-block mt-2">
+            Customers will see a verified badge indicating Rainbow guarantees a lower or matched price against the selected competitors.
+          </small>
+        </div>
+      }
+    </div>
+
+    <!-- Card 5: Product Cart & Storefront Labels (Input by User) -->
+    <div class="manage-card">
+      <div class="card-header-sleek">
+        <div class="header-title-wrap">
+          <div class="header-icon">
+            <iconify-icon icon="solar:ticket-bold-duotone"></iconify-icon>
+          </div>
+          <h5>Product Cart & Storefront Labels</h5>
+        </div>
+        <span class="header-desc">Custom text labels shown in product card and cart</span>
+      </div>
+      <div class="card-body-sleek">
+        <!-- Text Input to add new label -->
+        <div class="input-group input-group-sm mb-3">
+          <input type="text" [(ngModel)]="newLabelInput" (keydown.enter)="addLabel($event)" 
+                 class="form-control form-control-sleek" placeholder="Type custom label (e.g. 100% Halal, Pre-Cut & Cleaned, Farm Fresh, Deal of the Day)...">
+          <button type="button" class="btn btn-primary fs-12 px-3 cursor-pointer d-inline-flex align-items-center gap-1" 
+                  style="background: #2e3192; border-color: #2e3192;"
+                  (click)="addLabel()">
+            <iconify-icon icon="solar:add-circle-bold" class="fs-15"></iconify-icon>
+            <span>Add Label</span>
+          </button>
+        </div>
+
+        <!-- Active Labels Modern Chip List (Clean, proportional layout) -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          @for(lbl of product.labels; track lbl){
+            <span class="label-chip-modern">
+              <iconify-icon icon="solar:tag-linear" class="fs-12 text-muted"></iconify-icon>
+              <span>{{ lbl }}</span>
+              <button type="button" class="chip-remove-btn" (click)="removeLabel(lbl)" title="Remove label">
+                <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+              </button>
+            </span>
+          } @empty {
+            <div class="text-muted fs-12 fst-italic py-1">No custom badges added yet. Type a label above and press Enter or click Add Label.</div>
+          }
+        </div>
+        <small class="text-muted fs-11 d-block mt-2.5">These badges highlight key product benefits on the customer storefront and cart drawer.</small>
+      </div>
+    </div>
+
+    <!-- Card 6: 10 Superstores Geolocation Stock Distribution -->
+    <div class="manage-card">
+      <div class="card-header-sleek">
+        <div class="header-title-wrap">
+          <div class="header-icon">
+            <iconify-icon icon="solar:point-on-map-bold-duotone"></iconify-icon>
+          </div>
+          <div>
+            <h5>Multi-Branch Geolocation Inventory</h5>
+            <small class="text-muted fs-11">Stock quantities and visibility across 10 superstores</small>
+          </div>
+        </div>
+        <span class="badge bg-primary text-white fs-11">Total: {{ product.items_left }} Units</span>
+      </div>
+      <div class="p-0">
+        <div class="table-responsive">
+          <table class="table table-clean table-inventory align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3">Superstore Branch</th>
+                <th>City / Zone</th>
+                <th>Coordinates & Radius</th>
+                <th class="text-center" style="width: 110px;">Stock (Units)</th>
+                <th class="pe-3 text-end">Store Visibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(stock of product.branchStock; track stock.branchId){
+                <tr [ngClass]="{ 'bg-light-subtle opacity-75': !stock.inStock }">
+                  <td class="ps-3">
+                    <strong class="text-dark fs-12 d-block">{{ stock.branchName }}</strong>
+                    <small class="text-muted font-monospace fs-10">ID: {{ stock.branchId }}</small>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark border fs-11">{{ stock.city }}</span>
+                  </td>
+                  <td>
+                    <small class="text-muted font-monospace fs-11">{{ stock.latitude }}, {{ stock.longitude }}</small>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle d-block mt-0.5" style="width: fit-content; font-size: 10px;">
+                      Radius: {{ stock.deliveryRadiusKm }} km
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <input type="number" 
+                           [(ngModel)]="stock.stockQty" 
+                           (input)="recalculateTotalStock()" 
+                           [disabled]="!stock.inStock" 
+                           class="form-control form-control-sm form-control-sleek text-center fw-bold mx-auto fs-12 font-jost" 
+                           style="width: 72px; height: 32px;" min="0">
+                  </td>
+                  <td class="text-end pe-3">
+                    <div class="form-check form-switch cursor-pointer d-inline-block m-0">
+                      <input class="form-check-input cursor-pointer" type="checkbox" role="switch" [checked]="stock.inStock" (change)="toggleBranchAvailability(stock)">
+                      <span class="badge ms-1 fs-10" [ngClass]="stock.inStock ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                        {{ stock.inStock ? 'Active' : 'Off' }}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons Bar -->
+    <div class="p-3 bg-white border rounded-3 shadow-sm mb-4 d-flex justify-content-end gap-2">
+      <a routerLink="/product/list" class="btn btn-sm btn-outline-secondary px-3 cursor-pointer">Cancel</a>
+      <button type="button" (click)="saveProduct()" class="btn btn-sm btn-primary px-4 cursor-pointer shadow-sm d-flex align-items-center gap-1.5"
+              style="background: #2e3192; border-color: #2e3192;">
+        <iconify-icon icon="solar:check-circle-bold" class="fs-16"></iconify-icon>
+        <span>{{ isEditMode ? 'Update Product' : 'Save & Publish Product' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>

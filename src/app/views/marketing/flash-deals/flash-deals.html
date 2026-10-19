@@ -1,0 +1,305 @@
+<!-- Action Feedback Toast -->
+<div *ngIf="actionFeedback" class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-3 shadow-sm border-0" role="alert" style="background-color: #d1e7dd; color: #0f5132;">
+  <iconify-icon icon="solar:check-circle-bold" class="fs-20 me-2"></iconify-icon>
+  <div class="flex-grow-1 fw-medium">{{ actionFeedback }}</div>
+  <button type="button" class="btn-close" (click)="actionFeedback = null" aria-label="Close"></button>
+</div>
+
+<!-- ========================================== -->
+<!-- MARKETING NAVIGATION HEADER TABS           -->
+<!-- ========================================== -->
+<div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+  <div class="card-body p-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div>
+        <h4 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:bolt-bold-duotone" class="text-warning fs-26"></iconify-icon>
+          Flash Sales & Super Savers
+        </h4>
+        <p class="text-muted small mb-0">Create limited-time countdown events, morning produce rushes, and branch-exclusive flash sales</p>
+      </div>
+
+      <!-- Navigation Pills -->
+      <ul class="nav nav-pills bg-light p-1 rounded-pill border">
+        <li class="nav-item">
+          <a class="nav-link text-muted rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1" routerLink="/marketing/push-notifications">
+            <iconify-icon icon="solar:bell-bing-bold" class="fs-16"></iconify-icon> Push Notifications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-muted rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1" routerLink="/marketing/banners">
+            <iconify-icon icon="solar:gallery-bold" class="fs-16"></iconify-icon> Promotional Banners
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1" routerLink="/marketing/flash-deals">
+            <iconify-icon icon="solar:bolt-bold" class="fs-16"></iconify-icon> Flash Deals
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-muted rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1" routerLink="/marketing/sms">
+            <iconify-icon icon="solar:chat-round-line-bold" class="fs-16"></iconify-icon> SMS Blast
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-muted rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1" routerLink="/marketing/referrals">
+            <iconify-icon icon="solar:gift-bold" class="fs-16"></iconify-icon> Referral Program
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- KPI OVERVIEW STATS                         -->
+<!-- ========================================== -->
+<div class="row g-3 mb-4">
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+      <div class="card-body p-3 d-flex align-items-center justify-content-between">
+        <div>
+          <span class="text-uppercase text-muted fw-bold small" style="font-size: 11px;">ACTIVE FLASH SALES</span>
+          <h3 class="fw-bold mb-0 text-dark">1 Live / {{ deals.length }} Total</h3>
+        </div>
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff3e0; color: #ef6c00;">
+          <iconify-icon icon="solar:bolt-bold" class="fs-24"></iconify-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+      <div class="card-body p-3 d-flex align-items-center justify-content-between">
+        <div>
+          <span class="text-uppercase text-muted fw-bold small" style="font-size: 11px;">ORDERS GENERATED</span>
+          <h3 class="fw-bold mb-0 text-dark">{{ totalOrdersGenerated | number }}</h3>
+        </div>
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #ede7f6; color: #5e35b1;">
+          <iconify-icon icon="solar:cart-check-bold" class="fs-24"></iconify-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+      <div class="card-body p-3 d-flex align-items-center justify-content-between">
+        <div>
+          <span class="text-uppercase text-muted fw-bold small" style="font-size: 11px;">REVENUE GENERATED</span>
+          <h3 class="fw-bold mb-0 text-success">Rs {{ totalRevenueGenerated | number }}</h3>
+        </div>
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e8f5e9; color: #2e7d32;">
+          <iconify-icon icon="solar:wallet-money-bold" class="fs-24"></iconify-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm rounded-3 h-100 mb-0">
+      <div class="card-body p-3 d-flex align-items-center justify-content-between">
+        <div>
+          <span class="text-uppercase text-muted fw-bold small" style="font-size: 11px;">AVERAGE DISCOUNT</span>
+          <h3 class="fw-bold mb-0 text-dark">25% OFF</h3>
+        </div>
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e0f7fa; color: #00838f;">
+          <iconify-icon icon="solar:tag-price-bold" class="fs-24"></iconify-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- FLASH DEALS LIST                           -->
+<!-- ========================================== -->
+<div class="card border-0 shadow-sm rounded-3">
+  <!-- Table Header Controls -->
+  <div class="card-header bg-white border-bottom py-3">
+    <div class="row align-items-center gy-2">
+      <div class="col-lg-3 col-md-12">
+        <h5 class="mb-0 fw-bold text-dark">Flash Deals & Events</h5>
+        <span class="text-muted small">Real-time countdown sales</span>
+      </div>
+
+      <!-- Search -->
+      <div class="col-lg-3 col-md-4">
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Search event title..." class="form-control form-control-sm bg-light">
+      </div>
+
+      <!-- Branch Filter -->
+      <div class="col-lg-2 col-md-3">
+        <select class="form-select form-select-sm bg-light" [(ngModel)]="filterBranch">
+          <option value="all">All Branches</option>
+          <option value="Clifton">Clifton</option>
+          <option value="Valencia">Valencia</option>
+        </select>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-lg-2 col-md-2">
+        <select class="form-select form-select-sm bg-light" [(ngModel)]="filterStatus">
+          <option value="all">All Statuses</option>
+          <option value="Live">Live</option>
+          <option value="Upcoming">Upcoming</option>
+          <option value="Ended">Ended</option>
+        </select>
+      </div>
+
+      <!-- Add Button -->
+      <div class="col-lg-2 col-md-3 text-end">
+        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill d-inline-flex align-items-center gap-1 shadow-sm" (click)="openCreateModal(dealModal)">
+          <iconify-icon icon="solar:bolt-bold" class="fs-16"></iconify-icon> Create Flash Sale
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body p-4">
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6" *ngFor="let deal of filteredDeals">
+        <div class="card border rounded-3 h-100 overflow-hidden shadow-sm" [class.border-warning]="deal.status === 'Live'">
+          <!-- Top Badge Bar -->
+          <div class="p-2 d-flex align-items-center justify-content-between"
+               [ngClass]="deal.status === 'Live' ? 'bg-warning text-dark' : 'bg-light text-muted'">
+            <div class="d-flex align-items-center gap-1 fw-bold small">
+              <iconify-icon [icon]="deal.status === 'Live' ? 'solar:bolt-bold' : 'solar:clock-circle-bold'"></iconify-icon>
+              <span>{{ deal.status === 'Live' ? 'LIVE NOW • ENDS TODAY' : deal.status }}</span>
+            </div>
+            <span class="badge bg-dark text-white font-monospace">{{ deal.badge }}</span>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="rounded overflow-hidden bg-light border p-1" style="width: 50px; height: 50px;">
+                <img [src]="deal.bannerImage" class="img-fluid w-100 h-100 object-fit-contain" alt="Deal">
+              </div>
+              <div>
+                <h6 class="fw-bold text-dark mb-0">{{ deal.title }}</h6>
+                <div class="text-muted small">{{ deal.subtitle }}</div>
+              </div>
+            </div>
+
+            <div class="p-2 bg-light rounded-3 small mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted">Target Store:</span>
+                <strong class="text-primary">{{ deal.branch }}</strong>
+              </div>
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted">Start Time:</span>
+                <span>{{ deal.startTime }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted">End Time:</span>
+                <span>{{ deal.endTime }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Products Enrolled:</span>
+                <span class="badge bg-primary-subtle text-primary">{{ deal.productsCount }} items</span>
+              </div>
+            </div>
+
+            <!-- Revenue / Orders if live -->
+            <div *ngIf="deal.ordersGenerated > 0" class="d-flex align-items-center justify-content-between p-2 bg-success-subtle rounded-3 small mb-3">
+              <div>
+                <div class="text-muted" style="font-size: 11px;">Orders</div>
+                <strong class="text-dark">{{ deal.ordersGenerated }}</strong>
+              </div>
+              <div class="text-end">
+                <div class="text-muted" style="font-size: 11px;">Revenue Generated</div>
+                <strong class="text-success">Rs {{ deal.revenueGenerated | number }}</strong>
+              </div>
+            </div>
+
+            <!-- Action button -->
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm w-100 fw-semibold"
+                      [ngClass]="deal.status === 'Live' ? 'btn-outline-danger' : 'btn-outline-success'"
+                      (click)="toggleLiveStatus(deal)">
+                {{ deal.status === 'Live' ? 'End Flash Sale' : 'Make Live Now' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CREATE FLASH DEAL MODAL                    -->
+<!-- ========================================== -->
+<ng-template #dealModal let-modal>
+  <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+    <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+      Create Flash Deal Campaign
+    </h5>
+    <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-4">
+    <div class="mb-3">
+      <label class="form-label fw-bold small text-dark">Flash Deal Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" [(ngModel)]="newDeal.title" placeholder="e.g. Dawn Meat & Poultry Flash Rush">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold small text-dark">Tagline / Subtitle</label>
+      <input type="text" class="form-control" [(ngModel)]="newDeal.subtitle" placeholder="e.g. Fresh cuts at wholesale prices for 4 hours only">
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold small text-dark">Discount Percentage (%)</label>
+        <div class="input-group">
+          <input type="number" class="form-control" [(ngModel)]="newDeal.discountPercentage" min="5" max="90">
+          <span class="input-group-text">% OFF</span>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold small text-dark">Badge Label</label>
+        <input type="text" class="form-control" [(ngModel)]="newDeal.badge" placeholder="e.g. FLAT 25% OFF">
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold small text-dark">Applicable Branch</label>
+        <select class="form-select" [(ngModel)]="newDeal.branch">
+          <option value="All Branches">All Branches</option>
+          <option *ngFor="let b of branches" [value]="b.name">{{ b.name }} ({{ b.city }})</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold small text-dark">Number of Products</label>
+        <input type="number" class="form-control" [(ngModel)]="newDeal.productsCount" min="1">
+      </div>
+    </div>
+
+    <div class="row g-3 mb-2">
+      <div class="col-md-6">
+        <label class="form-label fw-bold small text-dark">Start Time</label>
+        <input type="text" class="form-control" [(ngModel)]="newDeal.startTime" placeholder="2026-10-18 09:00 AM">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold small text-dark">End Time</label>
+        <input type="text" class="form-control" [(ngModel)]="newDeal.endTime" placeholder="2026-10-18 09:00 PM">
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-end gap-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">
+      Cancel
+    </button>
+    <button type="button" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" 
+            style="background: #2e3192; border-color: #2e3192;"
+            (click)="saveDeal(modal)">
+      <iconify-icon icon="solar:check-circle-bold" class="fs-15 align-middle me-1"></iconify-icon>
+      Launch Flash Deal
+    </button>
+  </div>
+</ng-template>

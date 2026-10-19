@@ -1,0 +1,451 @@
+<!-- ========================================================
+     Executive Page Header & Hub Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+  <div>
+    <h4 class="fs-18 fw-bold text-dark mb-1 font-jost d-flex align-items-center gap-2">
+      <iconify-icon icon="solar:restart-bold-duotone" class="text-primary fs-20"></iconify-icon>
+      Returns &amp; Refund Claims Console
+    </h4>
+    <p class="text-muted fs-12 mb-0">
+      Review customer return requests, inspect item issues, and issue wallet/cash refunds
+      @if(isBranchLocked){
+        &bull; <span class="badge bg-primary-subtle text-primary border border-primary-subtle"><iconify-icon icon="solar:lock-keyhole-bold" class="align-middle me-1"></iconify-icon>{{currentBranchDisplayName}}</span>
+      }
+    </p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <!-- Hub Navigation Segmented Control -->
+    <div class="filter-segmented-control">
+      <a routerLink="/orders/list" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:bag-3-bold" class="fs-14"></iconify-icon>
+        <span>Customer Orders</span>
+      </a>
+      <a routerLink="/orders/returns" class="segment-btn active text-decoration-none">
+        <iconify-icon icon="solar:restart-bold" class="fs-14"></iconify-icon>
+        <span>Returns &amp; Refunds</span>
+      </a>
+      <a routerLink="/orders/feedback" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:chat-round-dots-bold" class="fs-14"></iconify-icon>
+        <span>Feedback &amp; Reviews</span>
+      </a>
+    </div>
+
+    <!-- Actions -->
+    <button type="button" (click)="resetFilters()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Reload / Reset Filters">
+      <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+      <span>Reload</span>
+    </button>
+    <button type="button" (click)="exportToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Export CSV">
+      <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
+      <span>Export CSV</span>
+    </button>
+  </div>
+</div>
+
+<!-- ========================================================
+     Operational Feedback Alert Banner
+     ======================================================== -->
+@if (actionFeedback) {
+  <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-3 border fs-12 shadow-sm alert-success border-success-subtle bg-success-subtle text-success">
+    <iconify-icon icon="solar:check-circle-bold" class="fs-16 flex-shrink-0"></iconify-icon>
+    <div class="flex-grow-1 fw-medium">{{ actionFeedback }}</div>
+    <button type="button" class="btn-close p-2 fs-10" (click)="actionFeedback = null"></button>
+  </div>
+}
+
+<!-- ========================================================
+     Executive Metrics Cards (4 Minimal Cards)
+     ======================================================== -->
+<div class="row g-3 mb-3">
+  <!-- Card 1: Total Returns -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Returns</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:box-minimalistic-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.all }}</div>
+      <small class="text-muted fs-11">Total claims filed</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Pending Review -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Pending Review</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:clock-circle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.pending }}</div>
+      <small class="text-muted fs-11">Awaiting store decision</small>
+    </div>
+  </div>
+
+  <!-- Card 3: Approved & Refunded -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Approved &amp; Settled</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:check-circle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.approved }}</div>
+      <small class="text-muted fs-11">Refunds processed</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Total Refunded Value -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Refund Value</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:wallet-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">Rs. {{ counts.totalRefunded | number }}</div>
+      <small class="text-muted fs-11">Credited to customer accounts</small>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Main Returns Console Card
+     ======================================================== -->
+<div class="cat-main-card overflow-hidden mb-4">
+  <!-- Header Toolbar: Status Tabs + Search Box -->
+  <div class="p-3 border-bottom bg-white">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <!-- Status Filter Segmented Control -->
+      <div class="filter-segmented-control">
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'all'" (click)="setStatusTab('all')">
+          <span>All Returns</span>
+          <span class="count-pill">{{ counts.all }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Pending Review'" (click)="setStatusTab('Pending Review')">
+          <span>Pending Review</span>
+          <span class="count-pill">{{ counts.pending }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Approved & Refunded'" (click)="setStatusTab('Approved & Refunded')">
+          <span>Approved &amp; Refunded</span>
+          <span class="count-pill">{{ counts.approved }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Rejected'" (click)="setStatusTab('Rejected')">
+          <span>Rejected</span>
+          <span class="count-pill">{{ counts.rejected }}</span>
+        </button>
+      </div>
+
+      <!-- Search Box with Clear Button -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <div class="search-box-wrapper">
+          <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
+                 class="form-control search-input shadow-none"
+                 placeholder="Search Return ID, Order#, item, customer...">
+          @if (searchTerm) {
+            <button class="clear-search-btn" type="button" (click)="clearSearch()" title="Clear search">
+              <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Filter Strip -->
+  <div class="filter-bar-strip d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <!-- Branch Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Store Branch:</span>
+        @if (isBranchLocked) {
+          <div class="d-inline-flex align-items-center gap-1 px-2.5 py-1 bg-white border rounded text-dark fs-12 fw-semibold">
+            <iconify-icon icon="solar:lock-keyhole-bold" class="text-primary fs-14"></iconify-icon>
+            <span>{{ currentBranchDisplayName }}</span>
+          </div>
+        } @else {
+          <select [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
+            @for (b of branches; track b.id) {
+              <option [value]="b.id">{{ b.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Reason Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Return Reason:</span>
+        <select [(ngModel)]="selectedReason" class="filter-dropdown" (change)="currentPage = 1">
+          @for (r of reasons; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Refund Channel Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Refund Destination:</span>
+        <select [(ngModel)]="selectedRefundChannel" class="filter-dropdown" (change)="currentPage = 1">
+          <option value="all">All Channels</option>
+          <option value="Rainbow Wallet">Rainbow Wallet</option>
+          <option value="Original Payment (Cash/COD)">Original Payment</option>
+          <option value="Bank Account">Bank Account</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Filter Counter & Reset -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted fs-11">
+        Found <strong>{{ filteredReturns.length }}</strong> claims
+      </span>
+      @if (searchTerm || (!isBranchLocked && selectedBranch !== 'all') || selectedStatus !== 'all' || selectedReason !== 'all' || selectedRefundChannel !== 'all') {
+        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fs-11 text-danger d-inline-flex align-items-center gap-1"
+                (click)="resetFilters()">
+          <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
+          <span>Reset</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Table Body -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th>RETURN REF / DATE</th>
+          <th>ORDER REFERENCE</th>
+          <th>CUSTOMER &amp; BRANCH</th>
+          <th>REFUND CLAIM</th>
+          <th class="text-center">STATUS</th>
+          <th class="text-end">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ret of paginatedReturns; track ret.id) {
+          <tr>
+            <!-- Col 1: RETURN REF / DATE -->
+            <td>
+              <div class="fw-bold text-dark font-monospace fs-12">{{ ret.id }}</div>
+              <small class="text-muted fs-11 d-block mt-0.5">{{ ret.returnDate }}</small>
+            </td>
+
+            <!-- Col 2: ORDER REFERENCE -->
+            <td>
+              <div class="d-inline-block badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fs-11 px-2 py-0.5">
+                #{{ ret.orderId }}
+              </div>
+              <small class="text-muted d-block fs-11 mt-0.5">{{ ret.orderDate }}</small>
+            </td>
+
+            <!-- Col 3: CUSTOMER & BRANCH -->
+            <td>
+              <span class="fw-bold text-dark fs-13 d-block mb-0.5">{{ ret.customer.name }}</span>
+              <a [href]="'tel:' + ret.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
+                {{ ret.customer.phone }}
+              </a>
+              <small class="text-muted text-truncate d-block fs-11" style="max-width: 190px;" [title]="ret.branch">
+                <iconify-icon icon="solar:shop-2-bold" class="text-muted me-1"></iconify-icon>
+                {{ ret.branch }}
+              </small>
+            </td>
+
+            <!-- Col 4: REFUND CLAIM -->
+            <td>
+              <span class="fw-bold text-dark fs-13 font-jost font-monospace">Rs. {{ ret.refundAmount | number }}</span>
+            </td>
+
+            <!-- Col 5: STATUS -->
+            <td class="text-center">
+              <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(ret.status)">
+                {{ ret.status }}
+              </span>
+            </td>
+
+            <!-- Col 6: ACTIONS -->
+            <td class="text-end">
+              <div class="d-flex gap-1 justify-content-end align-items-center">
+                <button type="button" class="cat-action-btn" (click)="openReviewModal(ret, reviewModal)" ngbTooltip="Review Return Claim">
+                  <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
+                </button>
+                @if (ret.status === 'Pending Review') {
+                  <button type="button" class="cat-action-btn btn-approve" (click)="approveReturn(ret)" ngbTooltip="Approve & Refund Wallet">
+                    <iconify-icon icon="solar:check-circle-bold" class="fs-15"></iconify-icon>
+                  </button>
+                  <button type="button" class="cat-action-btn btn-reject" (click)="rejectReturn(ret)" ngbTooltip="Reject Return Claim">
+                    <iconify-icon icon="solar:close-circle-bold" class="fs-15"></iconify-icon>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <iconify-icon icon="solar:box-broken" class="fs-36 text-muted mb-2"></iconify-icon>
+              <h6 class="text-dark font-jost fs-14 fw-bold">No return claims match current criteria</h6>
+              <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing status, reason, and branch filters.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Table Pagination Footer -->
+  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="text-muted fs-12">
+      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredReturns.length }}</strong> return requests
+    </div>
+    @if (filteredReturns.length > pageSize) {
+      <ngb-pagination [collectionSize]="filteredReturns.length"
+                      [(page)]="currentPage"
+                      [pageSize]="pageSize"
+                      [maxSize]="5"
+                      [rotate]="true"
+                      [boundaryLinks]="true"
+                      size="sm"
+                      class="mb-0">
+      </ngb-pagination>
+    }
+  </div>
+</div>
+
+<!-- ========================================================
+     RETURN REVIEW & REFUND MODAL
+     ======================================================== -->
+<ng-template #reviewModal let-modal>
+  @if (selectedReturn) {
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+        Return Request {{ selectedReturn.id }}
+      </h5>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body p-3">
+      <!-- Return Summary Cards -->
+      <div class="row g-3 mb-3">
+        <!-- Order & Customer -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3 bg-light-subtle h-100">
+            <h6 class="fs-11 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Order &amp; Customer Information</h6>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Order Ref:</span>
+              <span class="fw-bold font-monospace text-primary fs-12">#{{ selectedReturn.orderId }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Customer:</span>
+              <span class="fw-semibold text-dark fs-12">{{ selectedReturn.customer.name }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Phone:</span>
+              <span class="font-monospace text-dark fs-12">{{ selectedReturn.customer.phone }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Branch:</span>
+              <span class="text-dark fs-12">{{ selectedReturn.branch }}</span>
+            </div>
+            <div class="pt-1.5">
+              <span class="text-muted fs-11 d-block mb-0.5">Delivery Address:</span>
+              <span class="text-dark fs-11 fw-medium">{{ selectedReturn.customer.deliveryAddress }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item Claimed -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3 bg-light-subtle h-100">
+            <h6 class="fs-11 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Item Return Details</h6>
+            
+            <div class="d-flex align-items-center gap-2 p-2 bg-white rounded-2 border mb-2.5">
+              <img [src]="selectedReturn.item.image" alt="item" class="rounded object-fit-cover border flex-shrink-0" width="44" height="44">
+              <div>
+                <span class="fw-bold text-dark fs-12 d-block">{{ selectedReturn.item.name }}</span>
+                <span class="text-muted fs-11">Unit Price: Rs. {{ selectedReturn.item.unitPrice | number }} &times; Qty: {{ selectedReturn.item.quantity }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Reason for Return:</span>
+              <span class="badge bg-light text-dark border fs-11">{{ selectedReturn.reason }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Refund Destination:</span>
+              <span class="fw-semibold text-primary fs-12">
+                <iconify-icon icon="solar:wallet-bold" class="me-1"></iconify-icon>
+                {{ selectedReturn.refundChannel }}
+              </span>
+            </div>
+            <div class="d-flex justify-content-between pt-1.5">
+              <span class="text-muted fs-12 fw-semibold">Total Refund Claim:</span>
+              <span class="fw-bold text-dark fs-14 font-monospace font-jost">Rs. {{ selectedReturn.refundAmount | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Note / Comment -->
+      @if (selectedReturn.customerNotes) {
+        <div class="p-3 border rounded-3 bg-light mb-3">
+          <div class="d-flex align-items-center gap-1.5 mb-1 text-primary">
+            <iconify-icon icon="solar:chat-round-line-bold" class="fs-15"></iconify-icon>
+            <span class="fw-semibold fs-12">Customer Statement / Notes</span>
+          </div>
+          <p class="fs-12 text-dark mb-0 bg-white p-2.5 rounded-2 border">
+            &ldquo;{{ selectedReturn.customerNotes }}&rdquo;
+          </p>
+        </div>
+      }
+
+      <!-- Moderator / Admin Action Section -->
+      <div class="p-3 border rounded-3 bg-light-subtle">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">
+          Internal Moderator Remarks &amp; Decision Note
+        </label>
+        <textarea [(ngModel)]="moderatorNoteInput" 
+                  rows="2" 
+                  class="form-control form-control-sm shadow-none" 
+                  placeholder="Enter moderation remarks or reason for refund approval/rejection...">
+        </textarea>
+
+        @if (selectedReturn.reviewedBy) {
+          <div class="mt-2 text-muted fs-11 d-flex align-items-center gap-1">
+            <iconify-icon icon="solar:user-check-bold" class="text-success fs-13"></iconify-icon>
+            <span>Last reviewed by <strong>{{ selectedReturn.reviewedBy }}</strong> on {{ selectedReturn.reviewedAt }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-between align-items-center">
+      <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.dismiss()">
+        Close
+      </button>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" 
+                class="btn btn-sm btn-outline-danger fs-12 cursor-pointer px-3" 
+                (click)="rejectReturn(selectedReturn, modal)">
+          <iconify-icon icon="solar:close-circle-bold" class="align-middle me-1"></iconify-icon>
+          Reject Request
+        </button>
+        <button type="button" 
+                class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" 
+                style="background: #2e3192; border-color: #2e3192;"
+                (click)="approveReturn(selectedReturn, modal)">
+          <iconify-icon icon="solar:check-circle-bold" class="fs-15 align-middle me-1"></iconify-icon>
+          Approve &amp; Refund Rs. {{ selectedReturn.refundAmount | number }}
+        </button>
+      </div>
+    </div>
+  }
+</ng-template>

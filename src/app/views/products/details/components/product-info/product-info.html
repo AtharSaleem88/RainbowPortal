@@ -1,0 +1,92 @@
+<div class="card border-0 shadow-sm" style="border-radius: 16px;">
+  <div class="card-body p-4">
+    <!-- Category & Brand Header (Image 3) -->
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <span class="text-uppercase fw-bold text-primary fs-13" style="letter-spacing: 1px;">FROZEN FOOD</span>
+      <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">SKU: RW-FRZ-SH01</span>
+    </div>
+
+    <!-- Product Title (Image 3) -->
+    <h2 class="fw-bold text-dark mb-2">Chicken Shashlik</h2>
+
+    <!-- Brand with icon (Image 3) -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <iconify-icon icon="solar:shop-2-bold" class="text-primary fs-18"></iconify-icon>
+      <span class="text-muted fs-14">Brand: <strong class="text-dark">Rainbow Frozen</strong></span>
+      <span class="badge bg-primary text-white fs-11">In-House Label</span>
+    </div>
+
+    <!-- Supermarket Badges (Image 3) -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-13 rounded-pill fw-medium">
+        &#x2713; Freezed
+      </span>
+      <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-13 rounded-pill fw-medium">
+        &#x2713; Life 10 days
+      </span>
+      <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-13 rounded-pill fw-medium">
+        &#x2713; Lower than Imtiaz
+      </span>
+    </div>
+
+    <!-- Pricing (Image 3) -->
+    <div class="d-flex align-items-center gap-3 my-3">
+      <h1 class="fw-bold text-primary mb-0" style="color: #2e3192 !important;">Rs. 850</h1>
+      <span class="fs-20 text-muted text-decoration-line-through">Rs. 930</span>
+      <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-13 fw-bold rounded-pill">
+        Save Rs. 80
+      </span>
+    </div>
+
+    <!-- Pack size selector -->
+    <div class="my-3">
+      <label class="form-label text-muted fs-13 fw-semibold">Pack Selection:</label>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 active fw-semibold">500g (6 Skewers)</button>
+        <button type="button" class="btn btn-outline-light text-dark border btn-sm rounded-pill px-3 fw-semibold">1000g (12 Skewers)</button>
+      </div>
+    </div>
+
+    <!-- Quantity & ADD button (Image 3) -->
+    <div class="d-flex flex-wrap align-items-center gap-3 my-4">
+      <div appQuantityControl [quantity]="1" class="input-step border bg-light p-1 rounded-pill d-inline-flex align-items-center">
+        <button type="button" class="minus bg-white text-dark border-0 rounded-circle fs-16 lh-1" style="width: 32px; height: 32px;">-</button>
+        <input type="number" class="text-dark text-center border-0 bg-transparent fw-bold" style="width: 50px;" value="1" min="1" max="50" readonly>
+        <button type="button" class="plus bg-white text-dark border-0 rounded-circle fs-16 lh-1" style="width: 32px; height: 32px;">+</button>
+      </div>
+
+      <button type="button" class="btn px-4 py-2 text-white fw-bold d-flex align-items-center gap-2 rounded-pill shadow-sm" style="background: #2e3192;">
+        <iconify-icon icon="solar:bag-3-bold" class="fs-18"></iconify-icon>
+        ADD TO CART
+      </button>
+
+      <span class="badge bg-success-subtle text-success fs-13 py-2 px-3 rounded-pill">
+        <iconify-icon icon="solar:check-circle-bold" class="align-middle me-1"></iconify-icon> Available at 10/10 Superstores
+      </span>
+    </div>
+
+    <hr class="my-4 opacity-10">
+
+    <!-- Value Guarantees (Image 3) -->
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:delivery-bold-duotone" class="text-primary fs-24"></iconify-icon>
+          <span class="fs-13 fw-semibold text-dark">Fast Doorstep Delivery</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:shield-check-bold-duotone" class="text-success fs-24"></iconify-icon>
+          <span class="fs-13 fw-semibold text-dark">Quality Guaranteed</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:refresh-bold-duotone" class="text-info fs-24"></iconify-icon>
+          <span class="fs-13 fw-semibold text-dark">Easy Returns</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

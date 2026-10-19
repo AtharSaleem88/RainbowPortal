@@ -1,0 +1,617 @@
+<div class="container-fluid px-0">
+
+  <!-- ========================================================
+       Top Operations Control Bar: Branch & Date Range Filter
+       ======================================================== -->
+  <div class="op-card p-3 p-md-3.5 mb-4">
+    <!-- Top: Branch Selector Dropdown -->
+    <div class="mb-3">
+      @if(isBranchLocked){
+        <div class="btn-branch-pill d-flex align-items-center gap-2 bg-light">
+          <iconify-icon icon="solar:lock-keyhole-bold" class="text-primary fs-17 flex-shrink-0"></iconify-icon>
+          <span class="text-truncate">{{ currentBranchDisplayName }}</span>
+          <span class="badge bg-primary-subtle text-primary fs-10 ms-1 flex-shrink-0">Branch Scoped</span>
+        </div>
+      } @else {
+        <div class="dropdown" ngbDropdown>
+          <button type="button" class="btn btn-branch-pill d-flex align-items-center justify-content-between" 
+                  ngbDropdownToggle id="branchSelectDropdown">
+            <div class="d-flex align-items-center gap-2 overflow-hidden text-truncate me-2">
+              <iconify-icon icon="solar:shop-2-bold-duotone" class="fs-17 text-primary flex-shrink-0"></iconify-icon>
+              <span class="text-truncate">{{ currentSelectedBranch.name }}</span>
+            </div>
+            <iconify-icon icon="solar:alt-arrow-down-linear" class="fs-14 text-muted flex-shrink-0 ms-2"></iconify-icon>
+          </button>
+
+          <div ngbDropdownMenu aria-labelledby="branchSelectDropdown" class="branch-dropdown-menu shadow-lg border-0 py-2">
+            <div class="px-3 py-2 mb-1 border-bottom d-flex align-items-center justify-content-between">
+              <span class="fs-11 fw-bold text-uppercase text-muted">Select Superstore Branch</span>
+              <span class="badge bg-primary-subtle text-primary fs-10">{{ branches.length - 1 }} Outlets</span>
+            </div>
+            @for (branch of branches; track branch.id) {
+              <button type="button" ngbDropdownItem 
+                      class="dropdown-item d-flex align-items-center justify-content-between gap-2"
+                      [class.active-branch]="selectedBranchId === branch.id"
+                      (click)="selectBranch(branch.id)">
+                <div class="d-flex align-items-center gap-2 text-start overflow-hidden">
+                  <iconify-icon [icon]="branch.id === 'all' ? 'solar:buildings-2-bold-duotone' : 'solar:shop-2-bold-duotone'"
+                                [class.text-primary]="selectedBranchId === branch.id"
+                                class="fs-16 text-muted flex-shrink-0"></iconify-icon>
+                  <div class="overflow-hidden">
+                    <div class="fs-13 fw-semibold text-dark text-truncate">{{ branch.name }}</div>
+                    <small class="text-muted fs-11 d-block">{{ branch.address }} &bull; {{ branch.city }}</small>
+                  </div>
+                </div>
+                @if (selectedBranchId === branch.id) {
+                  <iconify-icon icon="solar:check-circle-bold" class="text-primary fs-16 flex-shrink-0 ms-2"></iconify-icon>
+                } @else {
+                  <span class="badge bg-light text-muted border fs-10 flex-shrink-0 ms-2">{{ branch.activeOrders }} orders</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Below: Date Filter Bar & Refresh Button -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <!-- Date Preset Pills -->
+      <div class="d-inline-flex align-items-center gap-1 bg-light p-1 rounded-2 border">
+        <button type="button" class="period-pill border-0" 
+                [class.active]="selectedDatePreset === 'today'" 
+                (click)="setDatePreset('today')">Today</button>
+        <button type="button" class="period-pill border-0" 
+                [class.active]="selectedDatePreset === 'yesterday'" 
+                (click)="setDatePreset('yesterday')">Yesterday</button>
+        <button type="button" class="period-pill border-0" 
+                [class.active]="selectedDatePreset === '7days'" 
+                (click)="setDatePreset('7days')">7 Days</button>
+        <button type="button" class="period-pill border-0" 
+                [class.active]="selectedDatePreset === '30days'" 
+                (click)="setDatePreset('30days')">30 Days</button>
+        <button type="button" class="period-pill border-0" 
+                [class.active]="selectedDatePreset === 'this_month'" 
+                (click)="setDatePreset('this_month')">This Month</button>
+      </div>
+
+      <!-- Custom Date Range Inputs -->
+      <div class="d-none d-sm-flex align-items-center gap-1 bg-white border rounded-2 px-2.5 py-1" style="height: 38px;">
+        <iconify-icon icon="solar:calendar-date-bold-duotone" class="text-muted fs-15"></iconify-icon>
+        <input type="date" class="form-control form-control-sm border-0 p-0 fs-12 text-muted shadow-none" 
+               style="width: 105px;" [(ngModel)]="startDate" (change)="onCustomDateChange()">
+        <span class="text-muted fs-11 fw-bold">&rarr;</span>
+        <input type="date" class="form-control form-control-sm border-0 p-0 fs-12 text-muted shadow-none" 
+               style="width: 105px;" [(ngModel)]="endDate" (change)="onCustomDateChange()">
+      </div>
+
+      <!-- Refresh Action Button -->
+      <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 px-3 rounded-2" 
+              style="height: 38px;" (click)="refreshStats()" ngbTooltip="Reload real-time store metrics">
+        <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+        <span class="fs-12 fw-semibold">Refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       Row 1: Catalog Scale & Core Volume (4 KPI Cards)
+       ======================================================== -->
+  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+    <span class="section-label">Catalog Overview & Volume Metrics</span>
+  </div>
+  <div class="row g-3.5 mb-4">
+    <!-- Card 1: Total Products (Required) -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <a routerLink="/product/list" class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Total Products</span>
+          <div class="stat-icon" style="background: rgba(46, 49, 146, 0.08); color: #2e3192;">
+            <iconify-icon icon="solar:box-minimalistic-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalProducts | number }}</h2>
+          <span class="fs-12 fw-semibold text-muted">SKUs</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">{{ catalogStats.inStockProducts | number }} In Stock &bull; {{ catalogStats.lowStockProducts }} Low</span>
+          <span class="text-primary fw-semibold d-inline-flex align-items-center">Manage &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 2: Total Categories (Required) -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <a routerLink="/category/list" class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Total Categories</span>
+          <div class="stat-icon" style="background: rgba(37, 170, 225, 0.1); color: #25aae1;">
+            <iconify-icon icon="solar:widget-2-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalCategories }}</h2>
+          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">100% Active</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">20 Master Departments</span>
+          <span class="text-primary fw-semibold d-inline-flex align-items-center">Explore &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 3: Total Sub Categories (Required) -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <a routerLink="/category/sub-category" class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Total Sub Categories</span>
+          <div class="stat-icon" style="background: rgba(147, 51, 234, 0.08); color: #9333ea;">
+            <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalSubCategories }}</h2>
+          <span class="badge bg-primary-subtle text-primary fs-11 fw-semibold py-1 px-2">Mapped</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">Across 20 Departments</span>
+          <span class="text-primary fw-semibold d-inline-flex align-items-center">Configure &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 4: Orders & Revenue for Selected Date Range -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <div class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Period Revenue</span>
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+            <iconify-icon icon="solar:dollar-minimalistic-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">PKR {{ kpiStats.sales | number }}</h2>
+          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">{{ kpiStats.salesGrowth }}</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">{{ kpiStats.orders | number }} Total Orders</span>
+          <span class="text-muted">AOV: PKR {{ kpiStats.avgOrderValue | number }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       Row 2: Operational Health, New Customers & Exceptions (4 Cards)
+       ======================================================== -->
+  <div class="row g-3.5 mb-4">
+    <!-- Card 1: New Customers -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <div class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">New Customers</span>
+          <div class="stat-icon" style="background: rgba(37, 170, 225, 0.1); color: #25aae1;">
+            <iconify-icon icon="solar:user-plus-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.newCustomers | number }}</h2>
+          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">{{ exceptionStats.newCustomerGrowth }}</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">Acquisition Pace</span>
+          <span class="fw-semibold text-dark">{{ exceptionStats.repeatRate }} Repeat</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Rejected Orders -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <div class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Rejected Orders</span>
+          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+            <iconify-icon icon="solar:close-circle-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.rejectedOrders | number }}</h2>
+          <span class="badge bg-danger-subtle text-danger fs-11 fw-semibold py-1 px-2">{{ exceptionStats.rejectedRate }} Rate</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">Primary Reason:</span>
+          <span class="fw-semibold text-danger text-truncate" style="max-width: 140px;">{{ exceptionStats.rejectedTopReason }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Cancelled Orders -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <div class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Cancelled Orders</span>
+          <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+            <iconify-icon icon="solar:shield-warning-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.cancelledOrders | number }}</h2>
+          <span class="badge bg-warning-subtle text-warning fs-11 fw-semibold py-1 px-2">{{ exceptionStats.cancelledRate }} Rate</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">Top Driver:</span>
+          <span class="fw-semibold text-dark text-truncate" style="max-width: 140px;">{{ exceptionStats.cancelledTopReason }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Store Fulfillment Rate & Fleet -->
+    <div class="col-xl-3 col-md-6 col-12">
+      <div class="kpi-card p-3.5 p-xl-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="fs-12 fw-bold text-muted text-uppercase tracking-wider">Fulfillment Rate</span>
+          <div class="stat-icon" style="background: rgba(46, 49, 146, 0.08); color: #2e3192;">
+            <iconify-icon icon="solar:check-circle-bold-duotone" class="fs-22"></iconify-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ kpiStats.fulfillmentRate }}</h2>
+          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">Optimal</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-light-subtle fs-12">
+          <span class="text-muted">Dispatch: {{ exceptionStats.avgDispatchMinutes }}</span>
+          <span class="fw-semibold text-primary">{{ kpiStats.activeRiders }} Active Riders</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       Row 3: Abandoned Cart Metrics Console (Sleek Executive View)
+       ======================================================== -->
+  <div class="op-card p-3.5 p-md-4 mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between pb-3 mb-3 border-bottom gap-2">
+      <div class="d-flex align-items-center gap-2" style="gap: 10px;">
+        <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background: rgba(46, 49, 146, 0.08); color: #2e3192; width: 34px; height: 34px;">
+          <iconify-icon icon="solar:cart-cross-bold-duotone" class="fs-18"></iconify-icon>
+        </div>
+        <div>
+          <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Abandoned Cart & Checkout Conversion Console</h5>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-light text-muted border fs-12 px-2.5 py-1.5">Conversion: <strong class="text-success">{{ abandonedStats.convertedRate }}%</strong></span>
+        <span class="badge bg-light text-muted border fs-12 px-2.5 py-1.5">Abandonment: <strong class="text-danger">{{ abandonedStats.abandonedRate }}%</strong></span>
+      </div>
+    </div>
+
+    <!-- 6 Executive Metrics in 1 Strip -->
+    <div class="row g-3 text-center text-md-start py-1">
+      <div class="col-xl-2 col-md-4 col-6 border-end-md px-3">
+        <span class="fs-11 text-muted fw-bold text-uppercase d-block mb-1">Total Carts</span>
+        <h4 class="fs-20 fw-bold text-dark mb-0 font-jost">{{ abandonedStats.totalCarts | number }}</h4>
+        <small class="fs-11 text-muted">Initiated Baskets</small>
+      </div>
+
+      <div class="col-xl-2 col-md-4 col-6 border-end-md px-3">
+        <span class="fs-11 text-success fw-bold text-uppercase d-block mb-1">Converted Orders</span>
+        <h4 class="fs-20 fw-bold text-success mb-0 font-jost">{{ abandonedStats.convertedCarts | number }}</h4>
+        <small class="fs-11 text-muted">{{ abandonedStats.convertedRate }}% Checkout Rate</small>
+      </div>
+
+      <div class="col-xl-2 col-md-4 col-6 border-end-md px-3">
+        <span class="fs-11 text-danger fw-bold text-uppercase d-block mb-1">Abandoned Baskets</span>
+        <h4 class="fs-20 fw-bold text-danger mb-0 font-jost">{{ abandonedStats.abandonedCarts | number }}</h4>
+        <small class="fs-11 text-muted">{{ abandonedStats.abandonedRate }}% Drop Rate</small>
+      </div>
+
+      <div class="col-xl-2 col-md-4 col-6 border-end-md px-3">
+        <span class="fs-11 text-muted fw-bold text-uppercase d-block mb-1">Total Cart Value</span>
+        <h4 class="fs-20 fw-bold text-dark mb-0 font-jost">PKR {{ abandonedStats.totalCartValue | number }}</h4>
+        <small class="fs-11 text-muted">Gross Potential</small>
+      </div>
+
+      <div class="col-xl-2 col-md-4 col-6 border-end-md px-3">
+        <span class="fs-11 text-primary fw-bold text-uppercase d-block mb-1">Realized GMV</span>
+        <h4 class="fs-20 fw-bold text-primary mb-0 font-jost">PKR {{ abandonedStats.convertedValue | number }}</h4>
+        <small class="fs-11 text-muted">Captured in Orders</small>
+      </div>
+
+      <div class="col-xl-2 col-md-4 col-6 px-3">
+        <span class="fs-11 text-danger fw-bold text-uppercase d-block mb-1">Unrecovered Value</span>
+        <h4 class="fs-20 fw-bold text-danger mb-0 font-jost">PKR {{ abandonedStats.abandonedValue | number }}</h4>
+        <small class="fs-11 text-muted">Lost in Basket</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       Row 4: Core Operations Analytics (Performance & Heat Map)
+       ======================================================== -->
+  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+    <span class="section-label">Performance Analytics & Rush Heat Map</span>
+  </div>
+  <div class="row g-3.5 mb-4">
+    <!-- Left: Operations & Revenue Performance Chart (8 cols) -->
+    <div class="col-xl-8 col-lg-7 col-12">
+      <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Operations & Revenue Performance</h5>
+            <small class="text-muted fs-11">Consolidated revenue and order volumes across selected operational timeline</small>
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            <button type="button" class="period-pill" 
+                    [class.active]="selectedChartPeriod === 'Day'" 
+                    (click)="setChartPeriod('Day')">Day</button>
+            <button type="button" class="period-pill" 
+                    [class.active]="selectedChartPeriod === 'Month'" 
+                    (click)="setChartPeriod('Month')">Month</button>
+            <button type="button" class="period-pill" 
+                    [class.active]="selectedChartPeriod === 'Year'" 
+                    (click)="setChartPeriod('Year')">Year</button>
+          </div>
+        </div>
+
+        @if (performanceChart) {
+          <div class="flex-grow-1" style="min-height: 290px;">
+            <apx-chart
+              [series]="performanceChart.series!"
+              [chart]="performanceChart.chart!"
+              [colors]="performanceChart.colors!"
+              [stroke]="performanceChart.stroke!"
+              [fill]="performanceChart.fill!"
+              [xaxis]="performanceChart.xaxis!"
+              [yaxis]="performanceChart.yaxis!"
+              [grid]="performanceChart.grid!"
+              [legend]="performanceChart.legend!">
+            </apx-chart>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right: Order Heat Map (Peak Rush Hours) (4 cols) -->
+    <div class="col-xl-4 col-lg-5 col-12">
+      <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Order Rush Heat Map</h5>
+            <small class="text-muted fs-11">Hourly dispatch intensity by weekday</small>
+          </div>
+          <span class="badge bg-primary-subtle text-primary fs-10 fw-bold">Live Traffic</span>
+        </div>
+
+        @if (heatMapChart) {
+          <div class="flex-grow-1" style="min-height: 290px;">
+            <apx-chart
+              [series]="heatMapChart.series!"
+              [chart]="heatMapChart.chart!"
+              [colors]="heatMapChart.colors!"
+              [plotOptions]="heatMapChart.plotOptions!"
+              [dataLabels]="heatMapChart.dataLabels!"
+              [xaxis]="heatMapChart.xaxis!"
+              [yaxis]="heatMapChart.yaxis!"
+              [grid]="heatMapChart.grid!"
+              [tooltip]="heatMapChart.tooltip!">
+            </apx-chart>
+          </div>
+        }
+
+        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-light-subtle fs-10 text-muted">
+          <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #e0f2fe;"></span>Low (0-20)</span>
+          <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #7dd3fc;"></span>Mod (21-50)</span>
+          <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #25aae1;"></span>Busy (51-75)</span>
+          <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #2e3192;"></span>Peak (76+)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       Row 5: Order Channels, Payments & Fulfillment Pipeline (3 Cols: 4-4-4)
+       ======================================================== -->
+  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+    <span class="section-label">Order Channels, Settlement & Logistics Pipeline</span>
+  </div>
+  <div class="row g-3.5 mb-4">
+    <!-- Col 1: Order Device Type Info (Required) -->
+    <div class="col-xl-4 col-md-6 col-12">
+      <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Order Device Type</h5>
+            <small class="text-muted fs-11">Channel distribution by client platform</small>
+          </div>
+          <span class="badge bg-light text-muted border fs-11">88.6% Mobile</span>
+        </div>
+
+        @if (deviceChart) {
+          <div class="my-auto py-2">
+            <apx-chart
+              [series]="deviceChart.series!"
+              [chart]="deviceChart.chart!"
+              [labels]="deviceChart.labels!"
+              [colors]="deviceChart.colors!"
+              [plotOptions]="deviceChart.plotOptions!"
+              [legend]="deviceChart.legend!"
+              [dataLabels]="deviceChart.dataLabels!"
+              [tooltip]="deviceChart.tooltip!">
+            </apx-chart>
+          </div>
+        }
+
+        <!-- Breakdown List -->
+        <div class="d-flex flex-column gap-2 pt-2 border-top border-light-subtle">
+          @for (d of deviceStats; track d.name) {
+            <div class="d-flex align-items-center justify-content-between fs-12">
+              <div class="d-flex align-items-center gap-2">
+                <span class="d-inline-block rounded-circle" [style.backgroundColor]="d.color" style="width: 8px; height: 8px;"></span>
+                <iconify-icon [icon]="d.icon" class="text-muted fs-14"></iconify-icon>
+                <span class="fw-medium text-dark">{{ d.name }}</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-dark">{{ d.percentage }}%</span>
+                <span class="text-muted fs-11 ms-1">({{ d.count }} orders)</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Col 2: Order Payment Type (Required) -->
+    <div class="col-xl-4 col-md-6 col-12">
+      <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Order Payment Type</h5>
+            <small class="text-muted fs-11">Settlement method breakdown & volume</small>
+          </div>
+          <span class="badge bg-light text-muted border fs-11">COD Dominant</span>
+        </div>
+
+        @if (paymentChart) {
+          <div class="my-auto py-2">
+            <apx-chart
+              [series]="paymentChart.series!"
+              [chart]="paymentChart.chart!"
+              [labels]="paymentChart.labels!"
+              [colors]="paymentChart.colors!"
+              [plotOptions]="paymentChart.plotOptions!"
+              [legend]="paymentChart.legend!"
+              [dataLabels]="paymentChart.dataLabels!"
+              [tooltip]="paymentChart.tooltip!">
+            </apx-chart>
+          </div>
+        }
+
+        <!-- Breakdown List -->
+        <div class="d-flex flex-column gap-2 pt-2 border-top border-light-subtle">
+          @for (p of paymentStats; track p.name) {
+            <div class="d-flex align-items-center justify-content-between fs-12">
+              <div class="d-flex align-items-center gap-2">
+                <span class="d-inline-block rounded-circle" [style.backgroundColor]="p.color" style="width: 8px; height: 8px;"></span>
+                <span class="fw-medium text-dark text-truncate" style="max-width: 170px;">{{ p.name }}</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-dark">PKR {{ (p.amount / 1000).toFixed(0) }}k</span>
+                <span class="badge bg-light text-muted border fs-10 ms-1">{{ p.percentage }}%</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Col 3: Order Fulfillment Pipeline -->
+    <div class="col-xl-4 col-md-12 col-12">
+      <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Fulfillment Pipeline</h5>
+            <small class="text-muted fs-11">Real-time status of orders in progress</small>
+          </div>
+          <span class="badge bg-success-subtle text-success fs-11 fw-bold">{{ kpiStats.fulfillmentRate }} On-Time</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3 my-auto">
+          @for (f of fulfillmentStats; track f.label) {
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fs-12 text-muted fw-medium">{{ f.label }}</span>
+                <span class="fs-12 fw-bold text-dark">{{ f.count }} <small class="text-muted fw-normal">({{ f.percentage }}%)</small></span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9;">
+                <div class="progress-bar rounded-pill" role="progressbar" [style.width.%]="f.percentage" [style.backgroundColor]="f.color"></div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="mt-3 pt-3 border-top border-light-subtle d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px;"></span>
+            <span class="fs-12 text-muted">Active Logistics Fleet</span>
+          </div>
+          <span class="fs-12 fw-bold text-dark">{{ kpiStats.activeRiders }} Active Riders Online</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       Row 6: Live Orders Operations Queue Table
+       ======================================================== -->
+  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+    <span class="section-label">Live Dispatch & Order Stream</span>
+  </div>
+  <div class="op-card p-0 overflow-hidden mb-4">
+    <div class="p-3.5 px-md-4 py-md-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Live Store Orders Stream</h5>
+        <span class="badge bg-light text-muted border fs-11">Showing recent orders for {{ getSelectedBranchShortName() }}</span>
+      </div>
+      <a routerLink="/orders/list" class="btn btn-sm btn-outline-primary py-1 px-2.5 fs-12 fw-semibold d-inline-flex align-items-center gap-1">
+        <span>View Complete Order Book</span>
+        <iconify-icon icon="solar:arrow-right-linear" class="fs-14"></iconify-icon>
+      </a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-clean table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Order Code</th>
+            <th>Customer & Items</th>
+            <th>Superstore Branch</th>
+            <th>Payment Mode</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of recentOrders; track order.id) {
+            <tr>
+              <td>
+                <span class="fw-bold text-primary font-monospace fs-12">#{{ order.uniqueCode }}</span>
+              </td>
+              <td>
+                <div class="fw-semibold text-dark fs-13">{{ order.customer.name }}</div>
+                <small class="text-muted fs-11">{{ order.items.length }} Items &bull; {{ order.deliveryBy }} &bull; {{ order.deviceType }}</small>
+              </td>
+              <td>
+                <span class="fs-12 text-muted">{{ order.branch.replace('Rainbow Cash & Carry - ', '').replace('Rainbow Superstore - ', '') }}</span>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border fs-11 fw-normal">
+                  {{ order.paymentType }}
+                </span>
+              </td>
+              <td class="fw-bold text-dark fs-13">
+                PKR {{ order.totalAmount | number }}
+              </td>
+              <td>
+                <span class="badge rounded-pill px-2.5 py-1 fs-11 fw-semibold"
+                      [ngClass]="{
+                        'bg-success-subtle text-success': order.status === 'Delivered',
+                        'bg-info-subtle text-info': order.status === 'Dispatch',
+                        'bg-warning-subtle text-warning': order.status === 'Accepted' || order.status === 'Pending',
+                        'bg-danger-subtle text-danger': order.status === 'Rejected'
+                      }">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="text-muted fs-12">
+                {{ order.time }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

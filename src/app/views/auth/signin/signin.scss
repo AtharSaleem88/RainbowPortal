@@ -1,0 +1,372 @@
+/* =========================================================================
+   RAINBOW ENTERPRISE ADMIN PORTAL - PREMIUM AUTHENTICATION
+   Embossed Cloud Swirl Watermark, Rainbow Glows, Secondary Color Hover Interactivity
+   ========================================================================= */
+
+.rainbow-login-viewport {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f3f6fb;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(255, 107, 107, 0.05) 0%, transparent 45%),
+    radial-gradient(at 85% 15%, rgba(37, 170, 225, 0.08) 0%, transparent 45%),
+    radial-gradient(at 85% 85%, rgba(138, 43, 226, 0.06) 0%, transparent 50%),
+    radial-gradient(at 15% 85%, rgba(43, 191, 78, 0.06) 0%, transparent 45%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================================================
+   EMBOSSED BACKGROUND RAINBOW CLOUD WATERMARK
+   ========================================================================= */
+
+.embossed-bg-logo-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.12;
+  user-select: none;
+
+  .embossed-bg-logo {
+    width: 780px;
+    max-width: 92vw;
+    height: auto;
+    /* High-fidelity 3D embossed lighting relief */
+    filter: 
+      drop-shadow(2px 3px 1px rgba(255, 255, 255, 0.95))
+      drop-shadow(-2px -2px 1px rgba(46, 49, 146, 0.16));
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* Ambient Rainbow Lighting in Background */
+.rainbow-cloud-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(85px);
+  pointer-events: none;
+  z-index: 1;
+
+  &.glow-top-left {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(232, 16, 31, 0.07) 0%, rgba(245, 158, 11, 0.06) 50%, transparent 70%);
+    top: -180px;
+    left: -150px;
+  }
+
+  &.glow-bottom-right {
+    width: 540px;
+    height: 540px;
+    background: radial-gradient(circle, rgba(37, 170, 225, 0.1) 0%, rgba(138, 43, 226, 0.07) 50%, transparent 70%);
+    bottom: -190px;
+    right: -170px;
+  }
+
+  &.glow-center {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(43, 191, 78, 0.05) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* =========================================================================
+   LOGIN CARD (CLEAN BESPOKE LUXURY SPECIFICATION)
+   ========================================================================= */
+
+.rainbow-login-card {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px !important;
+  box-shadow: 
+    0 30px 70px -15px rgba(46, 49, 146, 0.12),
+    0 10px 25px -8px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(226, 232, 240, 0.9) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Brand Logo */
+.rainbow-card-logo {
+  height: 62px;
+  width: auto;
+  max-width: 190px;
+  object-fit: contain;
+}
+
+/* Administration Portal Pill Badge */
+.portal-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #2e3192;
+  background: rgba(46, 49, 146, 0.06);
+  border: 1px solid rgba(46, 49, 146, 0.14);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: var(--bs-font-monospace);
+
+  .portal-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #25aae1;
+    box-shadow: 0 0 6px #25aae1;
+  }
+}
+
+/* Card Heading */
+.rainbow-auth-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1a1c36;
+  letter-spacing: -0.4px;
+}
+
+/* =========================================================================
+   ROLE SELECTOR PILLS (1-CLICK ACCOUNT SWITCHER)
+   ========================================================================= */
+
+.role-selector-container {
+  .role-pill-group {
+    background: #f1f5f9;
+    border-radius: 12px;
+    gap: 4px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .role-pill-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+
+    .role-pill-icon {
+      font-size: 14px;
+    }
+
+    &:hover:not(.active) {
+      color: #2e3192;
+      background: rgba(37, 170, 225, 0.1);
+    }
+
+    &.active {
+      background: #2e3192;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(46, 49, 146, 0.28);
+    }
+  }
+}
+
+/* =========================================================================
+   FORM CONTROLS & FOCUS STATES (SECONDARY COLOR ACCENT)
+   ========================================================================= */
+
+.rainbow-form-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 7px;
+  display: block;
+}
+
+.rainbow-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-leading-icon {
+    position: absolute;
+    left: 16px;
+    font-size: 19px;
+    color: #64748b;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+  }
+
+  .password-eye-btn {
+    position: absolute;
+    right: 14px;
+    background: transparent;
+    border: none;
+    padding: 4px;
+    font-size: 19px;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #25aae1; /* Secondary color hover */
+    }
+  }
+}
+
+.rainbow-form-control {
+  border-radius: 12px !important;
+  border: 1px solid #dbe2ea !important;
+  padding: 12px 16px 12px 46px !important;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+  transition: all 0.2s ease !important;
+
+  &::placeholder {
+    color: #94a3b8 !important;
+    font-size: 13.5px !important;
+  }
+
+  &:focus {
+    border-color: #25aae1 !important; /* Secondary color focus border */
+    box-shadow: 0 0 0 3.5px rgba(37, 170, 225, 0.18) !important; /* Secondary color focus glow */
+    outline: none !important;
+
+    ~ .input-leading-icon {
+      color: #25aae1; /* Secondary color on input focus */
+    }
+  }
+
+  &.is-invalid {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  }
+}
+
+/* Checkbox & Forgot Link */
+.rainbow-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .form-check-input {
+    border-radius: 4px;
+    border-color: #cbd5e1;
+    cursor: pointer;
+    margin-top: 0;
+
+    &:checked {
+      background-color: #2e3192;
+      border-color: #2e3192;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(37, 170, 225, 0.25);
+    }
+  }
+
+  .rainbow-check-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+  }
+}
+
+.rainbow-forgot-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2e3192;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #25aae1; /* Secondary color hover */
+    text-decoration: underline;
+  }
+}
+
+/* =========================================================================
+   LOGIN SUBMIT BUTTON: PRIMARY NAVY -> SECONDARY SKY-BLUE ON HOVER
+   ========================================================================= */
+
+.rainbow-submit-btn {
+  background: #2e3192 !important; /* Primary Rainbow Navy */
+  border: 1px solid #2e3192 !important;
+  border-radius: 12px !important;
+  padding: 13px 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(46, 49, 146, 0.3) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+
+  .btn-arrow-icon {
+    transition: transform 0.2s ease;
+  }
+
+  /* ON HOVER: VIBRANT SECONDARY SKY BLUE COLOR TRANSITION */
+  &:hover:not(:disabled) {
+    background: #25aae1 !important; /* Secondary Rainbow Sky Blue */
+    border-color: #25aae1 !important;
+    box-shadow: 0 8px 24px rgba(37, 170, 225, 0.45) !important;
+    transform: translateY(-2px);
+    color: #ffffff !important;
+
+    .btn-arrow-icon {
+      transform: translateX(4px);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 170, 225, 0.3) !important;
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+}
+
+/* =========================================================================
+   ADMIN PORTAL SECURITY PILL (REPLACED PUBLIC SIGNUP / SUPPORT)
+   ========================================================================= */
+
+.admin-security-pill {
+  background: #f8fafc;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  color: #64748b;
+  font-size: 11.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 575.98px) {
+  .rainbow-login-card {
+    border-radius: 22px !important;
+  }
+
+  .rainbow-card-logo {
+    height: 52px;
+  }
+
+  .rainbow-auth-title {
+    font-size: 1.45rem;
+  }
+}

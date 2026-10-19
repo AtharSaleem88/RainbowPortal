@@ -1,0 +1,134 @@
+<div class="rainbow-login-viewport min-vh-100 d-flex align-items-center justify-content-center p-3 p-sm-4 position-relative overflow-hidden">
+  
+  <!-- Subtle Rainbow Ambient Lighting in Background -->
+  <div class="rainbow-cloud-glow glow-top-left"></div>
+  <div class="rainbow-cloud-glow glow-bottom-right"></div>
+  <div class="rainbow-cloud-glow glow-center"></div>
+
+  <!-- Main Login Card -->
+  <div class="card rainbow-login-card border-0 position-relative z-2">
+    <div class="card-body p-4 p-sm-5">
+      
+      <!-- Rainbow Brand Logo (Top Center) -->
+      <div class="text-center mb-3">
+        <img src="assets/images/RainbowLogo.png" alt="Rainbow" class="rainbow-card-logo" />
+      </div>
+
+      <!-- Heading -->
+      <h2 class="rainbow-auth-title text-center mb-3">Admin Portal</h2>
+
+      <!-- Sleek Role Selector Pills (1-Click Switcher for Admin, Manager, Moderator) -->
+      <div class="role-selector-container mb-4">
+        <div class="role-pill-group d-flex justify-content-between p-1">
+          
+          <button type="button" 
+                  class="role-pill-btn" 
+                  [class.active]="selectedRole === 'admin'"
+                  (click)="selectRole('admin')">
+            <iconify-icon icon="solar:shield-star-bold" class="role-pill-icon"></iconify-icon>
+            <span>Admin</span>
+          </button>
+
+          <button type="button" 
+                  class="role-pill-btn" 
+                  [class.active]="selectedRole === 'manager'"
+                  (click)="selectRole('manager')">
+            <iconify-icon icon="solar:shop-2-bold" class="role-pill-icon"></iconify-icon>
+            <span>Manager</span>
+          </button>
+
+          <button type="button" 
+                  class="role-pill-btn" 
+                  [class.active]="selectedRole === 'moderator'"
+                  (click)="selectRole('moderator')">
+            <iconify-icon icon="solar:scooter-bold" class="role-pill-icon"></iconify-icon>
+            <span>Moderator</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="signInForm" (ngSubmit)="login()">
+        
+        <!-- Email address -->
+        <div class="form-group mb-3">
+          <label class="rainbow-form-label">Email address</label>
+          <div class="rainbow-input-wrapper">
+            <iconify-icon icon="solar:letter-linear" class="input-leading-icon"></iconify-icon>
+            <input type="email" 
+                   formControlName="email" 
+                   class="form-control rainbow-form-control" 
+                   placeholder="Enter Your Email Address"
+                   [class.is-invalid]="submitted && formValues['email'].errors" />
+          </div>
+          <div *ngIf="submitted && formValues['email'].errors" class="text-danger fs-12 mt-1">
+            Please enter a valid email address.
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group mb-3">
+          <label class="rainbow-form-label">Password</label>
+          <div class="rainbow-input-wrapper">
+            <iconify-icon icon="solar:lock-password-linear" class="input-leading-icon"></iconify-icon>
+            <input [type]="showPassword ? 'text' : 'password'" 
+                   formControlName="password" 
+                   class="form-control rainbow-form-control pe-5" 
+                   placeholder="Enter Your Password"
+                   [class.is-invalid]="submitted && formValues['password'].errors" />
+            <button type="button" 
+                    class="password-eye-btn" 
+                    (click)="togglePasswordVisibility()" 
+                    tabindex="-1"
+                    aria-label="Toggle password visibility">
+              <iconify-icon [icon]="showPassword ? 'solar:eye-closed-linear' : 'solar:eye-linear'"></iconify-icon>
+            </button>
+          </div>
+          <div *ngIf="submitted && formValues['password'].errors" class="text-danger fs-12 mt-1">
+            Password is required.
+          </div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div class="form-check rainbow-check mb-0">
+            <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+            <label class="form-check-label rainbow-check-label" for="rememberMe">
+              Remember Me
+            </label>
+          </div>
+          <a href="javascript:void(0);" class="rainbow-forgot-link">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button (Hover changes to Secondary Sky-Blue color) -->
+        <button type="submit" 
+                class="btn rainbow-submit-btn w-100 d-flex align-items-center justify-content-center gap-2"
+                [disabled]="isAuthenticating">
+          <span *ngIf="isAuthenticating" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span *ngIf="!isAuthenticating" class="d-inline-flex align-items-center gap-2 btn-content-wrap">
+            <span>Login</span>
+            <iconify-icon icon="solar:arrow-right-linear" class="fs-18 btn-arrow-icon"></iconify-icon>
+          </span>
+          <span *ngIf="isAuthenticating">Verifying Credentials...</span>
+        </button>
+
+      </form>
+
+      <!-- Admin Portal Security & Compliance Footer (Replaced Sign Up & Need Support) -->
+      <div class="text-center mt-4 pt-2 border-top border-light-subtle">
+        <div class="admin-security-pill d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill">
+          <iconify-icon icon="solar:shield-check-bold" class="text-success fs-14"></iconify-icon>
+          <span class="fw-semibold">Rainbow Enterprise Console</span>
+          <span class="opacity-40">•</span>
+          <span>RBAC Authorized Access</span>
+        </div>
+        <div class="text-muted fs-11 mt-2 opacity-75">
+          © 2026 Rainbow Cash & Carry. All rights reserved.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

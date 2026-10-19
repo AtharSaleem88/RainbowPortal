@@ -1,0 +1,684 @@
+<!-- ========================================================
+     Executive Page Header & Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+  <div>
+    <h4 class="fs-18 fw-bold text-dark mb-1 font-jost d-flex align-items-center gap-2">
+      <iconify-icon icon="solar:bag-check-bold-duotone" class="text-primary fs-20"></iconify-icon>
+      Customer Orders &amp; Dispatch Console
+    </h4>
+    <p class="text-muted fs-12 mb-0">
+      Consolidated supermarket customer orders, real-time rider dispatch, and fulfillment tracking
+      @if(isBranchLocked){
+        &bull; <span class="badge bg-primary-subtle text-primary border border-primary-subtle"><iconify-icon icon="solar:lock-keyhole-bold" class="align-middle me-1"></iconify-icon>{{currentBranchDisplayName}}</span>
+      }
+    </p>
+  </div>
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <!-- Hub Navigation Segmented Control -->
+    <div class="filter-segmented-control">
+      <a routerLink="/orders/list" class="segment-btn active text-decoration-none">
+        <iconify-icon icon="solar:bag-3-bold" class="fs-14"></iconify-icon>
+        <span>Customer Orders</span>
+      </a>
+      <a routerLink="/orders/returns" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:restart-bold" class="fs-14"></iconify-icon>
+        <span>Returns &amp; Refunds</span>
+      </a>
+      <a routerLink="/orders/feedback" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:chat-round-dots-bold" class="fs-14"></iconify-icon>
+        <span>Feedback &amp; Reviews</span>
+      </a>
+    </div>
+
+    <!-- Actions -->
+    <button type="button" (click)="resetFilters()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Reload / Reset Filters">
+      <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+      <span>Reload</span>
+    </button>
+    <button type="button" (click)="exportToExcel()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Export Excel / CSV">
+      <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
+      <span>Export CSV</span>
+    </button>
+  </div>
+</div>
+
+<!-- ========================================================
+     Operational Feedback Alert (Rider Assignment Toast)
+     ======================================================== -->
+@if (assignmentToast) {
+  <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-3 border fs-12 shadow-sm alert-success border-success-subtle bg-success-subtle text-success">
+    <iconify-icon icon="solar:check-circle-bold" class="fs-16 flex-shrink-0"></iconify-icon>
+    <div class="flex-grow-1 fw-medium">{{ assignmentToast }}</div>
+    <button type="button" class="btn-close p-2 fs-10" (click)="assignmentToast = null"></button>
+  </div>
+}
+
+<!-- ========================================================
+     Executive Metrics Cards (4 Minimal Cards)
+     ======================================================== -->
+<div class="row g-3 mb-3">
+  <!-- Card 1: Total Orders -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Orders</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:bag-check-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ statusCounts.all }}</div>
+      <small class="text-muted fs-11">Consolidated customer volume</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Pending Orders -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Pending Confirmation</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:clock-circle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ statusCounts.pending }}</div>
+      <small class="text-muted fs-11">Awaiting store acceptance</small>
+    </div>
+  </div>
+
+  <!-- Card 3: In Dispatch / Out for Delivery -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Out for Delivery</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:scooter-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ statusCounts.dispatch }}</div>
+      <small class="text-muted fs-11">Assigned &amp; on fleet transit</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Delivered Today -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Delivered Orders</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:check-circle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ statusCounts.delivered }}</div>
+      <small class="text-muted fs-11">Completed customer drop-offs</small>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Main Customer Orders Console Card
+     ======================================================== -->
+<div class="cat-main-card overflow-hidden mb-4">
+  <!-- Header Toolbar: Status Tabs + Search Box -->
+  <div class="p-3 border-bottom bg-white">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <!-- Status Filter Segmented Control -->
+      <div class="filter-segmented-control">
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'all'" (click)="setStatusTab('all')">
+          <span>All Orders</span>
+          <span class="count-pill">{{ statusCounts.all }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Pending'" (click)="setStatusTab('Pending')">
+          <span>Pending</span>
+          <span class="count-pill">{{ statusCounts.pending }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Accepted'" (click)="setStatusTab('Accepted')">
+          <span>Accepted</span>
+          <span class="count-pill">{{ statusCounts.accepted }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Dispatch'" (click)="setStatusTab('Dispatch')">
+          <span>Dispatch</span>
+          <span class="count-pill">{{ statusCounts.dispatch }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Delivered'" (click)="setStatusTab('Delivered')">
+          <span>Delivered</span>
+          <span class="count-pill">{{ statusCounts.delivered }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedStatus === 'Rejected'" (click)="setStatusTab('Rejected')">
+          <span>Rejected</span>
+          <span class="count-pill">{{ statusCounts.rejected }}</span>
+        </button>
+      </div>
+
+      <!-- Search Box with Clear Button -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <div class="search-box-wrapper">
+          <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
+                 class="form-control search-input shadow-none"
+                 placeholder="Search Order#, customer, rider...">
+          @if (searchTerm) {
+            <button class="clear-search-btn" type="button" (click)="clearSearch()" title="Clear search">
+              <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Filter Strip -->
+  <div class="filter-bar-strip d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <!-- Branch Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Store Branch:</span>
+        @if (isBranchLocked) {
+          <div class="d-inline-flex align-items-center gap-1 px-2.5 py-1 bg-white border rounded text-dark fs-12 fw-semibold">
+            <iconify-icon icon="solar:lock-keyhole-bold" class="text-primary fs-14"></iconify-icon>
+            <span>{{ currentBranchDisplayName }}</span>
+          </div>
+        } @else {
+          <select [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
+            @for (b of branches; track b.id) {
+              <option [value]="b.id">{{ b.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+    </div>
+
+    <!-- Active Filter Counter & Reset -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted fs-11">
+        Found <strong>{{ filteredOrders.length }}</strong> orders
+      </span>
+      @if (searchTerm || (!isBranchLocked && selectedBranch !== 'all') || selectedStatus !== 'all') {
+        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fs-11 text-danger d-inline-flex align-items-center gap-1"
+                (click)="resetFilters()">
+          <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
+          <span>Reset</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Table Body -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ORDER NO</th>
+          <th>DATE &amp; TIME</th>
+          <th>CUSTOMER DETAILS</th>
+          <th>STORE BRANCH</th>
+          <th class="text-center">STATUS</th>
+          <th class="text-end">NET TOTAL</th>
+          <th class="text-end">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(item of paginatedOrders; track item.id){
+          <tr>
+            <!-- Col 1: ORDER NO -->
+            <td>
+              <span class="fw-bold text-dark font-monospace fs-13">#{{item.id}}</span>
+            </td>
+
+            <!-- Col 2: DATE & TIME -->
+            <td>
+              <div class="text-dark fw-medium fs-12">{{item.time}}</div>
+              <small class="text-muted fs-11">{{item.date}}</small>
+            </td>
+
+            <!-- Col 3: CUSTOMER DETAILS -->
+            <td>
+              <div class="d-flex align-items-center gap-1.5 mb-0.5 flex-wrap">
+                <span class="fw-bold text-dark fs-13">{{item.customer.name}}</span>
+                @if(item.customer.isRepeatCustomer || item.customer.totalOrders > 1){
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10 fw-semibold">
+                    Repeat ({{item.customer.totalOrders}})
+                  </span>
+                }
+              </div>
+              <a [href]="'tel:' + item.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
+                {{item.customer.phone}}
+              </a>
+            </td>
+
+            <!-- Col 4: STORE BRANCH -->
+            <td>
+              <span class="text-dark fw-semibold fs-12">{{item.branch}}</span>
+            </td>
+
+            <!-- Col 5: STATUS -->
+            <td class="text-center">
+              <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(item.status)">
+                {{item.status}}
+              </span>
+            </td>
+
+            <!-- Col 6: AMOUNT -->
+            <td class="text-end">
+              <span class="fw-bold text-dark fs-13 font-monospace font-jost">Rs {{item.totalAmount | number:'1.2-2'}}</span>
+            </td>
+
+            <!-- Col 7: ACTIONS -->
+            <td class="text-end">
+              <div class="d-flex gap-1 justify-content-end">
+                <button type="button" class="cat-action-btn" (click)="openOrderModal(item, orderDetailsModal)" ngbTooltip="View Order Details">
+                  <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
+                </button>
+                @if(item.assignedRider){
+                  <button type="button" class="cat-action-btn" (click)="openAssignRiderModal(item, assignRiderModal)" [ngbTooltip]="'Rider: ' + item.assignedRider.name + ' (' + item.assignedRider.phone + ')'">
+                    <iconify-icon icon="solar:scooter-bold" class="fs-15 text-success"></iconify-icon>
+                  </button>
+                } @else if(item.status === 'Pending' || item.status === 'Accepted'){
+                  <button type="button" class="cat-action-btn" (click)="openAssignRiderModal(item, assignRiderModal)" ngbTooltip="Assign Rider">
+                    <iconify-icon icon="solar:scooter-linear" class="fs-15 text-primary"></iconify-icon>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <iconify-icon icon="solar:bag-3-linear" class="fs-36 text-muted mb-2"></iconify-icon>
+              <h6 class="text-dark font-jost fs-14 fw-bold">No orders match current criteria</h6>
+              <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing status and store filters.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Footer -->
+  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="d-flex align-items-center gap-2 text-muted fs-12">
+      <span>Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredOrders.length }}</strong> orders</span>
+      <select [(ngModel)]="pageSize" class="form-select form-select-sm shadow-none" style="width: auto;">
+        <option [ngValue]="10">10 / page</option>
+        <option [ngValue]="25">25 / page</option>
+        <option [ngValue]="50">50 / page</option>
+      </select>
+    </div>
+    <ngb-pagination [collectionSize]="filteredOrders.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5" class="pagination-sm mb-0">
+    </ngb-pagination>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- ORDER DETAILS POPUP MODAL                                                 -->
+<!-- ========================================================================= -->
+<ng-template #orderDetailsModal let-modal>
+  @if(selectedOrder){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+        Order #{{selectedOrder.id}} Details
+      </h5>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-light-subtle">
+      <!-- Customer & Delivery Summary Card -->
+      <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none">
+        <div class="d-flex justify-content-between align-items-center pb-2 mb-2.5 border-bottom">
+          <span class="fw-bold text-dark fs-12 font-jost text-uppercase" style="letter-spacing: 0.5px;">Customer &amp; Delivery Summary</span>
+          <span class="text-muted font-monospace fs-11">Ref: {{selectedOrder.uniqueCode}}</span>
+        </div>
+
+        <div class="row g-3">
+          <!-- Customer Info -->
+          <div class="col-md-4 col-sm-6">
+            <small class="text-muted d-block fs-11 text-uppercase fw-semibold mb-1">Customer</small>
+            <div class="d-flex align-items-center gap-1.5 flex-wrap mb-1">
+              <span class="fw-bold text-dark fs-13">{{selectedOrder.customer.name}}</span>
+              @if(selectedOrder.customer.isRepeatCustomer || selectedOrder.customer.totalOrders > 1){
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10 fw-semibold">
+                  Repeat ({{selectedOrder.customer.totalOrders}})
+                </span>
+              } @else {
+                <span class="badge bg-light text-muted border fs-10">New</span>
+              }
+            </div>
+            <a [href]="'tel:' + selectedOrder.customer.phone" class="text-primary fw-medium fs-12 d-block text-decoration-none">
+              {{selectedOrder.customer.phone}}
+            </a>
+            <small class="text-muted font-monospace fs-10">{{selectedOrder.customer.email}}</small>
+          </div>
+
+          <!-- Delivery Address -->
+          <div class="col-md-3 col-sm-6">
+            <small class="text-muted d-block fs-11 text-uppercase fw-semibold mb-1">Delivery Address</small>
+            <p class="text-dark fs-12 mb-1.5">{{selectedOrder.customer.deliveryAddress}}</p>
+            <a href="https://maps.google.com/?q={{selectedOrder.customer.locationCoordinates?.lat}},{{selectedOrder.customer.locationCoordinates?.lng}}" 
+               target="_blank" 
+               class="btn btn-xs btn-outline-primary py-0 px-2 fw-semibold d-inline-flex align-items-center gap-1 fs-10">
+              <iconify-icon icon="solar:map-point-bold"></iconify-icon>
+              <span>View Map</span>
+            </a>
+          </div>
+
+          <!-- Branch & Payment -->
+          <div class="col-md-3 col-sm-6">
+            <small class="text-muted d-block fs-11 text-uppercase fw-semibold mb-1">Branch &amp; Payment</small>
+            <p class="fw-bold text-dark mb-1 fs-12">{{selectedOrder.branch}}</p>
+            <div class="d-flex align-items-center gap-1">
+              <span class="badge bg-light text-dark border fs-10">{{selectedOrder.paymentType}}</span>
+              <span class="badge bg-info-subtle text-info border fs-10">{{selectedOrder.deliveryTimeType}}</span>
+            </div>
+          </div>
+
+          <!-- Total Amount -->
+          <div class="col-md-2 col-sm-6 text-md-end">
+            <small class="text-muted d-block fs-11 text-uppercase fw-semibold mb-1">Net Amount</small>
+            <h5 class="fw-bold text-primary mb-0 font-jost" style="color: #2e3192 !important;">Rs {{selectedOrder.totalAmount | number:'1.2-2'}}</h5>
+            <small class="text-muted fs-11">{{selectedOrder.items.length}} items</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dedicated Rider Card -->
+      @if(selectedOrder.assignedRider){
+        <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none" style="border-left: 3px solid #198754 !important;">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="cat-metric-icon bg-success-subtle text-success flex-shrink-0" style="width: 38px; height: 38px; font-size: 16px; border-radius: 8px;">
+                {{selectedOrder.assignedRider.name.charAt(0)}}
+              </div>
+              <div>
+                <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                  <h6 class="fw-bold text-dark mb-0 fs-13 font-jost">{{selectedOrder.assignedRider.name}}</h6>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle fs-10">Fleet Rider</span>
+                  <span class="badge bg-light text-dark border fs-10">⭐ {{selectedOrder.assignedRider.rating}}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2.5 mt-0.5 text-muted fs-11 flex-wrap">
+                  <span><iconify-icon icon="solar:scooter-bold" class="align-middle me-0.5 text-primary"></iconify-icon>{{selectedOrder.assignedRider.vehicleType}} ({{selectedOrder.assignedRider.vehicleRegNo}})</span>
+                  <span><iconify-icon icon="solar:clock-circle-bold" class="align-middle me-0.5 text-muted"></iconify-icon>{{selectedOrder.assignedRider.assignedAt}}</span>
+                  <a [href]="'tel:' + selectedOrder.assignedRider.phone" class="text-primary text-decoration-none fw-medium">
+                    {{selectedOrder.assignedRider.phone}}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+              <a [href]="getWhatsAppRiderDispatchUrl(selectedOrder)" target="_blank" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-11">
+                <iconify-icon icon="solar:chat-round-dots-bold" class="fs-13"></iconify-icon>
+                <span>WhatsApp Notice</span>
+              </a>
+              <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-outline-secondary py-1 px-2 fs-11">
+                Change
+              </button>
+              <button type="button" (click)="unassignRider(selectedOrder)" class="btn btn-sm btn-outline-danger py-1 px-2 fs-11" title="Unassign Rider">
+                Unassign
+              </button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="card border rounded-3 p-2.5 mb-3 bg-white shadow-none" style="border-left: 3px solid #f59e0b !important;">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <iconify-icon icon="solar:danger-circle-bold" class="fs-18 text-warning"></iconify-icon>
+              <div>
+                <h6 class="fw-bold text-dark mb-0 fs-12">No Rider Assigned Yet</h6>
+                <small class="text-muted fs-11">Assign an online branch rider to dispatch items to the customer.</small>
+              </div>
+            </div>
+            <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-primary py-1 px-2.5 fs-11 fw-semibold d-inline-flex align-items-center gap-1"
+                    style="background: #2e3192; border-color: #2e3192;">
+              <iconify-icon icon="solar:scooter-bold" class="fs-13"></iconify-icon>
+              <span>Assign Available Rider</span>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Ordered Items Table -->
+      <div class="card border rounded-3 bg-white shadow-none overflow-hidden">
+        <div class="p-2.5 px-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+          <h6 class="mb-0 fw-bold text-dark fs-12 font-jost">
+            Ordered Products ({{selectedOrder.items.length}})
+          </h6>
+          <span class="text-muted fs-11">PKR</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-clean align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3" style="width: 50%;">Item</th>
+                <th class="text-end" style="width: 18%;">Unit Price</th>
+                <th class="text-center" style="width: 14%;">Qty</th>
+                <th class="text-end pe-3" style="width: 18%;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(item of selectedOrder.items; track item.itemId){
+                <tr>
+                  <td class="ps-3">
+                    <div class="d-flex align-items-center gap-2.5">
+                      <div class="rounded bg-light border p-0.5 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; overflow: hidden;">
+                        <img [src]="item.image" [alt]="item.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                      </div>
+                      <div>
+                        <p class="text-dark fw-bold mb-0 fs-12">{{item.name}}</p>
+                        <small class="text-muted font-monospace fs-10">SKU: {{item.sku}}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end font-monospace text-muted fs-12">
+                    Rs {{item.finalPrice | number:'1.2-2'}}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-light text-dark border px-2 py-0.5 fs-11 fw-bold">
+                      {{item.orderedQty}}
+                    </span>
+                  </td>
+                  <td class="text-end pe-3 font-monospace fw-bold text-dark fs-12">
+                    Rs {{item.totalPrice | number:'1.2-2'}}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="p-3 bg-light bg-opacity-50 border-top">
+          <div class="d-flex justify-content-end">
+            <div style="min-width: 240px;">
+              <div class="d-flex justify-content-between text-muted fs-11 mb-1">
+                <span>Items Subtotal:</span>
+                <span class="font-monospace text-dark">Rs {{selectedOrder.subtotal | number:'1.2-2'}}</span>
+              </div>
+              <div class="d-flex justify-content-between text-muted fs-11 mb-1">
+                <span>Delivery Fee:</span>
+                <span class="font-monospace text-dark">Rs {{selectedOrder.deliveryFee | number:'1.2-2'}}</span>
+              </div>
+              @if(selectedOrder.packagingFee > 0){
+                <div class="d-flex justify-content-between text-muted fs-11 mb-1">
+                  <span>Packaging Fee:</span>
+                  <span class="font-monospace text-dark">Rs {{selectedOrder.packagingFee | number:'1.2-2'}}</span>
+                </div>
+              }
+              <hr class="my-1.5">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <span class="fw-bold text-dark fs-13">Net Total:</span>
+                <h5 class="fw-bold text-primary mb-0 font-jost" style="color: #2e3192 !important;">Rs {{selectedOrder.totalAmount | number:'1.2-2'}}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-1.5">
+        <small class="text-muted fw-semibold fs-11 me-1">Update Status:</small>
+
+        @if(selectedOrder.status === 'Pending'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Accepted')" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" style="background: #2e3192; border-color: #2e3192;">
+            <iconify-icon icon="solar:check-circle-bold" class="fs-15 align-middle me-1"></iconify-icon>
+            Accept Order
+          </button>
+        }
+
+        @if(selectedOrder.status === 'Accepted'){
+          <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" style="background: #2e3192; border-color: #2e3192;">
+            <iconify-icon icon="solar:scooter-bold" class="fs-15 align-middle me-1"></iconify-icon>
+            Dispatch with Rider
+          </button>
+        }
+
+        @if(selectedOrder.status === 'Dispatch'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Delivered')" class="btn btn-sm btn-success fs-12 cursor-pointer px-3">
+            <iconify-icon icon="solar:check-circle-bold" class="fs-15 align-middle me-1"></iconify-icon>
+            Mark Delivered
+          </button>
+        }
+
+        @if(selectedOrder.status !== 'Delivered' && selectedOrder.status !== 'Rejected'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Rejected')" class="btn btn-sm btn-outline-danger fs-12 cursor-pointer px-2.5">
+            Reject
+          </button>
+        }
+      </div>
+
+      <div>
+        <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">Close</button>
+      </div>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- ASSIGN RIDER MODAL                                                        -->
+<!-- ========================================================================= -->
+<ng-template #assignRiderModal let-modal>
+  @if(targetOrderForAssignment){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+        Assign Branch Rider
+      </h5>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-light-subtle">
+      <!-- Order Brief -->
+      <div class="card border rounded-3 p-2.5 mb-3 bg-white shadow-none">
+        <div class="row g-2 align-items-center text-muted fs-11">
+          <div class="col-sm-5">
+            <span class="text-uppercase fs-10 fw-bold text-muted d-block">Delivery Address</span>
+            <span class="text-dark fw-medium text-truncate d-block" [title]="targetOrderForAssignment.customer.deliveryAddress">
+              {{targetOrderForAssignment.customer.deliveryAddress}}
+            </span>
+          </div>
+          <div class="col-sm-3">
+            <span class="text-uppercase fs-10 fw-bold text-muted d-block">Payment &amp; Amount</span>
+            <span class="text-dark fw-bold font-monospace">Rs {{targetOrderForAssignment.totalAmount | number:'1.2-2'}} ({{targetOrderForAssignment.paymentType}})</span>
+          </div>
+          <div class="col-sm-4 text-sm-end">
+            <span class="badge bg-info-subtle text-info border fs-10 me-1">{{targetOrderForAssignment.deliveryTimeType}}</span>
+            <span class="badge fs-10" [ngClass]="getStatusBadgeClass(targetOrderForAssignment.status)">{{targetOrderForAssignment.status}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter & Search Controls -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div class="filter-segmented-control">
+          <button type="button" class="segment-btn" 
+                  [class.active]="riderFilterTab === 'available'"
+                  (click)="riderFilterTab = 'available'">
+            <span>Online &amp; Available</span>
+            <span class="count-pill">{{getRiderCounts(targetOrderForAssignment).available}}</span>
+          </button>
+          <button type="button" class="segment-btn" 
+                  [class.active]="riderFilterTab === 'all'"
+                  (click)="riderFilterTab = 'all'">
+            <span>All Fleet</span>
+            <span class="count-pill">{{getRiderCounts(targetOrderForAssignment).all}}</span>
+          </button>
+        </div>
+
+        <div class="search-box-wrapper" style="min-width: 200px;">
+          <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+          <input type="text" [(ngModel)]="riderSearchTerm" class="form-control search-input shadow-none" placeholder="Search rider name or reg#...">
+        </div>
+      </div>
+
+      <!-- Riders List -->
+      <div class="d-flex flex-column gap-2" style="max-height: 380px; overflow-y: auto;">
+        @for(rider of getFilteredBranchRiders(targetOrderForAssignment); track rider.id){
+          <div class="card border rounded-3 p-2.5 transition-all bg-white shadow-none"
+               [ngClass]="{'border-success-subtle': rider.status === 'Active', 'opacity-75 bg-light': rider.status !== 'Active'}">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <!-- Rider Info -->
+              <div class="d-flex align-items-center gap-2.5">
+                <div class="position-relative">
+                  <div class="cat-metric-icon d-flex align-items-center justify-content-center fw-bold fs-14 border"
+                       [ngClass]="rider.status === 'Active' ? 'bg-success-subtle text-success border-success-subtle' : 'bg-light text-muted'"
+                       style="width: 40px; height: 40px; border-radius: 8px;">
+                    {{rider.name.charAt(0)}}
+                  </div>
+                  <span class="position-absolute bottom-0 end-0 p-1 border border-white rounded-circle"
+                        [ngClass]="rider.status === 'Active' ? 'bg-success' : (rider.status === 'On Delivery' ? 'bg-warning' : 'bg-secondary')"
+                        style="width: 10px; height: 10px;"
+                        [title]="rider.status"></span>
+                </div>
+
+                <div>
+                  <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                    <h6 class="fw-bold text-dark mb-0 fs-13 font-jost">{{rider.name}}</h6>
+                    <span class="badge fs-10" [ngClass]="rider.status === 'Active' ? 'bg-success-subtle text-success' : (rider.status === 'On Delivery' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary')">
+                      {{rider.status === 'Active' ? 'Available' : rider.status }}
+                    </span>
+                    <span class="badge bg-light text-dark border fs-10">⭐ {{rider.riderDetails?.rating || 4.9}}</span>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2.5 mt-0.5 text-muted fs-11 flex-wrap">
+                    <span>{{rider.id}}</span>
+                    <span>🛵 {{rider.riderDetails?.vehicleType || 'Motorbike'}} &bull; <strong class="text-dark font-monospace">{{rider.riderDetails?.vehicleRegNo}}</strong></span>
+                    <span>{{rider.riderDetails?.totalDeliveries || 0}} drop-offs</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action -->
+              <div>
+                @if(rider.status === 'Active'){
+                  <button type="button" 
+                          (click)="assignRider(targetOrderForAssignment, rider, modal)"
+                          class="btn btn-sm btn-primary py-1 px-3 fw-semibold shadow-sm"
+                          style="background: #2e3192; border-color: #2e3192;">
+                    <span>Assign &amp; Dispatch</span>
+                  </button>
+                } @else {
+                  <button type="button" class="btn btn-sm btn-light border py-1 px-2.5 text-muted fs-11" disabled>Unavailable</button>
+                }
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="text-center py-4 text-muted bg-white rounded border">
+            <iconify-icon icon="solar:scooter-broken" class="fs-32 text-muted opacity-50 mb-1"></iconify-icon>
+            <p class="fs-12 fw-semibold text-dark mb-0.5">No Riders Match Criteria</p>
+            <p class="fs-11 text-muted mb-2">Switch tab to "All Fleet" or clear search filter.</p>
+            <button type="button" class="btn btn-sm btn-outline-primary py-0.5 px-2 fs-11" (click)="riderFilterTab = 'all'; riderSearchTerm = ''">Show All Riders</button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-end">
+      <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">Cancel</button>
+    </div>
+  }
+</ng-template>
