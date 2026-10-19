@@ -1,3 +1,4 @@
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +13,7 @@ import { ReferralConfig, MOCK_REFERRAL_CONFIG } from '../data';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MarketingReferrals implements OnInit {
+  title = 'Customer Referral & Loyalty Rewards';
   config: ReferralConfig = MOCK_REFERRAL_CONFIG;
   actionFeedback: string | null = null;
 
@@ -20,7 +22,7 @@ export class MarketingReferrals implements OnInit {
   ngOnInit(): void {}
 
   saveRules() {
-    this.showNotification('Referral & Reward rules updated successfully!');
+    void showSaveSuccess('Referral & Reward rules updated successfully!');
   }
 
   toggleProgram() {

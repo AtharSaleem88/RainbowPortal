@@ -1,3 +1,5 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -382,6 +384,7 @@ import { BRANDS, Brand, MASTER_CATEGORIES, SUB_CATEGORIES, MasterCategory, SubCa
   `]
 })
 export class BrandList implements OnInit {
+  title = 'Supermarket Brands & Labels';
   private modalService = inject(NgbModal);
 
   brands: Brand[] = BRANDS;
@@ -556,8 +559,8 @@ export class BrandList implements OnInit {
     this.triggerToast(`"${b.name}" status updated to ${b.status}`);
   }
 
-  deleteBrand(brand: Brand): void {
-    if (confirm(`Are you sure you want to delete brand "${brand.name}"?`)) {
+  async deleteBrand(brand: Brand): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete brand "${brand.name}"?`)) {
       this.brands = this.brands.filter(b => b.id !== brand.id);
       this.triggerToast(`"${brand.name}" deleted successfully`);
     }
@@ -624,7 +627,7 @@ export class BrandList implements OnInit {
 
   saveBrand(modal: any) {
     if (!this.newBrand.name) {
-      alert('Please enter a brand name.');
+      void showSaveValidation('Please enter a brand name.');
       return;
     }
     const cat = this.masterCategories.find(c => c.id === this.modalSelectedCategoryId);
@@ -655,7 +658,7 @@ export class BrandList implements OnInit {
           description: this.newBrand.description || this.brands[idx].description,
           status: this.newBrand.status || this.brands[idx].status,
         };
-        this.triggerToast(`"${this.newBrand.name}" updated successfully`);
+        void showSaveSuccess(`"${this.newBrand.name}" updated successfully`);
       }
     } else {
       const newEntry: Brand = {
@@ -675,7 +678,7 @@ export class BrandList implements OnInit {
         description: this.newBrand.description || 'Verified manufacturer partner for Rainbow Superstores.'
       };
       this.brands.unshift(newEntry);
-      this.triggerToast(`"${newEntry.name}" added successfully`);
+      void showSaveSuccess(`"${newEntry.name}" added successfully`);
     }
 
     modal.close();

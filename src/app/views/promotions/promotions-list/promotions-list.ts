@@ -1,3 +1,5 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -299,6 +301,39 @@ import { MASTER_CATEGORIES, SUB_CATEGORIES, SUB_SUB_CATEGORIES, BRANDS, MasterCa
       }
     }
 
+    .promotion-scope {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      .btn { min-height: 44px; white-space: normal; }
+    }
+
+    .promotion-form {
+      .form-control-sleek { min-height: 44px; }
+      .form-label { line-height: 1.5; }
+      .input-group-text { min-height: 44px; }
+      .badge { white-space: normal; line-height: 1.4; text-align: left; }
+    }
+
+    .promotion-product-preview {
+      height: 44px;
+      padding: 5px 8px;
+      line-height: 1.3;
+      > div:last-child { min-width: 0; }
+    }
+
+    .promotion-price-result {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 8px;
+    }
+
+    @media (max-width: 575.98px) {
+      .promotion-scope { grid-template-columns: minmax(0, 1fr); }
+    }
+
     /* Branch Checkbox Card */
     .branch-card-select {
       border: 1px solid #e2e8f0;
@@ -315,7 +350,7 @@ import { MASTER_CATEGORIES, SUB_CATEGORIES, SUB_SUB_CATEGORIES, BRANDS, MasterCa
   `]
 })
 export class PromotionsList implements OnInit {
-  title = 'Product Promotions Management';
+  title = 'Product Promotions & Discount Deals';
   promotions: ProductPromotion[] = RAINBOW_PROMOTIONS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
   availableProducts: ProductType[] = ProductList;
@@ -845,7 +880,7 @@ export class PromotionsList implements OnInit {
 
   savePromotion() {
     if (!this.formPromo.title?.trim()) {
-      alert('Please enter a promotion title.');
+      void showSaveValidation('Please enter a promotion title.');
       return;
     }
 
@@ -859,7 +894,7 @@ export class PromotionsList implements OnInit {
     } else {
       targetedIds = this.branches.filter(b => this.selectedBranchMap[b.id]).map(b => b.id);
       if (targetedIds.length === 0) {
-        alert('Please select at least one branch for this promotion.');
+        void showSaveValidation('Please select at least one branch for this promotion.');
         return;
       }
       if (targetedIds.length === this.branches.length) {
@@ -884,7 +919,7 @@ export class PromotionsList implements OnInit {
           targetBranchIds: targetedIds,
           targetBranchNames: targetedNames,
         } as ProductPromotion;
-        this.showNotification(`Promotion "${this.formPromo.title}" updated successfully.`);
+        void showSaveSuccess(`Promotion "${this.formPromo.title}" updated successfully.`);
       }
     } else {
       const newPromo: ProductPromotion = {
@@ -915,7 +950,7 @@ export class PromotionsList implements OnInit {
         createdAt: new Date().toLocaleDateString(),
       };
       this.promotions.unshift(newPromo);
-      this.showNotification(`Promotion "${newPromo.title}" created successfully.`);
+      void showSaveSuccess(`Promotion "${newPromo.title}" created successfully.`);
     }
 
     if (this.activePromoModalRef) {
@@ -933,8 +968,8 @@ export class PromotionsList implements OnInit {
     }
   }
 
-  deletePromotion(p: ProductPromotion) {
-    if (confirm(`Are you sure you want to delete promotion "${p.title}"?`)) {
+  async deletePromotion(p: ProductPromotion): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete promotion "${p.title}"?`)) {
       this.promotions = this.promotions.filter(item => item.id !== p.id);
       this.showNotification(`Promotion "${p.title}" deleted.`);
     }

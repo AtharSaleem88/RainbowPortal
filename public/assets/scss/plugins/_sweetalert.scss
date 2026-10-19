@@ -43,8 +43,7 @@
 // Container
 .swal2-container {
 	&.swal2-shown {
-		background-color: var(--#{$prefix}tertiary-color);
-		opacity: 0.5;
+		background-color: rgba(15, 23, 42, 0.45);
 	}
 
 	// Content

@@ -1,7 +1,9 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, MasterCategory } from '../data';
 
 @Component({
@@ -11,6 +13,10 @@ import { MASTER_CATEGORIES, MasterCategory } from '../data';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './category-edit.html',
   styles: [`
+    .modal-body {
+      max-height: calc(100dvh - 160px);
+      overflow-y: auto;
+    }
     .cat-form-card {
       background: #ffffff;
       border: 1px solid #eaedf1;
@@ -32,9 +38,19 @@ import { MASTER_CATEGORIES, MasterCategory } from '../data';
   `]
 })
 export class CategoryEdit implements OnInit {
-  title = 'Category Edit';
+  title = 'Edit Master Category';
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  activeModal = inject(NgbActiveModal, { optional: true });
+  saving = false;
+
+  cancel(): void {
+    if (this.activeModal) {
+      this.activeModal.dismiss();
+    } else {
+      void this.router.navigate(['/category/list']);
+    }
+  }
 
   category: MasterCategory = {
     id: 'CAT-02',
@@ -51,6 +67,7 @@ export class CategoryEdit implements OnInit {
   };
 
   ngOnInit(): void {
+    if (this.activeModal) return;
     this.route.queryParams.subscribe(params => {
       const catId = params['id'];
       if (catId) {
@@ -62,17 +79,29 @@ export class CategoryEdit implements OnInit {
     });
   }
 
-  saveCategory(): void {
-    if (!this.category.name) {
-      alert('Please fill in Category Title.');
+  async saveCategory(): Promise<void> {
+    if (this.saving) return;
+    if (!this.category.name?.trim()) {
+      void showSaveValidation('Please fill in Category Title.');
       return;
     }
 
     const index = MASTER_CATEGORIES.findIndex(c => c.id === this.category.id);
-    if (index !== -1) {
-      MASTER_CATEGORIES[index] = { ...this.category };
+    if (index === -1) {
+      void showSaveValidation('This category could not be found. Please reopen it from the category list.');
+      return;
+    }
+    this.saving = true;
+    const updatedCategory = { ...this.category, name: this.category.name.trim() };
+    MASTER_CATEGORIES[index] = updatedCategory;
+
+    if (this.activeModal) {
+      this.activeModal.close(updatedCategory);
+      await showSaveSuccess('Master category saved successfully.');
+      return;
     }
 
+    await showSaveSuccess('Master category saved successfully.');
     this.router.navigate(['/category/list']);
   }
 }

@@ -1,10 +1,13 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { confirmAction } from '@/app/helper/confirmation';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterModule } from '@angular/router';
-import { NgbDropdownModule, NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, SUB_CATEGORIES, MasterCategory, SubCategory } from '../data';
 import { Categories } from './components/categories/categories';
+import { CategoryAdd } from '../category-add/category-add';
+import { CategoryEdit } from '../category-edit/category-edit';
 
 @Component({
   selector: 'app-category-list',
@@ -311,6 +314,36 @@ import { Categories } from './components/categories/categories';
 })
 export class CategoryList implements OnInit {
   title = 'MASTER CATEGORIES';
+  private modalService = inject(NgbModal);
+
+  openEditCategory(category: MasterCategory): void {
+    const modal = this.modalService.open(CategoryEdit, {
+      size: 'lg',
+      centered: true,
+      scrollable: true,
+      backdrop: 'static',
+      ariaLabelledBy: 'edit-master-category-title',
+    });
+    modal.componentInstance.category = { ...category };
+    modal.result.then((updated: MasterCategory) => {
+      this.allCategories = this.allCategories.map(item => item.id === updated.id ? updated : item);
+    }, () => {});
+  }
+
+  openAddCategory(): void {
+    const modal = this.modalService.open(CategoryAdd, {
+      size: 'lg',
+      centered: true,
+      scrollable: true,
+      backdrop: 'static',
+      ariaLabelledBy: 'add-master-category-title',
+    });
+    modal.result.then((category: MasterCategory) => {
+      if (!this.allCategories.includes(category)) {
+        this.allCategories = [category, ...this.allCategories];
+      }
+    }, () => {});
+  }
 
   allCategories: MasterCategory[] = MASTER_CATEGORIES;
   allSubCategories: SubCategory[] = SUB_CATEGORIES;
@@ -523,8 +556,8 @@ export class CategoryList implements OnInit {
     event.target.style.display = 'none';
   }
 
-  deleteCategory(cat: MasterCategory): void {
-    if (confirm(`Are you sure you want to delete master category "${cat.name}"?`)) {
+  async deleteCategory(cat: MasterCategory): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete master category "${cat.name}"?`)) {
       this.allCategories = this.allCategories.filter(c => c.id !== cat.id);
       this.triggerToast(`"${cat.name}" removed from master categories`, 'warning');
     }

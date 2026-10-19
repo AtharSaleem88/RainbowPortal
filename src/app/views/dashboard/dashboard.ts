@@ -93,14 +93,16 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
     .kpi-card, .kpi-card-link {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
       text-decoration: none;
       color: inherit;
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 14px;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.02);
-      min-height: 172px;
+      min-height: 188px;
+      padding: 16px;
+      gap: 12px;
       transition: all 0.2s ease-in-out;
 
       &:hover {
@@ -110,9 +112,44 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
       }
     }
 
+    .kpi-heading {
+      gap: 12px;
+      min-height: 34px;
+
+      > span { font-size: 11px !important; line-height: 1.5; }
+    }
+
+    .kpi-value {
+      min-height: 48px;
+      align-content: center;
+      row-gap: 8px !important;
+
+      h2 {
+        font-size: clamp(22px, 1.6vw, 26px) !important;
+        line-height: 1.2;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .badge { white-space: nowrap; }
+    }
+
+    .kpi-footer {
+      margin-top: auto;
+      padding-top: 10px;
+      min-height: 40px;
+      gap: 12px;
+      font-size: 11px !important;
+      line-height: 1.5;
+
+      > :first-child { min-width: 0; flex: 1 1 auto; }
+      > :last-child { flex-shrink: 0; max-width: 60%; }
+      > .d-inline-flex { white-space: nowrap; }
+    }
+
     .stat-icon {
-      width: 44px;
-      height: 44px;
+      width: 34px;
+      height: 34px;
       border-radius: 10px;
       display: flex;
       align-items: center;

@@ -1,3 +1,5 @@
+import { confirmAction } from '@/app/helper/confirmation';
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -295,6 +297,7 @@ import { RouterLink } from '@angular/router';
   `]
 })
 export class List implements OnInit {
+  title = 'Product Catalog & Inventory';
   private modalService = inject(NgbModal);
 
   products: ProductType[] = ProductList;
@@ -533,16 +536,22 @@ export class List implements OnInit {
     }
   }
 
-  deleteProduct(product: ProductType): void {
-    if (confirm(`Are you sure you want to delete "${product.name}" (${product.sku}) from the catalog?`)) {
+  saveBranchStock(modal: { close: () => void }): void {
+    this.recalculateTotalStock();
+    modal.close();
+    void showSaveSuccess('Branch stock and availability changes saved successfully.');
+  }
+
+  async deleteProduct(product: ProductType): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete "${product.name}" (${product.sku}) from the catalog?`)) {
       this.products = this.products.filter(p => p.id !== product.id);
       this.selectedIds.delete(product.id);
       this.triggerToast(`"${product.name}" removed from catalog`, 'warning');
     }
   }
 
-  bulkDelete(): void {
-    if (confirm(`Are you sure you want to delete ${this.selectedCount} selected product(s)?`)) {
+  async bulkDelete(): Promise<void> {
+    if (await confirmAction(`Are you sure you want to delete ${this.selectedCount} selected product(s)?`)) {
       this.products = this.products.filter(p => !this.selectedIds.has(p.id));
       this.triggerToast(`${this.selectedCount} products deleted successfully`, 'warning');
       this.clearSelection();

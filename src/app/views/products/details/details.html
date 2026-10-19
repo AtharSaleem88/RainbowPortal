@@ -1,15 +1,7 @@
-<!-- Breadcrumbs -->
+<!-- Product Actions -->
 <div class="row mb-3">
   <div class="col-12">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 px-3 bg-white rounded-3 border">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0 fs-13">
-          <li class="breadcrumb-item"><a routerLink="/index" class="text-primary text-decoration-none fw-medium">Home</a></li>
-          <li class="breadcrumb-item"><a routerLink="/product/list" class="text-primary text-decoration-none fw-medium">Products</a></li>
-          <li class="breadcrumb-item"><a [routerLink]="['/category/sub-category']" class="text-primary text-decoration-none fw-medium">Frozen Food</a></li>
-          <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Chicken Shashlik</li>
-        </ol>
-      </nav>
+    <div class="d-flex align-items-center justify-content-end flex-wrap gap-2 py-2 px-3 bg-white rounded-3 border">
       <div class="d-flex align-items-center gap-2">
         <span class="badge bg-success-subtle text-success fs-12">&#x2713; Lower than Imtiaz Guaranteed</span>
         <a [routerLink]="['/product/manage']" [queryParams]="{ id: 'PRD-RW-001' }" class="btn btn-sm btn-primary d-flex align-items-center gap-1">

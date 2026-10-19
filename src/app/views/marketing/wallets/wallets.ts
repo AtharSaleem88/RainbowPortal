@@ -1,3 +1,4 @@
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -306,6 +307,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   `]
 })
 export class CustomerWallets implements OnInit {
+  title = 'Customer Wallets Hub';
   config: WalletSystemConfig = MOCK_WALLET_CONFIG;
   wallets: CustomerWalletAccount[] = MOCK_CUSTOMER_WALLETS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
@@ -420,7 +422,7 @@ export class CustomerWallets implements OnInit {
   }
 
   saveConfig() {
-    this.showNotification('Rainbow Wallet policies and balance limits saved successfully.');
+    void showSaveSuccess('Rainbow Wallet policies and balance limits saved successfully.');
   }
 
   toggleWalletFreeze(wallet: CustomerWalletAccount) {

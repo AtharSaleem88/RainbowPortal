@@ -1,3 +1,4 @@
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -221,6 +222,72 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
       }
     }
 
+    .campaign-table {
+      table-layout: fixed;
+      min-width: 1040px;
+
+      th {
+        padding: 14px 18px;
+        white-space: nowrap;
+        font-size: 10px;
+      }
+
+      th:nth-child(1) { width: 32%; }
+      th:nth-child(2) { width: 21%; }
+      th:nth-child(3) { width: 17%; }
+      th:nth-child(4) { width: 10%; }
+      th:nth-child(5) { width: 10%; }
+      th:nth-child(6) { width: 10%; }
+
+      td {
+        padding: 18px;
+        line-height: 1.5;
+      }
+
+      .text-dark { color: #334155 !important; }
+      .campaign-title { color: #0f172a !important; }
+
+      .campaign-title,
+      .campaign-message {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        min-height: 25px;
+        max-width: 100%;
+        white-space: normal;
+        text-align: left;
+        line-height: 1.3;
+        font-weight: 600;
+
+        iconify-icon { flex-shrink: 0; }
+      }
+
+      td:nth-child(3) > div,
+      td:nth-child(4) > div {
+        white-space: nowrap;
+      }
+
+      .cat-action-btn {
+        flex: 0 0 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    :host-context(html[data-bs-theme="dark"]) .campaign-table {
+      .text-dark { color: #dde4f0 !important; }
+      .campaign-title { color: #f0f4ff !important; }
+    }
+
     /* Action Buttons */
     .cat-action-btn {
       width: 30px;
@@ -298,9 +365,23 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
     }
 
     /* Emoji Chip */
+    .emoji-toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
     .emoji-chip {
-      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
       font-size: 14px;
+      line-height: 1;
       border-radius: 6px;
       border: 1px solid #e2e8f0;
       background: #ffffff;
@@ -352,6 +433,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   `]
 })
 export class PushNotifications implements OnInit {
+  title = 'Push Notifications Hub';
   notifications: PushNotificationCampaign[] = MOCK_PUSH_NOTIFICATIONS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
   customers: RainbowCustomer[] = RAINBOW_CUSTOMERS_LIST;
@@ -553,8 +635,8 @@ export class PushNotifications implements OnInit {
     this.currentPage = 1;
   }
 
-  cancelScheduledNotification(notif: PushNotificationCampaign) {
-    if (confirm(`Cancel scheduled notification "${notif.title}"?`)) {
+  async cancelScheduledNotification(notif: PushNotificationCampaign): Promise<void> {
+    if (await confirmAction(`Cancel scheduled notification "${notif.title}"?`, 'Cancel scheduled notification?', 'Yes, cancel dispatch')) {
       notif.status = 'Draft';
       this.showNotification(`Notification #${notif.id} moved to Drafts.`);
     }

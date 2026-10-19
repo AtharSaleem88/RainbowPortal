@@ -263,6 +263,79 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
       }
     }
 
+    .order-details-body {
+      line-height: 1.5;
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 7px;
+        line-height: 1.3;
+      }
+
+      .btn { white-space: nowrap; }
+    }
+
+    .order-items-table {
+      min-width: 640px;
+
+      td { padding-top: 14px; padding-bottom: 14px; }
+      td:not(:first-child) { white-space: nowrap; }
+    }
+
+    .order-totals {
+      width: 300px;
+      max-width: 100%;
+      > div { gap: 20px; }
+    }
+
+    .order-details-footer {
+      justify-content: space-between !important;
+      .btn { white-space: nowrap; }
+    }
+
+    @media (max-width: 991.98px) {
+      .order-rider-row { grid-template-columns: minmax(0, 1fr) !important; }
+    }
+
+    .rider-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .rider-card { flex-shrink: 0; }
+
+    .rider-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .rider-info {
+      min-width: 0;
+      > div:last-child { min-width: 0; }
+      h6 { line-height: 1.5; }
+    }
+
+    .rider-dispatch { white-space: nowrap; }
+
+    .rider-search {
+      flex: 1 1 240px;
+      min-width: 220px;
+      max-width: 300px;
+    }
+
+    @media (max-width: 575.98px) {
+      .rider-row { grid-template-columns: minmax(0, 1fr); }
+      .rider-dispatch { width: 100%; }
+      .rider-search { max-width: none; min-width: 0; }
+    }
+
     /* Modal Button Styles */
     .btn-modal-cancel {
       padding: 7px 15px;
@@ -302,7 +375,7 @@ import { AuthenticationService } from '@/app/core/services/auth.service';
   `]
 })
 export class OrdersList implements OnInit {
-  title = 'Rainbow Order Management & Dispatch';
+  title = 'Customer Orders & Dispatch Console';
   orders: RainbowOrder[] = RAINBOW_ORDERS;
 
   authService = inject(AuthenticationService);

@@ -1,3 +1,4 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -499,13 +500,13 @@ export class ManageProduct implements OnInit {
     img.src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80';
   }
 
-  saveProduct() {
+  async saveProduct(): Promise<void> {
     if (!this.product.name.trim()) {
-      alert('Please enter a Product Name.');
+      void showSaveValidation('Please enter a Product Name.');
       return;
     }
     if (!this.product.sellingPrice || this.product.sellingPrice <= 0) {
-      alert('Please enter a valid Selling Price.');
+      void showSaveValidation('Please enter a valid Selling Price.');
       return;
     }
 
@@ -529,6 +530,7 @@ export class ManageProduct implements OnInit {
       this.product.id = `PRD-RW-${Date.now().toString().slice(-4)}`;
       ProductList.unshift(JSON.parse(JSON.stringify(this.product)));
     }
+    await showSaveSuccess('Product saved successfully.');
     this.router.navigate(['/product/list']);
   }
 }

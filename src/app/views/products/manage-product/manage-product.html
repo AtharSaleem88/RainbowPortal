@@ -1,20 +1,7 @@
 <!-- ========================================================
      Executive Page Header & Actions
      ======================================================== -->
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <div>
-    <div class="d-flex align-items-center gap-2 mb-1">
-      <a routerLink="/product/list" class="text-primary text-decoration-none fs-12 fw-medium d-inline-flex align-items-center gap-1 cursor-pointer">
-        <iconify-icon icon="solar:arrow-left-linear" class="fs-14"></iconify-icon>
-        Back to Products
-      </a>
-      <span class="text-muted fs-12">&bull;</span>
-      <span class="badge bg-light text-muted border fs-11">{{ isEditMode ? 'Edit SKU Mode' : 'New Catalog SKU' }}</span>
-    </div>
-    <h4 class="fs-18 fw-bold text-dark mb-0 font-jost">{{ pageTitle }}</h4>
-    <p class="text-muted fs-12 mb-0">Configure SKU details, pricing, customer storefront labels, and competitor price-match</p>
-  </div>
-
+<div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-4">
   <div class="d-flex align-items-center gap-2">
     <a routerLink="/product/list" class="btn btn-sm btn-outline-secondary fs-12 px-3 cursor-pointer">
       Cancel

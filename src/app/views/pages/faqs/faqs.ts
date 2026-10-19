@@ -10,6 +10,6 @@ import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap'
   styles: ``,
 })
 export class Faqs {
-  title = 'FAQs';
+  title = 'Frequently Asked Questions';
   faqList = FaqData
 }

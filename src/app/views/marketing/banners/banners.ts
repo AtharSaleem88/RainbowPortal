@@ -1,3 +1,5 @@
+import { showSaveSuccess, showSaveValidation } from '@/app/helper/save-alert';
+import { confirmAction } from '@/app/helper/confirmation';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +16,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MarketingBanners implements OnInit {
+  title = 'App & Web Promotional Banners';
   banners: MarketingBanner[] = MOCK_MARKETING_BANNERS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
 
@@ -82,7 +85,7 @@ export class MarketingBanners implements OnInit {
 
   saveBanner(modal: any) {
     if (!this.newBanner.title?.trim()) {
-      alert('Please enter a banner title.');
+      void showSaveValidation('Please enter a banner title.');
       return;
     }
 
@@ -103,7 +106,7 @@ export class MarketingBanners implements OnInit {
     };
 
     this.banners.unshift(banner);
-    this.showNotification(`Promotional banner "${banner.title}" created successfully!`);
+    void showSaveSuccess(`Promotional banner "${banner.title}" created successfully!`);
     modal.close();
   }
 
@@ -112,8 +115,8 @@ export class MarketingBanners implements OnInit {
     this.showNotification(`Banner "${b.title}" is now ${b.status}.`);
   }
 
-  deleteBanner(b: MarketingBanner) {
-    if (confirm(`Delete banner "${b.title}"?`)) {
+  async deleteBanner(b: MarketingBanner): Promise<void> {
+    if (await confirmAction(`Delete banner "${b.title}"?`)) {
       this.banners = this.banners.filter(x => x.id !== b.id);
       this.showNotification(`Banner removed.`);
     }

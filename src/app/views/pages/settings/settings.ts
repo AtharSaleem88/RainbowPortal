@@ -1,3 +1,4 @@
+import { showSaveSuccess } from '@/app/helper/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -357,9 +358,9 @@ export class Settings implements OnInit {
         b.settings.asapOnly = this.currentBranch.settings.asapOnly;
         b.settings.preOrderOnly = this.currentBranch.settings.preOrderOnly;
       }
-      this.showNotification(`Settings saved for ${this.currentBranch.name} and delivery thresholds synced across all ${this.branches.length} branches.`);
+      void showSaveSuccess(`Settings saved for ${this.currentBranch.name} and delivery thresholds synced across all ${this.branches.length} branches.`);
     } else {
-      this.showNotification(`Branch parameters and timings saved successfully for ${this.currentBranch.name}.`);
+      void showSaveSuccess(`Branch parameters and timings saved successfully for ${this.currentBranch.name}.`);
     }
   }
 

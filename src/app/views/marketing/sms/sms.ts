@@ -15,6 +15,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MarketingSms implements OnInit {
+  title = 'Supermarket SMS Marketing Blast';
   campaigns: SmsCampaign[] = MOCK_SMS_CAMPAIGNS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
   customers: RainbowCustomer[] = RAINBOW_CUSTOMERS_LIST;
