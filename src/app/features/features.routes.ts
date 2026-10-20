@@ -1,21 +1,21 @@
 import { Route } from '@angular/router';
-import { Dashboard } from './dashboard/dashboard';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 export const FEATURES_ROUTES: Route[] = [
   {
     path: 'index',
-    component: Dashboard,
+    component: DashboardComponent,
     data: { title: 'Dashboard' },
   },
   {
     path: 'product',
     loadChildren: () =>
-      import('./products/product.route').then((mod) => mod.PRODUCT_ROUTES),
+      import('./products/products.routes').then((mod) => mod.PRODUCT_ROUTES),
   },
   {
     path: 'category',
     loadChildren: () =>
-      import('./category/category.route').then((mod) => mod.CATEGORY_ROUTES),
+      import('./category/category.routes').then((mod) => mod.CATEGORY_ROUTES),
   },
   {
     path: 'inventory',
@@ -25,42 +25,42 @@ export const FEATURES_ROUTES: Route[] = [
   {
     path: 'orders',
     loadChildren: () =>
-      import('./orders/orders.route').then((mod) => mod.ORDER_ROUTES),
+      import('./orders/orders.routes').then((mod) => mod.ORDER_ROUTES),
   },
   {
     path: 'attributes',
     loadChildren: () =>
-      import('./attributes/attributes.route').then((mod) => mod.ATTRIBUTES_ROUTES),
+      import('./attributes/attributes.routes').then((mod) => mod.ATTRIBUTES_ROUTES),
   },
   {
     path: 'role',
     loadChildren: () =>
-      import('./roles/role.route').then((mod) => mod.ROLE_ROUTES),
+      import('./roles/roles.routes').then((mod) => mod.ROLE_ROUTES),
   },
   {
     path: 'customer',
     loadChildren: () =>
-      import('./customer/customer.route').then((mod) => mod.CUSTOMERS_ROUTES),
+      import('./customer/customer.routes').then((mod) => mod.CUSTOMERS_ROUTES),
   },
   {
     path: 'promotions',
     loadChildren: () =>
-      import('./promotions/promotions.route').then((mod) => mod.PROMOTION_ROUTES),
+      import('./promotions/promotions.routes').then((mod) => mod.PROMOTION_ROUTES),
   },
   {
     path: 'coupons',
     loadChildren: () =>
-      import('./coupons/coupons.route').then((mod) => mod.COUPON_ROUTES),
+      import('./coupons/coupons.routes').then((mod) => mod.COUPON_ROUTES),
   },
   {
     path: 'marketing',
     loadChildren: () =>
-      import('./marketing/marketing.route').then((mod) => mod.MARKETING_ROUTES),
+      import('./marketing/marketing.routes').then((mod) => mod.MARKETING_ROUTES),
   },
   {
     path: 'charts',
     loadChildren: () =>
-      import('./charts/charts.route').then((mod) => mod.CHART_ROUTES),
+      import('./charts/charts.routes').then((mod) => mod.CHART_ROUTES),
   },
 ];
 
