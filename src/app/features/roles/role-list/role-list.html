@@ -1,0 +1,577 @@
+<!-- ========================================================
+     Executive Page Header & Hub Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
+  @if (isBranchLocked) {
+    <span class="badge bg-primary-subtle text-primary border border-primary-subtle"><iconify-icon icon="solar:lock-keyhole-bold" class="align-middle me-1"></iconify-icon>{{currentBranchDisplayName}}</span>
+  }
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <!-- Hub Navigation Segmented Control -->
+    <div class="filter-segmented-control">
+      <a routerLink="/role/list" class="segment-btn active text-decoration-none">
+        <iconify-icon icon="solar:user-id-bold" class="fs-14"></iconify-icon>
+        <span>Staff Management</span>
+      </a>
+      <a routerLink="/role/permissions" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:shield-keyhole-bold" class="fs-14"></iconify-icon>
+        <span>Roles &amp; Permissions</span>
+      </a>
+      
+    </div>
+
+    <!-- Actions -->
+    <button type="button" (click)="resetFilters()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Reload / Reset Filters">
+      <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+      <span>Reload</span>
+    </button>
+    <button type="button" (click)="exportToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Export CSV">
+      <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
+      <span>Export CSV</span>
+    </button>
+    <button type="button" (click)="openCreateModal(staffModal)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1 px-3 fs-12" style="background-color: #2e3192; border-color: #2e3192;">
+      <iconify-icon icon="solar:user-plus-bold" class="fs-14"></iconify-icon>
+      <span>+ Add Staff</span>
+    </button>
+  </div>
+</div>
+
+<!-- ========================================================
+     Operational Feedback Alert Banner
+     ======================================================== -->
+@if (actionFeedback) {
+  <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-3 border fs-12 shadow-sm alert-success border-success-subtle bg-success-subtle text-success">
+    <iconify-icon icon="solar:check-circle-bold" class="fs-16 flex-shrink-0"></iconify-icon>
+    <div class="flex-grow-1 fw-medium">{{ actionFeedback }}</div>
+    <button type="button" class="btn-close p-2 fs-10" (click)="actionFeedback = null"></button>
+  </div>
+}
+
+<!-- ========================================================
+     Executive Metrics Cards (4 Minimal Cards)
+     ======================================================== -->
+<div class="row g-3 mb-3">
+  <!-- Card 1: Total Staff -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Personnel</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.all }}</div>
+      <small class="text-muted fs-11">{{ counts.active }} on duty across branches</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Branch Managers -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Branch Managers</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:user-check-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.managers }}</div>
+      <small class="text-muted fs-11">Store operations keyholders</small>
+    </div>
+  </div>
+
+  <!-- Card 3: Store Moderators -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Store Moderators</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:shield-check-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.moderators }}</div>
+      <small class="text-muted fs-11">Customer care &amp; returns</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Delivery Riders -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Delivery Riders</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:scooter-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.riders }}</div>
+      <small class="text-muted fs-11">Active fleet personnel</small>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     Main Staff Console Card
+     ======================================================== -->
+<div class="cat-main-card overflow-hidden mb-4">
+  <!-- Header Toolbar: Role Tabs + Search Box -->
+  <div class="p-3 border-bottom bg-white">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <!-- Role Filter Segmented Control -->
+      <div class="filter-segmented-control">
+        <button type="button" class="segment-btn" [class.active]="selectedRole === 'all'" (click)="setRoleTab('all')">
+          <span>All Staff</span>
+          <span class="count-pill">{{ counts.all }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedRole === 'Branch Manager'" (click)="setRoleTab('Branch Manager')">
+          <span>Managers</span>
+          <span class="count-pill">{{ counts.managers }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedRole === 'Moderator'" (click)="setRoleTab('Moderator')">
+          <span>Moderators</span>
+          <span class="count-pill">{{ counts.moderators }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedRole === 'Rider'" (click)="setRoleTab('Rider')">
+          <span>Riders</span>
+          <span class="count-pill">{{ counts.riders }}</span>
+        </button>
+      </div>
+
+      <!-- Search Box with Clear Button -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <div class="search-box-wrapper">
+          <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
+                 class="form-control search-input shadow-none"
+                 placeholder="Search name, ID, phone, vehicle...">
+          @if (searchTerm) {
+            <button class="clear-search-btn" type="button" (click)="clearSearch()" title="Clear search">
+              <iconify-icon icon="solar:close-circle-bold"></iconify-icon>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Filter Strip -->
+  <div class="filter-bar-strip d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <!-- Branch Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Store Branch:</span>
+        @if (isBranchLocked) {
+          <div class="d-inline-flex align-items-center gap-1 px-2.5 py-1 bg-white border rounded text-dark fs-12 fw-semibold">
+            <iconify-icon icon="solar:lock-keyhole-bold" class="text-primary fs-14"></iconify-icon>
+            <span>{{ currentBranchDisplayName }}</span>
+          </div>
+        } @else {
+          <select [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
+            <option value="all">All Branches</option>
+            @for (b of branches; track b.id) {
+              <option [value]="b.id">{{ b.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Duty Status Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Duty Status:</span>
+        <select [(ngModel)]="selectedStatus" class="filter-dropdown" (change)="currentPage = 1">
+          <option value="all">All Statuses</option>
+          <option value="Active">Active / On Duty</option>
+          <option value="On Delivery">On Delivery</option>
+          <option value="Off Duty">Off Duty</option>
+          <option value="Suspended">Suspended</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Filter Counter & Reset -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted fs-11">
+        Found <strong>{{ filteredStaff.length }}</strong> personnel
+      </span>
+      @if (searchTerm || (!isBranchLocked && selectedBranch !== 'all') || selectedRole !== 'all' || selectedStatus !== 'all') {
+        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fs-11 text-danger d-inline-flex align-items-center gap-1"
+                (click)="resetFilters()">
+          <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
+          <span>Reset</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Table Body -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th>STAFF ID</th>
+          <th>STAFF NAME &amp; CONTACT</th>
+          <th>BRANCH</th>
+          <th>ROLE</th>
+          <th class="text-center">DUTY STATUS</th>
+          <th class="text-end">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (staff of paginatedStaff; track staff.id) {
+          <tr>
+            <!-- Col 1: STAFF ID -->
+            <td>
+              <div class="fw-bold text-dark font-monospace fs-12">{{ staff.id }}</div>
+            </td>
+
+            <!-- Col 2: STAFF NAME & CONTACT -->
+            <td>
+              <span class="fw-bold text-dark fs-13 d-block">{{ staff.name }}</span>
+              <a [href]="'tel:' + staff.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
+                {{ staff.phone }}
+              </a>
+            </td>
+
+            <!-- Col 3: BRANCH -->
+            <td>
+              <span class="fw-semibold text-dark fs-12 d-block">{{ staff.branchName }}</span>
+              <small class="text-muted fs-11 d-block">{{ staff.city }} &bull; {{ staff.branchCode }}</small>
+            </td>
+
+            <!-- Col 4: ROLE -->
+            <td>
+              <div class="d-flex align-items-center gap-1.5">
+                @if (staff.role === 'Branch Manager') {
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-semibold">
+                    <iconify-icon icon="solar:user-check-bold" class="align-middle me-1"></iconify-icon>
+                    Branch Manager
+                  </span>
+                } @else if (staff.role === 'Moderator') {
+                  <span class="badge bg-warning-subtle text-warning border border-warning-subtle fs-11 fw-semibold">
+                    <iconify-icon icon="solar:shield-check-bold" class="align-middle me-1"></iconify-icon>
+                    Store Moderator
+                  </span>
+                } @else {
+                  <span class="badge bg-info-subtle text-info border border-info-subtle fs-11 fw-semibold">
+                    <iconify-icon icon="solar:scooter-bold" class="align-middle me-1"></iconify-icon>
+                    Delivery Rider
+                  </span>
+                }
+              </div>
+            </td>
+
+            <!-- Col 5: DUTY STATUS -->
+            <td class="text-center">
+              <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(staff.status)">
+                {{ staff.status }}
+              </span>
+            </td>
+
+            <!-- Col 6: ACTIONS -->
+            <td class="text-end">
+              <div class="d-flex gap-1 justify-content-end align-items-center">
+                <button type="button" class="cat-action-btn" (click)="openDetailModal(staff, detailModal)" ngbTooltip="View Full Profile">
+                  <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
+                </button>
+                <button type="button" class="cat-action-btn" (click)="openEditModal(staff, staffModal)" ngbTooltip="Edit Staff Member">
+                  <iconify-icon icon="solar:pen-linear" class="fs-15"></iconify-icon>
+                </button>
+                <button type="button" class="cat-action-btn" (click)="toggleDutyStatus(staff)" [ngbTooltip]="staff.status === 'Off Duty' ? 'Mark Active' : 'Mark Off Duty'">
+                  <iconify-icon [icon]="staff.status === 'Off Duty' ? 'solar:play-circle-bold' : 'solar:pause-circle-bold'" [class.text-success]="staff.status === 'Off Duty'" [class.text-muted]="staff.status !== 'Off Duty'" class="fs-15"></iconify-icon>
+                </button>
+                <button type="button" class="cat-action-btn btn-delete" (click)="deleteStaff(staff)" ngbTooltip="Remove Staff">
+                  <iconify-icon icon="solar:trash-bin-minimalistic-linear" class="fs-15"></iconify-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <iconify-icon icon="solar:users-group-two-rounded-broken" class="fs-36 text-muted mb-2"></iconify-icon>
+              <h6 class="text-dark font-jost fs-14 fw-bold">No staff members match current criteria</h6>
+              <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing branch and role filters.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Table Pagination Footer -->
+  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="text-muted fs-12">
+      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredStaff.length }}</strong> staff members
+    </div>
+    @if (filteredStaff.length > pageSize) {
+      <ngb-pagination [collectionSize]="filteredStaff.length"
+                      [(page)]="currentPage"
+                      [pageSize]="pageSize"
+                      [maxSize]="5"
+                      [rotate]="true"
+                      [boundaryLinks]="true"
+                      size="sm"
+                      class="mb-0">
+      </ngb-pagination>
+    }
+  </div>
+</div>
+
+<!-- ========================================================
+     STAFF CREATE & EDIT MODAL
+     ======================================================== -->
+<ng-template #staffModal let-modal>
+  <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+    <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+      {{ isEditing ? 'Edit Staff Member' : 'Add New Branch Staff' }}
+    </h5>
+    <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-3">
+    <div class="row g-3">
+      <!-- Full Name -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Full Name <span class="text-danger">*</span></label>
+        <input type="text" [(ngModel)]="formStaff.name" class="form-control form-control-sm shadow-none" placeholder="e.g. Tariq Mehmood">
+      </div>
+
+      <!-- Staff Role -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Staff Role <span class="text-danger">*</span></label>
+        <select [(ngModel)]="formStaff.role" class="form-select form-select-sm shadow-none">
+          <option value="Rider">Delivery Rider (Fleet)</option>
+          <option value="Moderator">Store Moderator (Customer Service)</option>
+          <option value="Branch Manager">Branch Manager (Store Ops)</option>
+        </select>
+      </div>
+
+      <!-- Store Branch -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Assigned Branch <span class="text-danger">*</span></label>
+        <select [(ngModel)]="formStaff.branchId" (change)="onBranchChange()" class="form-select form-select-sm shadow-none">
+          @for (b of branches; track b.id) {
+            <option [value]="b.id">{{ b.name }} ({{ b.city }})</option>
+          }
+        </select>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Mobile Phone <span class="text-danger">*</span></label>
+        <input type="text" [(ngModel)]="formStaff.phone" class="form-control form-control-sm shadow-none" placeholder="+923001234567">
+      </div>
+
+      <!-- Email Address -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Email Address</label>
+        <input type="email" [(ngModel)]="formStaff.email" class="form-control form-control-sm shadow-none" placeholder="name@rainbowcc.com.pk">
+      </div>
+
+      <!-- CNIC -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">CNIC (National Identity)</label>
+        <input type="text" [(ngModel)]="formStaff.cnic" class="form-control form-control-sm shadow-none" placeholder="35202-0000000-1">
+      </div>
+
+      <!-- Shift Timing -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Operating Shift</label>
+        <select [(ngModel)]="formStaff.shift" class="form-select form-select-sm shadow-none">
+          <option value="Morning (08:00 AM - 04:00 PM)">Morning (08:00 AM - 04:00 PM)</option>
+          <option value="Evening (04:00 PM - 12:00 AM)">Evening (04:00 PM - 12:00 AM)</option>
+          <option value="Night (12:00 AM - 08:00 AM)">Night (12:00 AM - 08:00 AM)</option>
+          <option value="General Full Day">General Full Day</option>
+        </select>
+      </div>
+
+      <!-- Duty Status -->
+      <div class="col-md-6">
+        <label class="form-label fs-12 fw-semibold text-dark mb-1">Duty Status</label>
+        <select [(ngModel)]="formStaff.status" class="form-select form-select-sm shadow-none">
+          <option value="Active">Active / On Duty</option>
+          <option value="On Delivery">On Delivery</option>
+          <option value="Off Duty">Off Duty</option>
+          <option value="Suspended">Suspended</option>
+        </select>
+      </div>
+
+      <!-- Role-Specific Fields: RIDER -->
+      @if (formStaff.role === 'Rider' && formStaff.riderDetails) {
+        <div class="col-12">
+          <div class="p-3 border rounded-3 bg-light-subtle">
+            <h6 class="fs-12 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Rider Vehicle &amp; App Fleet Credentials</h6>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label fs-11 text-muted mb-0.5">Vehicle Type</label>
+                <select [(ngModel)]="formStaff.riderDetails.vehicleType" class="form-select form-select-sm shadow-none">
+                  <option value="Motorbike">Motorbike</option>
+                  <option value="Cargo Van">Cargo Van</option>
+                  <option value="Electric Scooter">Electric Scooter</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-11 text-muted mb-0.5">Vehicle Reg Number</label>
+                <input type="text" [(ngModel)]="formStaff.riderDetails.vehicleRegNo" class="form-control form-control-sm shadow-none" placeholder="LEA-2024-8841">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fs-11 text-muted mb-0.5">Rider App PIN (4 Digits)</label>
+                <input type="password" maxlength="4" [(ngModel)]="formStaff.riderDetails.appAccessPin" class="form-control form-control-sm shadow-none" placeholder="1234">
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Role-Specific Fields: MODERATOR -->
+      @if (formStaff.role === 'Moderator' && formStaff.moderatorDetails) {
+        <div class="col-12">
+          <div class="p-3 border rounded-3 bg-light-subtle">
+            <h6 class="fs-12 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Moderator Authorization Privileges</h6>
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="form-check form-switch fs-12">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="formStaff.moderatorDetails.canApproveReturns" id="modReturns">
+                  <label class="form-check-label text-dark fw-medium" for="modReturns">Authorize Order Returns &amp; Refunds</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch fs-12">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="formStaff.moderatorDetails.canModerateFeedback" id="modFeedback">
+                  <label class="form-check-label text-dark fw-medium" for="modFeedback">Moderate &amp; Publish Storefront Reviews</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Role-Specific Fields: BRANCH MANAGER -->
+      @if (formStaff.role === 'Branch Manager' && formStaff.managerDetails) {
+        <div class="col-12">
+          <div class="p-3 border rounded-3 bg-light-subtle">
+            <h6 class="fs-12 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Branch Management Scope</h6>
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="form-check form-switch fs-12 mt-1">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="formStaff.managerDetails.isKeyholder" id="mgrKey">
+                  <label class="form-check-label text-dark fw-medium" for="mgrKey">Designated Branch Keyholder</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fs-11 text-muted mb-0.5">Emergency Contact Phone</label>
+                <input type="text" [(ngModel)]="formStaff.managerDetails.emergencyContact" class="form-control form-control-sm shadow-none" placeholder="+923000000000">
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-end gap-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.dismiss()">
+      Cancel
+    </button>
+    <button type="button" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" 
+            style="background: #2e3192; border-color: #2e3192;"
+            (click)="saveStaff()">
+      <iconify-icon icon="solar:diskette-bold" class="fs-15 align-middle me-1"></iconify-icon>
+      {{ isEditing ? 'Save Changes' : 'Create Staff Member' }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================================
+     STAFF PROFILE DETAILS MODAL
+     ======================================================== -->
+<ng-template #detailModal let-modal>
+  @if (selectedStaff) {
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <h5 class="modal-title fw-bold text-dark mb-0 fs-16 font-jost">
+        {{ selectedStaff.name }}
+      </h5>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body p-3">
+      <div class="row g-3">
+        <!-- Contact & Assignment -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3 bg-light-subtle h-100">
+            <h6 class="fs-11 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Contact &amp; Assignment</h6>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Staff ID:</span>
+              <span class="fw-bold font-monospace text-primary fs-12">{{ selectedStaff.id }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Branch:</span>
+              <span class="fw-semibold text-dark fs-12">{{ selectedStaff.branchName }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">City:</span>
+              <span class="text-dark fs-12">{{ selectedStaff.city }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Phone:</span>
+              <span class="font-monospace text-dark fs-12">{{ selectedStaff.phone }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Email:</span>
+              <span class="text-dark fs-12">{{ selectedStaff.email }}</span>
+            </div>
+            <div class="d-flex justify-content-between pt-1">
+              <span class="text-muted fs-12">CNIC:</span>
+              <span class="font-monospace text-dark fs-12">{{ selectedStaff.cnic }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role & Work Metrics -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3 bg-light-subtle h-100">
+            <h6 class="fs-11 text-uppercase text-muted fw-bold mb-2.5" style="letter-spacing: 0.5px;">Operations &amp; Work Shift</h6>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Designation:</span>
+              <span class="fw-bold text-dark fs-12">{{ selectedStaff.role }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Shift:</span>
+              <span class="text-dark fs-12">{{ selectedStaff.shift }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1 border-bottom border-light">
+              <span class="text-muted fs-12">Duty Status:</span>
+              <span class="badge px-2 py-0.5 fs-11" [ngClass]="getStatusBadgeClass(selectedStaff.status)">{{ selectedStaff.status }}</span>
+            </div>
+            <div class="d-flex justify-content-between pt-1">
+              <span class="text-muted fs-12">Joining Date:</span>
+              <span class="text-dark fs-12">{{ selectedStaff.joiningDate }}</span>
+            </div>
+
+            @if (selectedStaff.role === 'Rider' && selectedStaff.riderDetails) {
+              <div class="mt-2.5 pt-2 border-top">
+                <span class="text-muted fs-11 text-uppercase fw-bold d-block mb-1">Rider Fleet Metrics</span>
+                <div class="d-flex justify-content-between fs-11 py-0.5">
+                  <span class="text-muted">Vehicle:</span>
+                  <span class="fw-semibold text-dark">{{ selectedStaff.riderDetails.vehicleType }} ({{ selectedStaff.riderDetails.vehicleRegNo }})</span>
+                </div>
+                <div class="d-flex justify-content-between fs-11 py-0.5">
+                  <span class="text-muted">Completed Deliveries:</span>
+                  <span class="fw-bold text-dark">{{ selectedStaff.riderDetails.totalDeliveries }}</span>
+                </div>
+                <div class="d-flex justify-content-between fs-11 py-0.5">
+                  <span class="text-muted">Shopper Rating:</span>
+                  <span class="fw-bold text-warning">{{ selectedStaff.riderDetails.rating }} ★</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-end">
+      <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.dismiss()">
+        Close
+      </button>
+    </div>
+  }
+</ng-template>

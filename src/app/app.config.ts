@@ -21,7 +21,7 @@ import { CalendarEffects } from '@store/calendar/calendar.effects'
 import { localStorageSyncReducer } from '@store/layout/layout-reducers'
 import { provideToastr } from 'ngx-toastr'
 import { routes } from './app.routes'
-import { FakeBackendProvider } from './helper/fake-backend'
+import { FakeBackendProvider } from '@core/interceptors/fake-backend.interceptor'
 import { rootReducer } from './store'
 import { AuthenticationEffects } from '@store/authentication/authentication.effects'
 

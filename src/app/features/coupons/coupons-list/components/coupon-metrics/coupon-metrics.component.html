@@ -1,0 +1,57 @@
+<div class="row g-3 mb-3">
+  <!-- Card 1: Total Coupons -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">All Coupons</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:ticket-sale-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.all }}</div>
+      <small class="text-muted fs-11">{{ counts.active }} Active &bull; {{ counts.scheduled }} Scheduled</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Total Redemptions -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Redemptions</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:cart-check-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.totalRedemptions | number }}</div>
+      <small class="text-muted fs-11">Successful checkouts</small>
+    </div>
+  </div>
+
+  <!-- Card 3: Total Customer Savings -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Customer Savings</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:wallet-money-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">Rs. {{ counts.totalSavings | number }}</div>
+      <small class="text-muted fs-11">Discount awarded to shoppers</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Active Codes -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Active Vouchers</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:tag-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.active }} <span class="fs-13 text-muted fw-normal">Live</span></div>
+      <small class="text-muted fs-11">{{ counts.expired }} Expired / Paused</small>
+    </div>
+  </div>
+</div>

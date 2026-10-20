@@ -1,0 +1,30 @@
+.cat-metric-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  background: #ffffff;
+  padding: 16px 18px;
+  height: 100%;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    border-color: #cbd5e1;
+  }
+}
+
+.cat-metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.font-jost {
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+}

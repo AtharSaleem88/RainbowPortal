@@ -1,0 +1,57 @@
+<div class="row g-3 mb-3">
+  <!-- Card 1: Total Returns -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Returns</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:box-minimalistic-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.all }}</div>
+      <small class="text-muted fs-11">Total claims filed</small>
+    </div>
+  </div>
+
+  <!-- Card 2: Pending Review -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Pending Review</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:clock-circle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.pending }}</div>
+      <small class="text-muted fs-11">Awaiting store decision</small>
+    </div>
+  </div>
+
+  <!-- Card 3: Approved & Refunded -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Approved &amp; Settled</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:check-circle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ counts.approved }}</div>
+      <small class="text-muted fs-11">Refunds processed</small>
+    </div>
+  </div>
+
+  <!-- Card 4: Total Refunded Value -->
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Total Refund Value</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:wallet-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">Rs. {{ counts.totalRefunded | number }}</div>
+      <small class="text-muted fs-11">Credited to customer accounts</small>
+    </div>
+  </div>
+</div>

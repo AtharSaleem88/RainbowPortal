@@ -1,8 +1,6 @@
-import { Routes, Router, type UrlTree, RedirectCommand } from '@angular/router'
-import { Layout } from './layouts/layout/layout'
-import { AuthLayout } from '@layouts/auth-layout/auth-layout'
-import { AuthenticationService } from './core/services/auth.service'
-import { inject } from '@angular/core'
+import { Routes } from '@angular/router'
+import { LayoutComponent, AuthLayoutComponent } from '@layouts/index'
+import { authGuard } from '@core/guards/auth.guard'
 
 export const routes: Routes = [
   {
@@ -12,34 +10,15 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: Layout,
-    canActivate: [
-      (url: any) => {
-        const router = inject(Router)
-        const currentUser = inject(AuthenticationService)
-        if (!currentUser.session) {
-          return router.createUrlTree(['/auth/signin'], {
-            queryParams: { returnUrl: url._routerState.url },
-          })
-        }
-        return true
-      },
-    ],
+    component: LayoutComponent,
+    canActivate: [authGuard],
     loadChildren: () =>
-      import('./views/views.route').then((mod) => mod.VIEW_ROUTES),
+      import('./features/features.routes').then((mod) => mod.FEATURES_ROUTES),
   },
   {
     path: 'auth',
-    component: AuthLayout,
+    component: AuthLayoutComponent,
     loadChildren: () =>
-      import('./views/auth/auth.route').then((mod) => mod.AUTH_ROUTES),
-  },
-  {
-    path: 'pages',
-    component: AuthLayout,
-    loadChildren: () =>
-      import('./views/other-pages/other-page.route').then(
-        (mod) => mod.OTHER_PAGE_ROUTES
-      ),
+      import('./features/auth/auth.route').then((mod) => mod.AUTH_ROUTES),
   },
 ]

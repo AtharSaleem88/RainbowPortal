@@ -221,11 +221,4 @@ export const MENU: MenuItem[] = [
       }
     ],
   },
-  {
-    key: 'settings',
-    icon: 'solar:shop-2-bold-duotone',
-    label: 'Store Branch Settings',
-    link: '/pages/settings',
-    roles: ['Admin', 'Branch Manager'],
-  },
 ];
