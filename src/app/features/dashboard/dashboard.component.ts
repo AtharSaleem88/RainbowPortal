@@ -555,7 +555,42 @@ export class DashboardComponent implements OnInit {
         }
       ],
       grid: { borderColor: '#f1f5f9', strokeDashArray: 3 },
-      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' }
+      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
+      responsive: [{
+        breakpoint: 360,
+        options: {
+          xaxis: {
+            labels: {
+              rotate: -45,
+              hideOverlappingLabels: true,
+              style: { fontSize: '8px' }
+            }
+          },
+          yaxis: [
+            {
+              title: { text: 'Revenue (PKR)', offsetX: 18, style: { color: '#2e3192', fontSize: '8px', fontWeight: 600 } },
+              labels: {
+                formatter: (val: number) => 'Rs ' + (val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : (val / 1000).toFixed(0) + 'k'),
+                minWidth: 24,
+                maxWidth: 30,
+                style: { colors: '#64748b', fontSize: '8px' }
+              }
+            },
+            {
+              opposite: true,
+              title: { text: 'Orders', offsetX: -18, style: { color: '#25aae1', fontSize: '8px', fontWeight: 600 } },
+              labels: {
+                formatter: (val: number) => val.toLocaleString(),
+                minWidth: 12,
+                maxWidth: 18,
+                style: { colors: '#64748b', fontSize: '8px' }
+              }
+            }
+          ],
+          grid: { padding: { left: -8, right: -8 } },
+          legend: { fontSize: '9px' }
+        }
+      }]
     };
   }
 

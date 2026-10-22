@@ -1,0 +1,111 @@
+// Match the existing navigation toggle breakpoint, including direct mobile loads.
+@media (max-width: 1140px) {
+  html[data-menu-size][data-bs-theme] .wrapper {
+    .main-nav {
+      margin-left: -260px !important;
+    }
+
+    .page-content { margin-left: 0 !important; }
+    .topbar { padding-left: 0 !important; }
+  }
+
+  html.sidebar-enable[data-menu-size][data-bs-theme] .wrapper .main-nav {
+    margin-left: 0 !important;
+    z-index: 1060 !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  html[data-bs-theme] .wrapper {
+    .page-content > .container-fluid {
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+
+    .navbar-header > :first-child,
+    .navbar-header .topbar-item:has(h4) { min-width: 0; }
+    .navbar-header > :last-child { flex-shrink: 0; }
+    .topbar-item h4.topbar-button {
+      overflow-wrap: anywhere;
+      white-space: normal;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  .wrapper .page-content {
+    .filter-segmented-control { flex-wrap: wrap; max-width: 100%; }
+    .d-flex:has(> .search-box-wrapper) { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+    .search-box-wrapper { min-width: 0 !important; width: 100%; max-width: 100%; }
+    .filter-control-wrap { flex-wrap: wrap; max-width: 100%; }
+    .filter-bar-strip > .d-flex { min-width: 0; max-width: 100%; }
+    .filter-control-wrap .filter-dropdown { min-width: 0 !important; max-width: 100% !important; }
+    .pagination { flex-wrap: wrap; }
+    .btn-branch-pill { max-width: 100%; }
+    .branch-dropdown-menu { min-width: 0; width: calc(100vw - 56px); max-width: 420px; }
+    .op-card .d-inline-flex:has(> .period-pill) { flex-wrap: wrap; }
+    .d-inline-flex:has(> .scope-pill-btn) { flex-wrap: wrap; }
+    .cat-metric-card .d-flex > :first-child { min-width: 0; overflow-wrap: anywhere; }
+    .op-card > .d-flex > .d-flex:has(h5) { flex-wrap: wrap; min-width: 0; }
+    .op-card .badge { white-space: normal; overflow-wrap: anywhere; }
+  }
+
+  .topbar .dropdown-menu {
+    max-width: calc(100vw - 24px);
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .wrapper .page-content .dashboard-chart-row,
+  .wrapper .page-content .dashboard-operations-row { row-gap: 1rem; }
+}
+
+@media (max-width: 575.98px) {
+  html[data-bs-theme] .wrapper .topbar {
+    height: auto;
+
+    .navbar-header {
+      display: grid;
+      grid-template-columns: auto 1fr;
+    }
+    .navbar-header > :first-child { display: contents !important; }
+    .navbar-header > :last-child { grid-column: 2; grid-row: 1; justify-self: end; }
+    .topbar-item:has(h4) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      height: auto;
+      justify-content: flex-start;
+      padding-bottom: 12px;
+    }
+  }
+
+  .wrapper .page-content {
+    .op-card[class~="p-3.5"] { padding: 1rem !important; }
+    .dashboard-table-heading { padding: 12px !important; }
+    .heatmap-legend {
+      flex-wrap: wrap;
+      justify-content: flex-start !important;
+      gap: 6px 12px;
+    }
+    .dashboard-section-heading {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-bottom: 12px !important;
+    }
+    .performance-chart-description { display: block; font-size: 10px; line-height: 1.4; }
+    .op-card .d-flex:has(> input[type="date"]) {
+      flex-wrap: wrap;
+      height: auto !important;
+      input { min-width: 0; flex: 1 1 80px; }
+    }
+    .row > .col-6:has(> .cat-metric-card) { width: 100%; }
+    .cat-main-card > .d-flex:has(> .badge) { flex-wrap: wrap; gap: 8px; }
+  }
+}
+
+@media (max-width: 359.98px) {
+  .wrapper .page-content {
+    .dashboard-abandoned-metrics h4 { font-size: 16px !important; }
+  }
+}

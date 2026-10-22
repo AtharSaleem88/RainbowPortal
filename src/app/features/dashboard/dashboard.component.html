@@ -76,7 +76,7 @@
       </div>
 
       <!-- Custom Date Range Inputs -->
-      <div class="d-none d-sm-flex align-items-center gap-1 bg-white border rounded-2 px-2.5 py-1" style="height: 38px;">
+      <div class="d-flex align-items-center gap-1 bg-white border rounded-2 px-2.5 py-1" style="height: 38px;">
         <iconify-icon icon="solar:calendar-date-bold-duotone" class="text-muted fs-15"></iconify-icon>
         <input type="date" class="form-control form-control-sm border-0 p-0 fs-12 text-muted shadow-none" 
                style="width: 105px;" [(ngModel)]="startDate" (change)="onCustomDateChange()">
@@ -287,7 +287,7 @@
     </div>
 
     <!-- 6 Executive Metrics in 1 Strip -->
-    <div class="row g-3 text-center text-md-start py-1">
+    <div class="row g-3 text-center text-md-start py-1 dashboard-abandoned-metrics">
       <div class="col-xl-2 col-md-4 col-6 border-end-md px-3">
         <span class="fs-11 text-muted fw-bold text-uppercase d-block mb-1">Total Carts</span>
         <h4 class="fs-20 fw-bold text-dark mb-0 font-jost">{{ abandonedStats.totalCarts | number }}</h4>
@@ -329,17 +329,17 @@
   <!-- ========================================================
        Row 4: Core Operations Analytics (Performance & Heat Map)
        ======================================================== -->
-  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1 dashboard-section-heading">
     <span class="section-label">Performance Analytics & Rush Heat Map</span>
   </div>
-  <div class="row g-3.5 mb-4">
+  <div class="row g-3.5 mb-4 dashboard-chart-row">
     <!-- Left: Operations & Revenue Performance Chart (8 cols) -->
     <div class="col-xl-8 col-lg-7 col-12">
       <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
           <div>
             <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Operations & Revenue Performance</h5>
-            <small class="text-muted fs-11">Consolidated revenue and order volumes across selected operational timeline</small>
+            <small class="text-muted fs-11 performance-chart-description">Consolidated revenue and order volumes across selected operational timeline</small>
           </div>
           <div class="d-flex align-items-center gap-1">
             <button type="button" class="period-pill" 
@@ -365,7 +365,8 @@
               [xaxis]="performanceChart.xaxis!"
               [yaxis]="performanceChart.yaxis!"
               [grid]="performanceChart.grid!"
-              [legend]="performanceChart.legend!">
+              [legend]="performanceChart.legend!"
+              [responsive]="performanceChart.responsive!">
             </apx-chart>
           </div>
         }
@@ -399,7 +400,7 @@
           </div>
         }
 
-        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-light-subtle fs-10 text-muted">
+        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-light-subtle fs-10 text-muted heatmap-legend">
           <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #e0f2fe;"></span>Low (0-20)</span>
           <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #7dd3fc;"></span>Mod (21-50)</span>
           <span><span class="d-inline-block rounded-1 me-1" style="width: 10px; height: 10px; background: #25aae1;"></span>Busy (51-75)</span>
@@ -412,10 +413,10 @@
   <!-- ========================================================
        Row 5: Order Channels, Payments & Fulfillment Pipeline (3 Cols: 4-4-4)
        ======================================================== -->
-  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1">
+  <div class="d-flex align-items-center justify-content-between mb-2.5 px-1 dashboard-section-heading">
     <span class="section-label">Order Channels, Settlement & Logistics Pipeline</span>
   </div>
-  <div class="row g-3.5 mb-4">
+  <div class="row g-3.5 mb-4 dashboard-operations-row">
     <!-- Col 1: Order Device Type Info (Required) -->
     <div class="col-xl-4 col-md-6 col-12">
       <div class="op-card p-3.5 p-md-4 h-100 d-flex flex-column">
@@ -548,7 +549,7 @@
     <span class="section-label">Live Dispatch & Order Stream</span>
   </div>
   <div class="op-card p-0 overflow-hidden mb-4">
-    <div class="p-3.5 px-md-4 py-md-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="p-3.5 px-md-4 py-md-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2 dashboard-table-heading">
       <div class="d-flex align-items-center gap-2">
         <h5 class="fw-bold text-dark mb-0 fs-15 font-jost">Live Store Orders Stream</h5>
         <span class="badge bg-light text-muted border fs-11">Showing recent orders for {{ getSelectedBranchShortName() }}</span>
