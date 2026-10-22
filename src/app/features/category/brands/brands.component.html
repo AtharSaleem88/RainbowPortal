@@ -1,23 +1,23 @@
 <!-- ========================================================
      Executive Page Header & Actions
      ======================================================== -->
-<div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
-  <div class="d-flex align-items-center gap-2 flex-wrap">
+<div class="d-flex flex-wrap align-items-center justify-content-between justify-content-sm-end gap-2 mb-3">
+  <div class="d-flex align-items-center gap-1.5 gap-sm-2 flex-wrap w-100 w-sm-auto justify-content-between justify-content-sm-end">
     <!-- Export CSV Button -->
-    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer"
+    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12 cursor-pointer"
             (click)="exportCSV()" ngbTooltip="Export brands list to CSV">
       <iconify-icon icon="solar:download-linear" class="fs-15"></iconify-icon>
-      <span>Export CSV</span>
+      <span class="d-none d-sm-inline">Export</span> <span>CSV</span>
     </button>
 
     <!-- Sub Categories Link -->
-    <a routerLink="/category/sub-category" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer">
+    <a routerLink="/category/sub-category" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12 cursor-pointer">
       <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-15"></iconify-icon>
       <span>Sub Categories</span>
     </a>
 
     <!-- Add Brand Action -->
-    <button type="button" (click)="openAddModal(brandModal)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
+    <button type="button" (click)="openAddModal(brandModal)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm ms-auto ms-sm-0"
             style="background: #2e3192; border-color: #2e3192;">
       <iconify-icon icon="solar:add-circle-bold" class="fs-16"></iconify-icon>
       <span>+ Add Brand</span>
@@ -51,14 +51,14 @@
 <div class="cat-main-card overflow-hidden mb-4">
   
   <!-- Header Toolbar: 2-Row Unified Layout -->
-  <div class="p-3 border-bottom bg-white">
+  <div class="p-2 p-sm-3 border-bottom bg-white">
     <!-- Top Row: Status Tabs + Search Box & Page Size -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 gap-sm-3">
       
       <!-- Left: Status Filter Segmented Control -->
       <div class="filter-segmented-control">
         <button type="button" class="segment-btn" [class.active]="statusFilter === 'all'" (click)="setStatusFilter('all')">
-          <span>All Brands</span>
+          <span>All <span class="d-none d-sm-inline">Brands</span></span>
           <span class="count-pill">{{ brandCounts.all }}</span>
         </button>
         <button type="button" class="segment-btn" [class.active]="statusFilter === 'active'" (click)="setStatusFilter('active')">
@@ -72,8 +72,8 @@
       </div>
 
       <!-- Right: Search Box with Clear Button & Page Size -->
-      <div class="d-flex align-items-center gap-2 ms-auto" style="gap: 12px;">
-        <div class="search-box-wrapper">
+      <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -86,21 +86,21 @@
         </div>
 
         <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
-          <option [ngValue]="10">10 / page</option>
-          <option [ngValue]="20">20 / page</option>
-          <option [ngValue]="50">50 / page</option>
+          <option [ngValue]="10">10 / pg</option>
+          <option [ngValue]="20">20 / pg</option>
+          <option [ngValue]="50">50 / pg</option>
         </select>
       </div>
 
     </div>
 
     <!-- Secondary Filter Strip: Category, Sort & Reset -->
-    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-3 mt-3 rounded-2">
+    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-2 gap-sm-3 mt-2 mt-sm-3 rounded-2">
       
       <!-- Master Category Filter -->
-      <div class="filter-control-wrap">
+      <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Category:</span>
-        <select [(ngModel)]="selectedCategoryFilter" (change)="onCategoryFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 190px;">
+        <select [(ngModel)]="selectedCategoryFilter" (change)="onCategoryFilterChange()" class="form-select filter-dropdown shadow-none">
           <option value="all">All Categories</option>
           @for(cat of masterCategories; track cat.id){
             <option [value]="cat.id">{{ cat.name }}</option>
@@ -109,9 +109,9 @@
       </div>
 
       <!-- Sort By -->
-      <div class="filter-control-wrap">
+      <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Sort:</span>
-        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
+        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none">
           <option value="skus_desc">Products: High to Low</option>
           <option value="skus_asc">Products: Low to High</option>
           <option value="name_asc">Name: A to Z</option>
@@ -128,8 +128,8 @@
     </div>
   </div>
 
-  <!-- Brands Table -->
-  <div class="table-responsive">
+  <!-- Brands Table (Desktop >= 768px) -->
+  <div class="table-responsive d-none d-md-block">
     <table class="table table-clean table-hover align-middle mb-0">
       <thead>
         <tr>
@@ -163,11 +163,11 @@
             <!-- Brand Name & Description -->
             <td>
               <div class="overflow-hidden">
-                  <span class="fw-bold text-dark fs-13 text-truncate d-block">{{ b.name }}</span>
-                  <small class="text-muted d-block text-truncate" style="max-width: 240px;">
-                    {{ b.description }}
-                  </small>
-                </div>
+                <span class="fw-bold text-dark fs-13 text-truncate d-block">{{ b.name }}</span>
+                <small class="text-muted d-block text-truncate" style="max-width: 240px;">
+                  {{ b.description }}
+                </small>
+              </div>
             </td>
 
             <!-- Category Association -->
@@ -178,9 +178,10 @@
                     <span class="badge bg-light text-primary border border-primary-subtle fs-10 fw-semibold">
                       {{ mapping.categoryName }}
                     </span>
-                    <span class="text-muted fs-10">&rarr;</span>
                     @for(subName of mapping.subCategoryNames; track subName){
-                      <span class="badge bg-light text-muted border fs-10">{{ subName }}</span>
+                      <span class="badge bg-white text-muted border fs-10">
+                        {{ subName }}
+                      </span>
                     }
                   </div>
                 }
@@ -193,7 +194,7 @@
               <span class="text-muted fs-11 ms-1">SKUs</span>
             </td>
 
-            <!-- Status Switch (Clean toggle, NO "Active" label text) -->
+            <!-- Status Switch -->
             <td class="text-center">
               <div class="form-check form-switch d-inline-block m-0 cursor-pointer">
                 <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
@@ -202,7 +203,7 @@
               </div>
             </td>
 
-            <!-- Actions (Working icons with tooltips) -->
+            <!-- Actions -->
             <td class="text-end">
               <div class="d-flex align-items-center justify-content-end gap-1.5">
                 <!-- Edit Brand -->
@@ -211,7 +212,7 @@
                 </button>
 
                 <!-- Delete Brand -->
-                <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteBrand(b)" ngbTooltip="Delete">
+                <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteBrand(b)" ngbTooltip="Delete Brand">
                   <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
                 </button>
               </div>
@@ -223,10 +224,10 @@
             <td colspan="6" class="text-center py-5">
               <div class="d-flex flex-column align-items-center justify-content-center">
                 <div class="rounded-circle p-3 bg-light text-muted mb-2">
-                  <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>
+                  <iconify-icon icon="solar:shop-2-bold-duotone" class="fs-32"></iconify-icon>
                 </div>
                 <h6 class="fw-bold text-dark mb-1">No Brands Found</h6>
-                <p class="text-muted fs-12 mb-3">No brands match your selected filters or search query.</p>
+                <p class="text-muted fs-12 mb-3">No brands match your search or filter criteria.</p>
                 <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" 
                         (click)="clearSearch(); selectedCategoryFilter = 'all'; setStatusFilter('all')">
                   Reset All Filters
@@ -239,12 +240,92 @@
     </table>
   </div>
 
+  <!-- Brands Mobile Responsive Cards List (< 768px) -->
+  <div class="cat-mobile-list d-md-none">
+    <!-- Quick Select All Bar -->
+    <div class="p-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+      <div class="form-check m-0 d-flex align-items-center gap-2">
+        <input type="checkbox" class="form-check-input cursor-pointer" id="brandMobileSelectAll"
+               [checked]="isAllSelected" 
+               (change)="toggleSelectAll($event)">
+        <label for="brandMobileSelectAll" class="form-check-label fs-12 fw-semibold text-muted cursor-pointer mb-0">
+          Select All
+        </label>
+      </div>
+      <span class="fs-11 text-muted">{{ paginatedBrands.length }} displayed</span>
+    </div>
+
+    @for(b of paginatedBrands; track b.id){
+      <div class="cat-mobile-item p-3 border-bottom" [class.cat-mobile-selected]="isSelected(b.id)">
+        <!-- Top Row: Checkbox + Name + Status Toggle -->
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+          <div class="d-flex align-items-center gap-2 min-w-0">
+            <input type="checkbox" class="form-check-input flex-shrink-0 cursor-pointer m-0"
+                   [checked]="isSelected(b.id)"
+                   (change)="toggleSelect(b.id)">
+            <span class="fw-bold text-dark fs-13 text-truncate">{{ b.name }}</span>
+          </div>
+
+          <!-- Status Switch -->
+          <div class="form-check form-switch m-0 flex-shrink-0 cursor-pointer">
+            <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
+                   [checked]="b.status === 'Active'" 
+                   (change)="toggleStatus(b)"
+                   [id]="'brand-mobile-switch-' + b.id">
+          </div>
+        </div>
+
+        <!-- Description -->
+        @if (b.description) {
+          <p class="text-muted fs-11 mb-2 line-clamp-2 ps-4" style="line-height: 1.4;">{{ b.description }}</p>
+        }
+
+        <!-- Categories Mappings Row -->
+        <div class="d-flex align-items-center gap-1.5 flex-wrap mb-2 ps-4">
+          @for(mapping of b.categoryMappings; track mapping.categoryId){
+            <span class="badge bg-light text-primary border border-primary-subtle fs-10 fw-semibold">
+              {{ mapping.categoryName }}
+            </span>
+          }
+        </div>
+
+        <!-- Bottom Row: SKUs Count + Actions -->
+        <div class="d-flex align-items-center justify-content-between gap-2 pt-2 border-top border-light ps-4">
+          <span class="badge bg-light text-dark border fs-11 fw-normal px-2 py-1">
+            <strong class="fw-semibold font-jost">{{ b.totalProducts | number }}</strong> SKUs
+          </span>
+
+          <div class="d-flex align-items-center gap-1.5">
+            <button type="button" class="cat-action-btn cursor-pointer" (click)="openEditModal(b, brandModal)" ngbTooltip="Edit">
+              <iconify-icon icon="solar:pen-2-broken" class="fs-15"></iconify-icon>
+            </button>
+            <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteBrand(b)" ngbTooltip="Delete">
+              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-15"></iconify-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="text-center py-5 px-3">
+        <div class="rounded-circle p-3 bg-light text-muted d-inline-flex mb-2">
+          <iconify-icon icon="solar:shop-2-bold-duotone" class="fs-28"></iconify-icon>
+        </div>
+        <h6 class="fw-bold text-dark mb-1 fs-14">No Brands Found</h6>
+        <p class="text-muted fs-12 mb-3">No brands match your search or filter criteria.</p>
+        <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" 
+                (click)="clearSearch(); selectedCategoryFilter = 'all'; setStatusFilter('all')">
+          Reset All Filters
+        </button>
+      </div>
+    }
+  </div>
+
   <!-- Footer Pagination & Count Info -->
-  <div class="p-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="fs-12 text-muted">
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
       Showing <span class="fw-semibold text-dark">{{ ((currentPage - 1) * pageSize) + 1 }}</span> to
       <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
-      <span class="fw-semibold text-dark">{{ filteredBrands.length }}</span> Brands
+      <span class="fw-semibold text-dark">{{ filteredBrands.length }}</span> <span class="d-none d-sm-inline">Brands</span>
     </div>
 
     @if (filteredBrands.length > pageSize) {
@@ -252,9 +333,9 @@
         [(page)]="currentPage"
         [pageSize]="pageSize"
         [collectionSize]="filteredBrands.length"
-        [maxSize]="5"
+        [maxSize]="3"
         [rotate]="true"
-        [boundaryLinks]="true"
+        [boundaryLinks]="false"
         (pageChange)="onPageChange($event)"
         class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>
