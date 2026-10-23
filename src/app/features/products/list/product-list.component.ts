@@ -34,6 +34,8 @@ export class ProductListComponent implements OnInit {
 
   selectedBranchId: string = 'all';
   selectedCategory: string = 'all';
+  selectedSubCategory: string = 'all';
+  selectedBrand: string = 'all';
   selectedStorage: string = 'all';
   stockFilter: 'all' | 'in_stock' | 'out_of_stock' = 'all';
   searchTerm: string = '';
@@ -94,6 +96,21 @@ export class ProductListComponent implements OnInit {
     return this.products.filter(p => p.brand.toLowerCase().includes('rainbow')).length;
   }
 
+  get categories(): string[] {
+    return [...new Set(this.products.map(p => p.category).filter(Boolean))].sort();
+  }
+
+  get availableSubCategories(): string[] {
+    const list = this.selectedCategory === 'all'
+      ? this.products
+      : this.products.filter(p => p.category === this.selectedCategory);
+    return [...new Set(list.map(p => p.subCategory).filter(Boolean))].sort();
+  }
+
+  get brands(): string[] {
+    return [...new Set(this.products.map(p => p.brand).filter(Boolean))].sort();
+  }
+
   // Filtered products
   get filteredProducts(): ProductType[] {
     const term = this.searchTerm.trim().toLowerCase();
@@ -109,7 +126,8 @@ export class ProductListComponent implements OnInit {
         (item.labels && item.labels.some(l => l.toLowerCase().includes(term)));
 
       const matchesCategory = this.selectedCategory === 'all' || item.category === this.selectedCategory;
-      const matchesStorage = this.selectedStorage === 'all' || (item.storageType && item.storageType.toLowerCase() === this.selectedStorage.toLowerCase());
+      const matchesSubCategory = this.selectedSubCategory === 'all' || item.subCategory === this.selectedSubCategory;
+      const matchesBrand = this.selectedBrand === 'all' || item.brand === this.selectedBrand;
 
       let matchesStock = true;
       if (this.stockFilter === 'in_stock') {
@@ -124,7 +142,7 @@ export class ProductListComponent implements OnInit {
         matchesBranch = !!branchStock && branchStock.inStock;
       }
 
-      return matchesSearch && matchesCategory && matchesStorage && matchesStock && matchesBranch;
+      return matchesSearch && matchesCategory && matchesSubCategory && matchesBrand && matchesStock && matchesBranch;
     });
 
     result = [...result].sort((a, b) => {
@@ -207,6 +225,11 @@ export class ProductListComponent implements OnInit {
     this.currentPage = 1;
   }
 
+  onCategoryChange(): void {
+    this.selectedSubCategory = 'all';
+    this.currentPage = 1;
+  }
+
   onFilterChange(): void {
     this.currentPage = 1;
   }
@@ -228,6 +251,8 @@ export class ProductListComponent implements OnInit {
     this.searchTerm = '';
     this.selectedBranchId = 'all';
     this.selectedCategory = 'all';
+    this.selectedSubCategory = 'all';
+    this.selectedBrand = 'all';
     this.selectedStorage = 'all';
     this.stockFilter = 'all';
     this.sortBy = 'stock_desc';

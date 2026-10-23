@@ -278,3 +278,37 @@
     .font-jost {
       font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+
+    @media (max-width: 576px) {
+      .filter-bar-strip {
+        padding: 10px 12px;
+      }
+
+      .filter-control-wrap {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .filter-title {
+          min-width: 90px;
+        }
+
+        .filter-dropdown {
+          flex: 1;
+          min-width: 0 !important;
+          max-width: none !important;
+        }
+      }
+
+      .search-box-wrapper {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .btn-reset-filters {
+        width: 100%;
+        justify-content: center;
+        margin-top: 4px;
+      }
+    }
