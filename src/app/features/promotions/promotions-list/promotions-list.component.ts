@@ -355,6 +355,21 @@ export class PromotionsListComponent implements OnInit {
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
   availableProducts: ProductType[] = ProductList;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   // Filters
   selectedBranch: string = 'all';
   selectedStatus: string = 'all';

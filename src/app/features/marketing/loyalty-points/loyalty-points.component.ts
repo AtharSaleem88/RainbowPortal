@@ -379,6 +379,21 @@ export class LoyaltyPointsComponent implements OnInit {
   customers: CustomerLoyaltyRecord[] = MOCK_CUSTOMER_LOYALTY_RECORDS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
 
+  // Responsive row expand state (mobile child rows)
+  expandedCustIds = new Set<string>();
+
+  toggleCustExpand(id: string): void {
+    if (this.expandedCustIds.has(id)) {
+      this.expandedCustIds.delete(id);
+    } else {
+      this.expandedCustIds.add(id);
+    }
+  }
+
+  isCustExpanded(id: string): boolean {
+    return this.expandedCustIds.has(id);
+  }
+
   // Filter State
   searchTerm: string = '';
   selectedTier: string = 'all';

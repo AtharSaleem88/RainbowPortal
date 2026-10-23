@@ -457,17 +457,32 @@
     <table class="table table-clean campaign-table align-middle mb-0">
       <thead>
         <tr>
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
           <th>NOTIFICATION DETAILS</th>
-          <th>TARGET AUDIENCE</th>
-          <th>DISPATCH / SCHEDULE</th>
-          <th>RECIPIENTS</th>
-          <th class="text-center">STATUS</th>
-          <th class="text-end">ACTIONS</th>
+          <th class="d-none d-lg-table-cell">TARGET AUDIENCE</th>
+          <th class="d-none d-lg-table-cell">DISPATCH / SCHEDULE</th>
+          <th class="d-none d-lg-table-cell">RECIPIENTS</th>
+          <th class="d-none d-lg-table-cell text-center">STATUS</th>
+          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
         @for(item of paginatedNotifications; track item.id) {
           <tr>
+            <!-- 0. Mobile expand/collapse control -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" 
+                      class="dtr-control-btn border-0 bg-transparent p-0" 
+                      (click)="toggleRowExpand(item.id)" 
+                      [attr.aria-expanded]="isRowExpanded(item.id)"
+                      [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
+                <iconify-icon [icon]="isRowExpanded(item.id) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                              [class.text-danger]="isRowExpanded(item.id)" 
+                              [class.text-primary]="!isRowExpanded(item.id)" 
+                              class="fs-18"></iconify-icon>
+              </button>
+            </td>
+
             <!-- Col 1: Notification Details -->
             <td>
               <div>
@@ -477,7 +492,7 @@
             </td>
 
             <!-- Col 2: Target Audience -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div *ngIf="item.targetType === 'all'">
                 <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1 fs-11">
                   <iconify-icon icon="solar:users-group-two-rounded-bold" class="align-middle me-1"></iconify-icon> All Customers
@@ -509,7 +524,7 @@
             </td>
 
             <!-- Col 3: Date & Time -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div class="fs-12 text-dark fw-medium">{{ item.sentAt || item.scheduledAt }}</div>
               <span class="text-muted fs-11">
                 {{ item.status === 'Scheduled' ? 'Pending schedule' : 'Dispatched live' }}
@@ -517,7 +532,7 @@
             </td>
 
             <!-- Col 4: Recipients -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div class="fw-bold text-dark fs-13">{{ item.recipientsCount | number }}</div>
               <div class="text-muted fs-11" *ngIf="item.deliveredCount > 0">
                 Delivered: <span class="text-success fw-semibold">{{ item.deliveredCount | number }}</span>
@@ -525,7 +540,7 @@
             </td>
 
             <!-- Col 5: Status -->
-            <td class="text-center">
+            <td class="d-none d-lg-table-cell text-center">
               <span class="badge px-2 py-1 fs-11"
                     [ngClass]="item.status === 'Sent' ? 'bg-success-subtle text-success' : (item.status === 'Scheduled' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary')">
                 <iconify-icon [icon]="item.status === 'Sent' ? 'solar:check-circle-bold' : (item.status === 'Scheduled' ? 'solar:clock-circle-bold' : 'solar:document-text-bold')" class="align-middle me-1"></iconify-icon>
@@ -534,7 +549,7 @@
             </td>
 
             <!-- Col 6: Actions -->
-            <td class="text-end">
+            <td class="d-none d-lg-table-cell text-end">
               <div class="d-flex gap-2 justify-content-end">
                 <button type="button" class="cat-action-btn" (click)="openDetailsModal(item, detailsModal)" ngbTooltip="View Campaign Details" aria-label="View campaign details">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
@@ -545,9 +560,91 @@
               </div>
             </td>
           </tr>
+
+          <!-- Mobile Child Row -->
+          @if (isRowExpanded(item.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Target Audience</th>
+                        <td class="dtr-child-data">
+                          <div *ngIf="item.targetType === 'all'">
+                            <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1 fs-11">
+                              All Customers (Nationwide)
+                            </span>
+                          </div>
+                          <div *ngIf="item.targetType === 'branch'">
+                            <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1 fs-11">
+                              Branch: {{ item.targetBranch }}
+                            </span>
+                          </div>
+                          <div *ngIf="item.targetType === 'segment'">
+                            <span class="badge bg-warning-subtle text-warning-emphasis fw-semibold px-2 py-1 fs-11">
+                              Segment: {{ item.targetSegment }}
+                            </span>
+                          </div>
+                          <div *ngIf="item.targetType === 'individual'">
+                            <span class="badge bg-info-subtle text-info fw-semibold px-2 py-1 fs-11">
+                              Individual: {{ item.targetCustomerName }} ({{ item.targetCustomerPhone }})
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Schedule / Time</th>
+                        <td class="dtr-child-data">
+                          <div class="fs-12 text-dark fw-medium">{{ item.sentAt || item.scheduledAt }}</div>
+                          <small class="text-muted fs-11">
+                            {{ item.status === 'Scheduled' ? 'Pending schedule' : 'Dispatched live' }}
+                          </small>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Recipients</th>
+                        <td class="dtr-child-data">
+                          <div class="fw-bold text-dark fs-12">{{ item.recipientsCount | number }} total</div>
+                          <small class="text-muted fs-11" *ngIf="item.deliveredCount > 0">
+                            Delivered: <span class="text-success fw-semibold">{{ item.deliveredCount | number }}</span>
+                          </small>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-11"
+                                [ngClass]="item.status === 'Sent' ? 'bg-success-subtle text-success' : (item.status === 'Scheduled' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary')">
+                            <iconify-icon [icon]="item.status === 'Sent' ? 'solar:check-circle-bold' : (item.status === 'Scheduled' ? 'solar:clock-circle-bold' : 'solar:document-text-bold')" class="align-middle me-1"></iconify-icon>
+                            {{ item.status }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Actions</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1" (click)="openDetailsModal(item, detailsModal)">
+                              <iconify-icon icon="solar:eye-linear" class="fs-14 text-primary"></iconify-icon>
+                              <span>Details</span>
+                            </button>
+                            <button *ngIf="item.status === 'Scheduled'" type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger" (click)="cancelScheduledNotification(item)">
+                              <iconify-icon icon="solar:close-circle-linear" class="fs-14"></iconify-icon>
+                              <span>Cancel</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="6" class="text-center py-5">
+            <td colspan="7" class="text-center py-5">
               <iconify-icon icon="solar:bell-bing-bold" class="fs-36 text-muted mb-2"></iconify-icon>
               <h6 class="text-dark font-jost fs-14 fw-bold">No campaigns match criteria</h6>
               <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing audience and status filters.</p>

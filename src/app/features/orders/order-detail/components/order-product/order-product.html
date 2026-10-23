@@ -7,40 +7,82 @@
       <table class="table align-middle mb-0 table-hover table-centered">
         <thead class="bg-light-subtle border-bottom">
           <tr>
+            <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
             <th>Product Name & Size</th>
-            <th>Status</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Text</th>
+            <th class="d-none d-lg-table-cell">Status</th>
+            <th class="d-none d-lg-table-cell">Quantity</th>
+            <th class="d-none d-lg-table-cell">Price</th>
+            <th class="d-none d-lg-table-cell">Tax</th>
             <th>Amount</th>
           </tr>
         </thead>
         <tbody>
           @for(item of productList;track $index){
           <tr>
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" 
+                      class="dtr-control-btn border-0 bg-transparent p-0" 
+                      (click)="toggleRowExpand(item.name + $index)" 
+                      [attr.aria-expanded]="isRowExpanded(item.name + $index)"
+                      [title]="isRowExpanded(item.name + $index) ? 'Collapse details' : 'Expand details'">
+                <iconify-icon [icon]="isRowExpanded(item.name + $index) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                              [class.text-danger]="isRowExpanded(item.name + $index)" 
+                              [class.text-primary]="!isRowExpanded(item.name + $index)" 
+                              class="fs-18"></iconify-icon>
+              </button>
+            </td>
             <td>
               <div class="d-flex align-items-center gap-2">
                 <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
                   <img [src]="item.image" alt="" class="avatar-md">
                 </div>
                 <div>
-                  <a href="javascript:void(0);" class="text-dark fw-medium fs-15">{{item.name}}</a>
-                  <p class="text-muted mb-0 mt-1 fs-13"><span>Size : </span>{{item.size}}</p>
+                  <a href="javascript:void(0);" class="text-dark fw-medium fs-14">{{item.name}}</a>
+                  <p class="text-muted mb-0 mt-0.5 fs-12"><span>Size: </span>{{item.size}}</p>
                 </div>
               </div>
-
             </td>
 
-            <td>
-              <span class="badge px-2 py-1 fs-13" [ngClass]="{'bg-success-subtle text-success':item.status == 'Ready','bg-light text-dark':item.status == 'Packaging'}" >{{item.status}}</span>
+            <td class="d-none d-lg-table-cell">
+              <span class="badge px-2 py-1 fs-12" [ngClass]="{'bg-success-subtle text-success':item.status == 'Ready','bg-light text-dark':item.status == 'Packaging'}" >{{item.status}}</span>
             </td>
-            <td> {{item.quantity}}</td>
-            <td>${{item.price | number:'2.2'}}</td>
-            <td> ${{item.tax | number:'1.2'}}</td>
+            <td class="d-none d-lg-table-cell"> {{item.quantity}}</td>
+            <td class="d-none d-lg-table-cell">${{item.price | number:'2.2'}}</td>
+            <td class="d-none d-lg-table-cell"> ${{item.tax | number:'1.2'}}</td>
             <td>
-              ${{item.total | number:'1.2'}}
+              <span class="fw-bold text-dark font-jost">${{item.total | number:'1.2'}}</span>
             </td>
           </tr>
+          @if (isRowExpanded(item.name + $index)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-12" [ngClass]="{'bg-success-subtle text-success':item.status == 'Ready','bg-light text-dark':item.status == 'Packaging'}" >{{item.status}}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Quantity</th>
+                        <td class="dtr-child-data">{{item.quantity}}</td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Price</th>
+                        <td class="dtr-child-data">${{item.price | number:'2.2'}}</td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Tax</th>
+                        <td class="dtr-child-data">${{item.tax | number:'1.2'}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
           }
         </tbody>
       </table>

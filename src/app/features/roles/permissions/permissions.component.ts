@@ -367,6 +367,21 @@ export class PermissionsComponent implements OnInit {
   modalSelectedUser: UserPermissionProfile | null = null;
   actionFeedback: string | null = null;
 
+  // Responsive row expand state (mobile child rows)
+  expandedUserIds = new Set<string>();
+
+  toggleUserExpand(id: string): void {
+    if (this.expandedUserIds.has(id)) {
+      this.expandedUserIds.delete(id);
+    } else {
+      this.expandedUserIds.add(id);
+    }
+  }
+
+  isUserExpanded(id: string): boolean {
+    return this.expandedUserIds.has(id);
+  }
+
   constructor(private modalService: NgbModal) {
     this.initPermissions();
   }

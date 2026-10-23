@@ -206,19 +206,34 @@
     <table class="table table-clean align-middle mb-0">
       <thead>
         <tr>
-          <th>STAFF ID</th>
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+          <th class="d-none d-lg-table-cell">STAFF ID</th>
           <th>STAFF NAME &amp; CONTACT</th>
-          <th>BRANCH</th>
-          <th>ROLE</th>
-          <th class="text-center">DUTY STATUS</th>
-          <th class="text-end">ACTIONS</th>
+          <th class="d-none d-lg-table-cell">BRANCH</th>
+          <th class="d-none d-lg-table-cell">ROLE</th>
+          <th class="d-none d-lg-table-cell text-center">DUTY STATUS</th>
+          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
         @for (staff of paginatedStaff; track staff.id) {
           <tr>
+            <!-- 0. Mobile expand/collapse control -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" 
+                      class="dtr-control-btn border-0 bg-transparent p-0" 
+                      (click)="toggleRowExpand(staff.id)" 
+                      [attr.aria-expanded]="isRowExpanded(staff.id)"
+                      [title]="isRowExpanded(staff.id) ? 'Collapse details' : 'Expand details'">
+                <iconify-icon [icon]="isRowExpanded(staff.id) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                              [class.text-danger]="isRowExpanded(staff.id)" 
+                              [class.text-primary]="!isRowExpanded(staff.id)" 
+                              class="fs-18"></iconify-icon>
+              </button>
+            </td>
+
             <!-- Col 1: STAFF ID -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div class="fw-bold text-dark font-monospace fs-12">{{ staff.id }}</div>
             </td>
 
@@ -228,16 +243,17 @@
               <a [href]="'tel:' + staff.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
                 {{ staff.phone }}
               </a>
+              <div class="d-lg-none text-muted font-monospace fs-11 mt-0.5">ID: {{ staff.id }}</div>
             </td>
 
             <!-- Col 3: BRANCH -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <span class="fw-semibold text-dark fs-12 d-block">{{ staff.branchName }}</span>
               <small class="text-muted fs-11 d-block">{{ staff.city }} &bull; {{ staff.branchCode }}</small>
             </td>
 
             <!-- Col 4: ROLE -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div class="d-flex align-items-center gap-1.5">
                 @if (staff.role === 'Branch Manager') {
                   <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-semibold">
@@ -259,14 +275,14 @@
             </td>
 
             <!-- Col 5: DUTY STATUS -->
-            <td class="text-center">
+            <td class="d-none d-lg-table-cell text-center">
               <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(staff.status)">
                 {{ staff.status }}
               </span>
             </td>
 
             <!-- Col 6: ACTIONS -->
-            <td class="text-end">
+            <td class="d-none d-lg-table-cell text-end">
               <div class="d-flex gap-1 justify-content-end align-items-center">
                 <button type="button" class="cat-action-btn" (click)="openDetailModal(staff, detailModal)" ngbTooltip="View Full Profile">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
@@ -283,9 +299,82 @@
               </div>
             </td>
           </tr>
+
+          <!-- Mobile Child Row -->
+          @if (isRowExpanded(staff.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Branch</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-semibold text-dark fs-12 d-block">{{ staff.branchName }}</span>
+                          <small class="text-muted fs-11 d-block">{{ staff.city }} &bull; {{ staff.branchCode }}</small>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Role</th>
+                        <td class="dtr-child-data">
+                          @if (staff.role === 'Branch Manager') {
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-semibold">
+                              <iconify-icon icon="solar:user-check-bold" class="align-middle me-1"></iconify-icon>
+                              Branch Manager
+                            </span>
+                          } @else if (staff.role === 'Moderator') {
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle fs-11 fw-semibold">
+                              <iconify-icon icon="solar:shield-check-bold" class="align-middle me-1"></iconify-icon>
+                              Store Moderator
+                            </span>
+                          } @else {
+                            <span class="badge bg-info-subtle text-info border border-info-subtle fs-11 fw-semibold">
+                              <iconify-icon icon="solar:scooter-bold" class="align-middle me-1"></iconify-icon>
+                              Delivery Rider
+                            </span>
+                          }
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Duty Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(staff.status)">
+                            {{ staff.status }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Actions</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex gap-1.5 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1" (click)="openDetailModal(staff, detailModal)">
+                              <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>
+                              <span>View</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-primary" (click)="openEditModal(staff, staffModal)">
+                              <iconify-icon icon="solar:pen-linear" class="fs-14"></iconify-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1" (click)="toggleDutyStatus(staff)">
+                              <iconify-icon [icon]="staff.status === 'Off Duty' ? 'solar:play-circle-bold' : 'solar:pause-circle-bold'" [class.text-success]="staff.status === 'Off Duty'" class="fs-14"></iconify-icon>
+                              <span>{{ staff.status === 'Off Duty' ? 'Activate' : 'Off Duty' }}</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger" (click)="deleteStaff(staff)">
+                              <iconify-icon icon="solar:trash-bin-minimalistic-linear" class="fs-14"></iconify-icon>
+                              <span>Remove</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="6" class="text-center py-5">
+            <td colspan="7" class="text-center py-5">
               <iconify-icon icon="solar:users-group-two-rounded-broken" class="fs-36 text-muted mb-2"></iconify-icon>
               <h6 class="text-dark font-jost fs-14 fw-bold">No staff members match current criteria</h6>
               <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing branch and role filters.</p>

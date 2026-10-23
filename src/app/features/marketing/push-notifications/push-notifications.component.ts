@@ -438,6 +438,21 @@ export class PushNotificationsComponent implements OnInit {
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
   customers: RainbowCustomer[] = RAINBOW_CUSTOMERS_LIST;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   // Filter state
   filterAudience: string = 'all';
   filterBranch: string = 'all';

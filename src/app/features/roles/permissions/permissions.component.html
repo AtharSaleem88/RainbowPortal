@@ -298,18 +298,33 @@
       <table class="table table-clean align-middle mb-0">
         <thead>
           <tr>
-            <th>STAFF ID / CONTACT</th>
+            <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+            <th class="d-none d-lg-table-cell">STAFF ID / CONTACT</th>
             <th>NAME &amp; ROLE</th>
-            <th>STORE BRANCH</th>
-            <th>PERMISSIONS AUTHORIZED</th>
-            <th class="text-end">ACTIONS</th>
+            <th class="d-none d-lg-table-cell">STORE BRANCH</th>
+            <th class="d-none d-lg-table-cell">PERMISSIONS AUTHORIZED</th>
+            <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
           @for (u of paginatedUsers; track u.staffId) {
             <tr>
+              <!-- 0. Mobile expand/collapse control -->
+              <td class="dtr-control-col d-lg-none text-center">
+                <button type="button" 
+                        class="dtr-control-btn border-0 bg-transparent p-0" 
+                        (click)="toggleUserExpand(u.staffId)" 
+                        [attr.aria-expanded]="isUserExpanded(u.staffId)"
+                        [title]="isUserExpanded(u.staffId) ? 'Collapse details' : 'Expand details'">
+                  <iconify-icon [icon]="isUserExpanded(u.staffId) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                                [class.text-danger]="isUserExpanded(u.staffId)" 
+                                [class.text-primary]="!isUserExpanded(u.staffId)" 
+                                class="fs-18"></iconify-icon>
+                </button>
+              </td>
+
               <!-- Col 1: STAFF ID / CONTACT -->
-              <td>
+              <td class="d-none d-lg-table-cell">
                 <div class="fw-bold text-dark font-monospace fs-12">{{ u.staffId }}</div>
                 <a [href]="'tel:' + u.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block mt-0.5">
                   {{ u.phone }}
@@ -322,15 +337,16 @@
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10 fw-semibold">
                   {{ u.role }}
                 </span>
+                <div class="d-lg-none text-muted font-monospace fs-11 mt-1">ID: {{ u.staffId }}</div>
               </td>
 
               <!-- Col 3: STORE BRANCH -->
-              <td>
+              <td class="d-none d-lg-table-cell">
                 <span class="fw-semibold text-dark fs-12 d-block">{{ u.branchName }}</span>
               </td>
 
               <!-- Col 4: PERMISSIONS AUTHORIZED -->
-              <td>
+              <td class="d-none d-lg-table-cell">
                 <div class="d-flex align-items-center gap-2" style="max-width: 180px;">
                   <div class="progress flex-grow-1" style="height: 6px;">
                     <div class="progress-bar bg-primary" role="progressbar"
@@ -344,7 +360,7 @@
               </td>
 
               <!-- Col 5: ACTIONS -->
-              <td class="text-end">
+              <td class="d-none d-lg-table-cell text-end">
                 <div class="d-flex gap-1 justify-content-end align-items-center">
                   <button type="button" class="cat-action-btn" (click)="openUserCustomModal(u, customModal)" ngbTooltip="Customize User Permissions">
                     <iconify-icon icon="solar:pen-linear" class="fs-15"></iconify-icon>
@@ -355,9 +371,67 @@
                 </div>
               </td>
             </tr>
+
+            <!-- Mobile Child Row -->
+            @if (isUserExpanded(u.staffId)) {
+              <tr class="dtr-child-row d-lg-none">
+                <td colspan="100%" class="p-0 border-0">
+                  <div class="dtr-child-box">
+                    <table class="table dtr-child-table mb-0">
+                      <tbody>
+                        <tr>
+                          <th class="dtr-child-title">Contact</th>
+                          <td class="dtr-child-data">
+                            <a [href]="'tel:' + u.phone" class="text-primary fs-12 text-decoration-none fw-medium">
+                              {{ u.phone }}
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="dtr-child-title">Branch</th>
+                          <td class="dtr-child-data">
+                            <span class="fw-semibold text-dark fs-12">{{ u.branchName }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="dtr-child-title">Permissions</th>
+                          <td class="dtr-child-data">
+                            <div class="d-flex align-items-center gap-2" style="max-width: 220px;">
+                              <div class="progress flex-grow-1" style="height: 6px;">
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                     [style.width.%]="(getUserActiveCount(u.staffId) / totalPermissionsCount) * 100">
+                                </div>
+                              </div>
+                              <span class="fw-bold text-dark fs-12 font-monospace">
+                                {{ getUserActiveCount(u.staffId) }}/{{ totalPermissionsCount }}
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="dtr-child-title">Actions</th>
+                          <td class="dtr-child-data">
+                            <div class="d-flex gap-2">
+                              <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1" (click)="openUserCustomModal(u, customModal)">
+                                <iconify-icon icon="solar:pen-linear" class="fs-14 text-primary"></iconify-icon>
+                                <span>Customize</span>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-secondary" (click)="resetUserToRoleDefaults(u)">
+                                <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+                                <span>Reset Base</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            }
           } @empty {
             <tr>
-              <td colspan="5" class="text-center py-5">
+              <td colspan="6" class="text-center py-5">
                 <iconify-icon icon="solar:users-group-two-rounded-broken" class="fs-36 text-muted mb-2"></iconify-icon>
                 <h6 class="text-dark font-jost fs-14 fw-bold">No personnel match current criteria</h6>
                 <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing branch and role filters.</p>

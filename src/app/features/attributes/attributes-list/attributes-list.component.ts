@@ -12,6 +12,21 @@ import { NgbDropdownModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstr
 export class AttributesListComponent {
   title = 'Attribute List';
   attributes = AttributeData;
+
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string | number>();
+
+  toggleRowExpand(id: string | number): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string | number): boolean {
+    return this.expandedRowIds.has(id);
+  }
 }
 
 export { AttributesListComponent as AttributesList };
