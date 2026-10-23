@@ -332,6 +332,30 @@ import { MASTER_CATEGORIES, SUB_CATEGORIES, SUB_SUB_CATEGORIES, BRANDS, MasterCa
 
     @media (max-width: 575.98px) {
       .promotion-scope { grid-template-columns: minmax(0, 1fr); }
+
+      .table-clean {
+        th, td {
+          padding: 8px 8px;
+        }
+      }
+
+      .dtr-child-table {
+        .dtr-child-title {
+          width: 32%;
+          min-width: 90px;
+          padding: 8px 10px;
+          font-size: 11px;
+          line-height: 1.3;
+          vertical-align: middle;
+          word-break: normal;
+        }
+
+        .dtr-child-data {
+          padding: 8px 10px;
+          font-size: 12px;
+          word-break: break-word;
+        }
+      }
     }
 
     /* Branch Checkbox Card */

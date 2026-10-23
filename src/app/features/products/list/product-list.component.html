@@ -286,12 +286,6 @@
                 <span class="badge" [ngClass]="stockStatus.stock > 30 ? 'bg-success-subtle text-success border border-success-subtle' : (stockStatus.stock > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle')">
                   {{ stockStatus.inStock ? 'In Stock (' + stockStatus.stock + ')' : 'Out of Stock' }}
                 </span>
-                <button type="button" class="btn btn-xs btn-outline-primary py-0.5 px-2 fs-11 d-inline-flex align-items-center gap-1 mt-1 cursor-pointer"
-                        (click)="openBranchStockModal(branchModal, item)"
-                        ngbTooltip="Configure live stock across 10 superstore branches">
-                  <iconify-icon icon="solar:point-on-map-bold" class="fs-12"></iconify-icon>
-                  <span>10 Branches Geo</span>
-                </button>
               </div>
             </td>
 

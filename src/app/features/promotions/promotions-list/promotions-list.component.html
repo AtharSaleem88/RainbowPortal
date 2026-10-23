@@ -326,7 +326,7 @@
                         <th class="dtr-child-title">Price & Discount</th>
                         <td class="dtr-child-data">
                           @if (promo.scope === 'individual' && promo.originalPrice && promo.promoPrice) {
-                            <div class="d-flex align-items-baseline gap-2">
+                            <div class="d-flex align-items-baseline gap-1.5 flex-wrap">
                               <span class="fw-bold text-dark fs-14 font-jost">Rs. {{ promo.promoPrice | number }}</span>
                               <span class="text-muted text-decoration-line-through fs-12">Rs. {{ promo.originalPrice | number }}</span>
                               <span class="badge bg-success-subtle text-success fs-10">
@@ -372,16 +372,16 @@
                       <tr>
                         <th class="dtr-child-title">Actions</th>
                         <td class="dtr-child-data">
-                          <div class="d-flex align-items-center gap-2">
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
                             <button type="button" 
                                     (click)="openEditModal(promo, promoModal)" 
-                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1">
+                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 cursor-pointer">
                               <iconify-icon icon="solar:pen-2-broken" class="fs-14 text-primary"></iconify-icon>
                               <span>Edit</span>
                             </button>
                             <button type="button" 
                                     (click)="deletePromotion(promo)" 
-                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger">
+                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger cursor-pointer">
                               <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-14"></iconify-icon>
                               <span>Delete</span>
                             </button>
