@@ -33,8 +33,20 @@ export class SubCategoryComponent implements OnInit {
   masterCategories: MasterCategory[] = MASTER_CATEGORIES;
   allSubCategories: SubCategory[] = SUB_CATEGORIES;
   
-  // View Mode: Table (default) or Cards
-  viewMode: 'table' | 'cards' = 'table';
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
 
   selectedCategoryId: string = 'all';
   searchTerm: string = '';
@@ -66,19 +78,6 @@ export class SubCategoryComponent implements OnInit {
         this.selectedCategoryId = params['category'];
       }
     });
-  }
-
-  // Scroll Synchronization for Top Scrollbar
-  onTopScroll(top: HTMLElement, table: HTMLElement): void {
-    if (table && Math.abs(table.scrollLeft - top.scrollLeft) > 1) {
-      table.scrollLeft = top.scrollLeft;
-    }
-  }
-
-  onTableScroll(table: HTMLElement, top: HTMLElement): void {
-    if (top && Math.abs(top.scrollLeft - table.scrollLeft) > 1) {
-      top.scrollLeft = table.scrollLeft;
-    }
   }
 
   get totalProducts(): number {

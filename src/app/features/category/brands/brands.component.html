@@ -71,20 +71,8 @@
         </button>
       </div>
 
-      <!-- Right: Search Box, Page Size & View Toggle -->
+      <!-- Right: Search Box & Page Size -->
       <div class="d-flex align-items-center gap-2 toolbar-search-group">
-        <!-- View Toggle (Table / Cards) -->
-        <div class="view-switch-group d-flex align-items-center bg-light rounded-2 p-0.5 border flex-shrink-0">
-          <button type="button" class="btn btn-xs view-switch-btn" [class.active]="viewMode === 'table'" (click)="viewMode = 'table'" title="Table View (with Table Headers)">
-            <iconify-icon icon="solar:list-bold" class="fs-14 align-middle"></iconify-icon>
-            <span class="d-none d-md-inline ms-1 fs-11 fw-semibold">Table</span>
-          </button>
-          <button type="button" class="btn btn-xs view-switch-btn" [class.active]="viewMode === 'cards'" (click)="viewMode = 'cards'" title="Card View (with Column Labels)">
-            <iconify-icon icon="solar:widget-2-linear" class="fs-14 align-middle"></iconify-icon>
-            <span class="d-none d-md-inline ms-1 fs-11 fw-semibold">Cards</span>
-          </button>
-        </div>
-
         <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
@@ -140,238 +128,217 @@
     </div>
   </div>
 
-  <!-- ========================================================
-       MODE 1: RESPONSIVE TABLE VIEW (Default - Table Heads Visible Everywhere)
-       ======================================================== -->
-  @if (viewMode === 'table') {
-    <!-- Top Horizontal Scroll Helper -->
-    <div class="table-top-scroll-wrapper d-md-none" #topScroll (scroll)="onTopScroll(topScroll, tableContainer)">
-      <div class="table-top-scroll-inner"></div>
-    </div>
+  <!-- Brands Table (Responsive Child-Row Expand on Small Screens) -->
+  <div class="table-responsive">
+    <table class="table table-clean table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
 
-    <!-- Small Screen Horizontal Swipe Indicator Strip -->
-    <div class="d-md-none px-3 py-1 bg-light border-bottom d-flex align-items-center justify-content-between fs-11 text-muted">
-      <span>
-        <iconify-icon icon="solar:transfer-horizontal-linear" class="align-middle text-primary me-1 fs-13"></iconify-icon>
-        Scroll horizontally &bull; headers visible
-      </span>
-      <span class="badge bg-white text-dark border font-monospace fs-10">6 Columns</span>
-    </div>
+          <!-- Checkbox -->
+          <th style="width: 38px;" class="text-center">
+            <div class="form-check m-0 d-flex justify-content-center">
+              <input type="checkbox" class="form-check-input cursor-pointer" 
+                     [checked]="isAllSelected" 
+                     (change)="toggleSelectAll($event)">
+            </div>
+          </th>
 
-    <!-- Brands Table (Full Table with Table Heads on ALL Screens) -->
-    <div class="table-responsive" #tableContainer (scroll)="onTableScroll(tableContainer, topScroll)">
-      <table class="table table-clean table-hover align-middle mb-0">
-        <thead>
-          <tr>
-            <th style="width: 38px;" class="text-center th-checkbox">
+          <!-- Brand (Always visible) -->
+          <th style="min-width: 180px;">Brand</th>
+
+          <!-- Desktop Columns (Hidden on < 992px, shown in child row) -->
+          <th class="d-none d-lg-table-cell" style="min-width: 240px;">Category Association</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 100px;">Active SKUs</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 90px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 100px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(b of paginatedBrands; track b.id){
+          <!-- Parent Row -->
+          <tr class="cat-row" [class.table-light]="isSelected(b.id)" [class.dtr-row-expanded]="isRowExpanded(b.id)">
+            
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(b.id)"
+                      (click)="toggleRowExpand(b.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(b.id)"
+                      [title]="isRowExpanded(b.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(b.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
+            <!-- Checkbox -->
+            <td class="text-center">
               <div class="form-check m-0 d-flex justify-content-center">
-                <input type="checkbox" class="form-check-input cursor-pointer" 
-                       [checked]="isAllSelected" 
-                       (change)="toggleSelectAll($event)">
+                <input type="checkbox" class="form-check-input cursor-pointer"
+                       [checked]="isSelected(b.id)"
+                       (change)="toggleSelect(b.id)">
               </div>
-            </th>
-            <th class="th-master-cat" style="min-width: 220px;">Brand</th>
-            <th style="min-width: 240px;">Category Association</th>
-            <th style="min-width: 100px;">Active SKUs</th>
-            <th style="width: 90px;" class="text-center">Status</th>
-            <th style="width: 100px;" class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for(b of paginatedBrands; track b.id){
-            <tr class="cat-row" [class.table-light]="isSelected(b.id)">
-              
-              <!-- Checkbox -->
-              <td class="text-center td-checkbox">
-                <div class="form-check m-0 d-flex justify-content-center">
-                  <input type="checkbox" class="form-check-input cursor-pointer"
-                         [checked]="isSelected(b.id)"
-                         (change)="toggleSelect(b.id)">
-                </div>
-              </td>
+            </td>
 
-              <!-- Brand Name & Description -->
-              <td class="td-master-cat">
-                <div class="overflow-hidden">
-                  <span class="fw-bold text-dark fs-13 text-truncate d-block">{{ b.name }}</span>
-                  <small class="text-muted d-block text-truncate" style="max-width: 220px;">
-                    {{ b.description }}
-                  </small>
-                </div>
-              </td>
+            <!-- Brand Name & Description -->
+            <td>
+              <div class="overflow-hidden">
+                <span class="fw-bold text-dark fs-13 text-truncate d-block">{{ b.name }}</span>
+                <small class="text-muted d-block text-truncate" style="max-width: 240px;">
+                  {{ b.description }}
+                </small>
+              </div>
+            </td>
 
-              <!-- Category Association -->
-              <td>
-                <div class="d-flex flex-column gap-1">
-                  @for(mapping of b.categoryMappings; track mapping.categoryId){
-                    <div class="d-flex align-items-center flex-wrap gap-1">
-                      <span class="badge bg-light text-primary border border-primary-subtle fs-10 fw-semibold">
-                        {{ mapping.categoryName }}
+            <!-- Category Association (Desktop only) -->
+            <td class="d-none d-lg-table-cell">
+              <div class="d-flex flex-column gap-1">
+                @for(mapping of b.categoryMappings; track mapping.categoryId){
+                  <div class="d-flex align-items-center flex-wrap gap-1">
+                    <span class="badge bg-light text-primary border border-primary-subtle fs-10 fw-semibold">
+                      {{ mapping.categoryName }}
+                    </span>
+                    @for(subName of mapping.subCategoryNames; track subName){
+                      <span class="badge bg-white text-muted border fs-10">
+                        {{ subName }}
                       </span>
-                      @for(subName of mapping.subCategoryNames; track subName){
-                        <span class="badge bg-white text-muted border fs-10">
-                          {{ subName }}
-                        </span>
-                      }
-                    </div>
-                  }
-                </div>
-              </td>
-
-              <!-- Active SKUs -->
-              <td>
-                <span class="fw-bold text-dark fs-13 font-jost">{{ b.totalProducts | number }}</span>
-                <span class="text-muted fs-11 ms-1">SKUs</span>
-              </td>
-
-              <!-- Status Switch -->
-              <td class="text-center">
-                <div class="form-check form-switch d-inline-block m-0 cursor-pointer">
-                  <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
-                         [checked]="b.status === 'Active'" 
-                         (change)="toggleStatus(b)">
-                </div>
-              </td>
-
-              <!-- Actions -->
-              <td class="text-end">
-                <div class="d-flex align-items-center justify-content-end gap-1.5">
-                  <button type="button" class="cat-action-btn cursor-pointer" (click)="openEditModal(b, brandModal)" ngbTooltip="Edit Brand">
-                    <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
-                  </button>
-
-                  <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteBrand(b)" ngbTooltip="Delete Brand">
-                    <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
-                  </button>
-                </div>
-              </td>
-
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="6" class="text-center py-5">
-                <div class="d-flex flex-column align-items-center justify-content-center">
-                  <div class="rounded-circle p-3 bg-light text-muted mb-2">
-                    <iconify-icon icon="solar:shop-2-bold-duotone" class="fs-32"></iconify-icon>
+                    }
                   </div>
-                  <h6 class="fw-bold text-dark mb-1">No Brands Found</h6>
-                  <p class="text-muted fs-12 mb-3">No brands match your search or filter criteria.</p>
-                  <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" 
-                          (click)="clearSearch(); selectedCategoryFilter = 'all'; setStatusFilter('all')">
-                    Reset All Filters
-                  </button>
+                }
+              </div>
+            </td>
+
+            <!-- Active SKUs (Desktop only) -->
+            <td class="d-none d-lg-table-cell">
+              <span class="fw-bold text-dark fs-13 font-jost">{{ b.totalProducts | number }}</span>
+              <span class="text-muted fs-11 ms-1">SKUs</span>
+            </td>
+
+            <!-- Status Switch (Desktop only) -->
+            <td class="text-center d-none d-lg-table-cell">
+              <div class="form-check form-switch d-inline-block m-0 cursor-pointer">
+                <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
+                       [checked]="b.status === 'Active'" 
+                       (change)="toggleStatus(b)">
+              </div>
+            </td>
+
+            <!-- Actions (Desktop only) -->
+            <td class="text-end d-none d-lg-table-cell">
+              <div class="d-flex align-items-center justify-content-end gap-1.5">
+                <button type="button" class="cat-action-btn cursor-pointer" (click)="openEditModal(b, brandModal)" ngbTooltip="Edit Brand">
+                  <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
+                </button>
+
+                <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteBrand(b)" ngbTooltip="Delete Brand">
+                  <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
+                </button>
+              </div>
+            </td>
+
+          </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(b.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Categories</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex flex-column gap-1">
+                            @for(mapping of b.categoryMappings; track mapping.categoryId){
+                              <div class="d-flex align-items-center flex-wrap gap-1">
+                                <span class="badge bg-light text-primary border border-primary-subtle fs-10 fw-semibold">
+                                  {{ mapping.categoryName }}
+                                </span>
+                                @for(subName of mapping.subCategoryNames; track subName){
+                                  <span class="badge bg-white text-muted border fs-10">
+                                    {{ subName }}
+                                  </span>
+                                }
+                              </div>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Total Products</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-bold text-dark fs-13 font-jost">{{ b.totalProducts | number }}</span>
+                          <span class="text-muted fs-11 ms-1">SKUs</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Origin</th>
+                        <td class="dtr-child-data">
+                          <span class="badge bg-light text-dark border fs-11">{{ b.origin }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="form-check form-switch m-0 d-inline-block cursor-pointer">
+                              <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
+                                     [checked]="b.status === 'Active'" 
+                                     (change)="toggleStatus(b)">
+                            </div>
+                            <span class="badge" [class.bg-success-subtle]="b.status === 'Active'" [class.text-success]="b.status === 'Active'" [class.bg-danger-subtle]="b.status !== 'Active'" [class.text-danger]="b.status !== 'Active'">
+                              {{ b.status }}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" (click)="openEditModal(b, brandModal)"
+                                    class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer">
+                              <iconify-icon icon="solar:pen-2-broken" class="fs-14"></iconify-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button type="button" (click)="deleteBrand(b)"
+                                    class="btn btn-sm btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer">
+                              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-14"></iconify-icon>
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </td>
             </tr>
           }
-        </tbody>
-      </table>
-    </div>
-  }
-
-  <!-- ========================================================
-       MODE 2: CARD VIEW (Explicit Table Head Labels on Every Card)
-       ======================================================== -->
-  @if (viewMode === 'cards') {
-    <div class="cat-card-grid p-3">
-      <!-- Quick Select All Bar -->
-      <div class="p-2.5 px-3 bg-light rounded-2 border mb-3 d-flex align-items-center justify-content-between">
-        <div class="form-check m-0 d-flex align-items-center gap-2">
-          <input type="checkbox" class="form-check-input cursor-pointer" id="brandCardSelectAll"
-                 [checked]="isAllSelected" 
-                 (change)="toggleSelectAll($event)">
-          <label for="brandCardSelectAll" class="form-check-label fs-12 fw-semibold text-muted cursor-pointer mb-0">
-            Select All Brands
-          </label>
-        </div>
-        <span class="fs-11 text-muted">{{ paginatedBrands.length }} displayed</span>
-      </div>
-
-      <div class="row g-3">
-        @for(b of paginatedBrands; track b.id){
-          <div class="col-12 col-md-6 col-xl-4">
-            <div class="cat-item-card p-3 border rounded-3 bg-white h-100 d-flex flex-column" [class.cat-item-selected]="isSelected(b.id)">
-              
-              <!-- Brand Table Head & Status -->
-              <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-                <div class="d-flex align-items-start gap-2 min-w-0">
-                  <input type="checkbox" class="form-check-input flex-shrink-0 cursor-pointer mt-1"
-                         [checked]="isSelected(b.id)"
-                         (change)="toggleSelect(b.id)">
-                  <div class="min-w-0">
-                    <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block">Brand</span>
-                    <span class="fw-bold text-dark fs-14 text-truncate d-block">{{ b.name }}</span>
-                  </div>
-                </div>
-
-                <!-- Status Table Head & Toggle -->
-                <div class="text-end flex-shrink-0">
-                  <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block mb-1">Status</span>
-                  <div class="form-check form-switch m-0 d-inline-block cursor-pointer">
-                    <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
-                           [checked]="b.status === 'Active'" 
-                           (change)="toggleStatus(b)"
-                           [id]="'brand-card-switch-' + b.id">
-                  </div>
-                </div>
-              </div>
-
-              <!-- Description -->
-              @if (b.description) {
-                <p class="text-muted fs-11 mb-2 line-clamp-2 ps-4" style="line-height: 1.4;">{{ b.description }}</p>
-              }
-
-              <!-- Category Association Table Head -->
-              <div class="mb-2 ps-4">
-                <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block mb-1">Category Association</span>
-                <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                  @for(mapping of b.categoryMappings; track mapping.categoryId){
-                    <span class="badge bg-light text-primary border border-primary-subtle fs-10 fw-semibold">
-                      {{ mapping.categoryName }}
-                    </span>
-                  }
-                </div>
-              </div>
-
-              <!-- Active SKUs Table Head -->
-              <div class="py-2 border-top border-bottom my-2 bg-light-subtle rounded-2 px-2 mt-auto">
-                <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block mb-1">Active SKUs</span>
-                <span class="badge bg-light text-dark border fs-11 fw-normal px-2 py-1">
-                  <strong class="fw-semibold font-jost">{{ b.totalProducts | number }}</strong> SKUs
-                </span>
-              </div>
-
-              <!-- Actions Table Head -->
-              <div class="d-flex align-items-center justify-content-between pt-1">
-                <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold">Actions</span>
-                <div class="d-flex align-items-center gap-1.5">
-                  <button type="button" class="cat-action-btn cursor-pointer" (click)="openEditModal(b, brandModal)" ngbTooltip="Edit">
-                    <iconify-icon icon="solar:pen-2-broken" class="fs-15"></iconify-icon>
-                  </button>
-                  <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteBrand(b)" ngbTooltip="Delete">
-                    <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-15"></iconify-icon>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
         } @empty {
-          <div class="col-12 text-center py-5">
-            <div class="rounded-circle p-3 bg-light text-muted d-inline-flex mb-2">
-              <iconify-icon icon="solar:shop-2-bold-duotone" class="fs-28"></iconify-icon>
-            </div>
-            <h6 class="fw-bold text-dark mb-1 fs-14">No Brands Found</h6>
-            <p class="text-muted fs-12 mb-3">No brands match your search or filter criteria.</p>
-            <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" 
-                    (click)="clearSearch(); selectedCategoryFilter = 'all'; setStatusFilter('all')">
-              Reset All Filters
-            </button>
-          </div>
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <div class="d-flex flex-column align-items-center justify-content-center">
+                <div class="rounded-circle p-3 bg-light text-muted mb-2">
+                  <iconify-icon icon="solar:shop-2-bold-duotone" class="fs-32"></iconify-icon>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">No Brands Found</h6>
+                <p class="text-muted fs-12 mb-3">No brands match your search or filter criteria.</p>
+                <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" 
+                        (click)="clearSearch(); selectedCategoryFilter = 'all'; setStatusFilter('all')">
+                  Reset All Filters
+                </button>
+              </div>
+            </td>
+          </tr>
         }
-      </div>
-    </div>
-  }
+      </tbody>
+    </table>
+  </div>
 
   <!-- Footer Pagination & Count Info -->
   <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">

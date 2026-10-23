@@ -34,8 +34,20 @@ export class SubSubCategoryComponent implements OnInit {
   subCategories: SubCategory[] = SUB_CATEGORIES;
   allSubSubCategories: SubSubCategory[] = SUB_SUB_CATEGORIES;
 
-  // View Mode: Table (default) or Cards
-  viewMode: 'table' | 'cards' = 'table';
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
 
   selectedSubCategoryId: string = 'all';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';
@@ -67,19 +79,6 @@ export class SubSubCategoryComponent implements OnInit {
         this.selectedSubCategoryId = params['subcategory'];
       }
     });
-  }
-
-  // Scroll Synchronization for Top Scrollbar
-  onTopScroll(top: HTMLElement, table: HTMLElement): void {
-    if (table && Math.abs(table.scrollLeft - top.scrollLeft) > 1) {
-      table.scrollLeft = top.scrollLeft;
-    }
-  }
-
-  onTableScroll(table: HTMLElement, top: HTMLElement): void {
-    if (top && Math.abs(top.scrollLeft - table.scrollLeft) > 1) {
-      top.scrollLeft = table.scrollLeft;
-    }
   }
 
   get modalSubCategories(): SubCategory[] {
