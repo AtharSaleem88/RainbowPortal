@@ -142,9 +142,9 @@
         </button>
       </div>
 
-      <!-- Search Box with Clear Button -->
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <div class="search-box-wrapper">
+      <!-- Search Box with Clear Button & Page Size -->
+      <div class="d-flex align-items-center gap-2 ms-auto flex-wrap flex-sm-nowrap">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -155,6 +155,13 @@
             </button>
           }
         </div>
+
+        <!-- Page Size Selector Above -->
+        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
+          <option [ngValue]="10">10 / page</option>
+          <option [ngValue]="20">20 / page</option>
+          <option [ngValue]="50">50 / page</option>
+        </select>
       </div>
     </div>
   </div>
@@ -372,18 +379,25 @@
     </table>
   </div>
 
-  <!-- Pagination Footer -->
-  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
-    <div class="d-flex align-items-center gap-2 text-muted fs-12">
-      <span>Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredOrders.length }}</strong> orders</span>
-      <select [(ngModel)]="pageSize" class="form-select form-select-sm shadow-none" style="width: auto;">
-        <option [ngValue]="10">10 / page</option>
-        <option [ngValue]="25">25 / page</option>
-        <option [ngValue]="50">50 / page</option>
-      </select>
+  <!-- Footer Pagination & Count Info -->
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredOrders.length ? currentStartIndex : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredOrders.length }}</span>
     </div>
-    <ngb-pagination [collectionSize]="filteredOrders.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5" class="pagination-sm mb-0">
-    </ngb-pagination>
+
+    @if (filteredOrders.length > pageSize) {
+      <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="filteredOrders.length"
+        [maxSize]="3"
+        [rotate]="true"
+        [boundaryLinks]="false"
+        class="pagination-sm mb-0 cursor-pointer">
+      </ngb-pagination>
+    }
   </div>
 </div>
 

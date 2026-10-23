@@ -485,6 +485,11 @@ export class OrdersListComponent implements OnInit {
     return Math.min(this.currentPage * this.pageSize, this.filteredOrders.length);
   }
 
+  onPageSizeChange(newSize: any) {
+    this.pageSize = Number(newSize);
+    this.currentPage = 1;
+  }
+
   onSearchChange() {
     this.currentPage = 1;
   }

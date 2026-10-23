@@ -443,19 +443,20 @@
     </div>
 
     <!-- Pagination Footer -->
-    <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
-      <div class="text-muted fs-12">
-        Showing <strong>{{ userStartIndex }}</strong> to <strong>{{ userEndIndex }}</strong> of <strong>{{ filteredUsers.length }}</strong> personnel
+    <div class="p-2.5 p-sm-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="fs-11 fs-sm-12 text-muted">
+        Showing <span class="fw-semibold text-dark">{{ filteredUsers.length ? userStartIndex : 0 }}</span> to
+        <span class="fw-semibold text-dark">{{ userEndIndex }}</span> of
+        <span class="fw-semibold text-dark">{{ filteredUsers.length }}</span>
       </div>
       @if (filteredUsers.length > userPageSize) {
         <ngb-pagination [collectionSize]="filteredUsers.length"
                         [(page)]="userCurrentPage"
                         [pageSize]="userPageSize"
-                        [maxSize]="5"
+                        [maxSize]="3"
                         [rotate]="true"
-                        [boundaryLinks]="true"
-                        size="sm"
-                        class="mb-0">
+                        [boundaryLinks]="false"
+                        class="pagination-sm mb-0 cursor-pointer">
         </ngb-pagination>
       }
     </div>

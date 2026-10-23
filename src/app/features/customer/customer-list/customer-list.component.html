@@ -282,9 +282,9 @@
         </div>
       </div>
 
-      <!-- Search Input -->
-      <div class="col-lg-4 col-md-5">
-        <div class="input-group input-group-sm">
+      <!-- Search Input & Page Size -->
+      <div class="col-lg-4 col-md-5 d-flex align-items-center gap-2">
+        <div class="input-group input-group-sm flex-grow-1">
           <span class="input-group-text bg-light border-end-0">
             <iconify-icon icon="solar:magnifer-linear" class="fs-16 text-muted"></iconify-icon>
           </span>
@@ -295,6 +295,13 @@
             <i class="bx bx-x"></i>
           </button>
         </div>
+
+        <!-- Page Size Selector Above -->
+        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none" style="width: auto; min-width: 95px; height: 31px;">
+          <option [ngValue]="8">8 / page</option>
+          <option [ngValue]="16">16 / page</option>
+          <option [ngValue]="32">32 / page</option>
+        </select>
       </div>
 
       <!-- Branch Filter -->
@@ -540,17 +547,24 @@
     </table>
   </div>
 
-  <!-- Pagination Footer -->
-  <div class="card-footer bg-white border-top py-3">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-      <div class="text-muted small">
-        Showing <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> to
-        <strong>{{ (currentPage * pageSize) < filteredCustomers.length ? (currentPage * pageSize) : filteredCustomers.length }}</strong> of
-        <strong>{{ filteredCustomers.length }}</strong> customers
-      </div>
-      <ngb-pagination [collectionSize]="filteredCustomers.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5" class="pagination-sm mb-0">
-      </ngb-pagination>
+  <!-- Footer Pagination & Count Info -->
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredCustomers.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ (currentPage * pageSize) < filteredCustomers.length ? (currentPage * pageSize) : filteredCustomers.length }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredCustomers.length }}</span>
     </div>
+    @if (filteredCustomers.length > pageSize) {
+      <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="filteredCustomers.length"
+        [maxSize]="3"
+        [rotate]="true"
+        [boundaryLinks]="false"
+        class="pagination-sm mb-0 cursor-pointer">
+      </ngb-pagination>
+    }
   </div>
 </div>
 

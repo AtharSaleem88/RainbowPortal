@@ -656,12 +656,16 @@
   </div>
 
   <!-- Pagination Footer -->
-  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
-    <div class="text-muted fs-12">
-      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredNotifications.length }}</strong> campaigns
+  <div class="p-2.5 p-sm-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredNotifications.length ? currentStartIndex : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredNotifications.length }}</span>
     </div>
-    <ngb-pagination [collectionSize]="filteredNotifications.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5" class="pagination-sm mb-0">
-    </ngb-pagination>
+    @if (filteredNotifications.length > pageSize) {
+      <ngb-pagination [collectionSize]="filteredNotifications.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="3" [rotate]="true" [boundaryLinks]="false" class="pagination-sm mb-0 cursor-pointer">
+      </ngb-pagination>
+    }
   </div>
 </div>
 

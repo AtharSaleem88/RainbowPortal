@@ -47,6 +47,11 @@ export class CustomerListComponent implements OnInit {
   pageSize: number = 8;
   currentPage: number = 1;
 
+  onPageSizeChange(newSize: any) {
+    this.pageSize = Number(newSize);
+    this.currentPage = 1;
+  }
+
   // Expanded row state
   expandedRowMap: { [customerId: string]: boolean } = {};
 

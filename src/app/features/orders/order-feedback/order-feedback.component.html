@@ -328,19 +328,20 @@
   </div>
 
   <!-- Table Pagination Footer -->
-  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="text-muted fs-12">
-      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredFeedbacks.length }}</strong> customer reviews
+  <div class="p-2.5 p-sm-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredFeedbacks.length ? currentStartIndex : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredFeedbacks.length }}</span>
     </div>
     @if (filteredFeedbacks.length > pageSize) {
       <ngb-pagination [collectionSize]="filteredFeedbacks.length"
                       [(page)]="currentPage"
                       [pageSize]="pageSize"
-                      [maxSize]="5"
+                      [maxSize]="3"
                       [rotate]="true"
-                      [boundaryLinks]="true"
-                      size="sm"
-                      class="mb-0">
+                      [boundaryLinks]="false"
+                      class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>
     }
   </div>

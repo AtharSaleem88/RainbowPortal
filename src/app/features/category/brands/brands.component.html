@@ -343,9 +343,9 @@
   <!-- Footer Pagination & Count Info -->
   <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
     <div class="fs-11 fs-sm-12 text-muted">
-      Showing <span class="fw-semibold text-dark">{{ ((currentPage - 1) * pageSize) + 1 }}</span> to
+      Showing <span class="fw-semibold text-dark">{{ filteredBrands.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
       <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
-      <span class="fw-semibold text-dark">{{ filteredBrands.length }}</span> <span class="d-none d-sm-inline">Brands</span>
+      <span class="fw-semibold text-dark">{{ filteredBrands.length }}</span>
     </div>
 
     @if (filteredBrands.length > pageSize) {

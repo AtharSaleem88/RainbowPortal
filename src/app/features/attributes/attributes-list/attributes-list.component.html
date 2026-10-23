@@ -131,13 +131,14 @@
         </div>
         
       </div>
-      <div class="card-footer border-top">
-        <nav aria-label="Page navigation example">
-          <ngb-pagination [collectionSize]="30" [page]="1" class="pagination justify-content-end mb-0">
-            <ng-template ngbPaginationPrevious>Previous</ng-template>
-            <ng-template ngbPaginationNext>Next</ng-template>
-          </ngb-pagination>
-        </nav>
+      <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="fs-11 fs-sm-12 text-muted">
+          Showing <span class="fw-semibold text-dark">1</span> to
+          <span class="fw-semibold text-dark">{{ attributes.length }}</span> of
+          <span class="fw-semibold text-dark">{{ attributes.length }}</span>
+        </div>
+        <ngb-pagination [collectionSize]="attributes.length" [page]="1" [pageSize]="10" [maxSize]="3" [rotate]="true" [boundaryLinks]="false" class="pagination-sm mb-0 cursor-pointer">
+        </ngb-pagination>
       </div>
     </div>
   </div>

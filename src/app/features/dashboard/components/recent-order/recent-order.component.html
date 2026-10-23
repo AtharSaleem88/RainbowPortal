@@ -130,24 +130,13 @@
   </div>
   
 
-  <div class="card-footer border-top">
-    <div class="row g-3">
-      <div class="col-sm">
-        <div class="text-muted">
-          Showing
-          <span class="fw-semibold">5</span>
-          of
-          <span class="fw-semibold">90,521</span>
-          orders
-        </div>
-      </div>
-
-      <div class="col-sm-auto">
-        <ngb-pagination [collectionSize]="30" [page]="1" class="m-0">
-          <ng-template ngbPaginationPrevious><i class="bx bx-left-arrow-alt"></i></ng-template>
-          <ng-template ngbPaginationNext><i class="bx bx-right-arrow-alt"></i></ng-template>
-        </ngb-pagination>
-      </div>
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">1</span> to
+      <span class="fw-semibold text-dark">{{ orders.length }}</span> of
+      <span class="fw-semibold text-dark">{{ orders.length }}</span>
     </div>
+    <ngb-pagination [collectionSize]="orders.length" [page]="1" [pageSize]="5" [maxSize]="3" [rotate]="true" [boundaryLinks]="false" class="pagination-sm mb-0 cursor-pointer">
+    </ngb-pagination>
   </div>
 </div>

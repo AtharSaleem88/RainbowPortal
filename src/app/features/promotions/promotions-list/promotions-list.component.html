@@ -415,11 +415,11 @@
   </div>
 
   <!-- Footer Pagination -->
-  <div class="p-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="fs-12 text-muted">
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
       Showing <span class="fw-semibold text-dark">{{ filteredPromotions.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
       <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
-      <span class="fw-semibold text-dark">{{ filteredPromotions.length }}</span> Promotions
+      <span class="fw-semibold text-dark">{{ filteredPromotions.length }}</span>
     </div>
 
     @if (filteredPromotions.length > pageSize) {
@@ -427,9 +427,9 @@
         [(page)]="currentPage"
         [pageSize]="pageSize"
         [collectionSize]="filteredPromotions.length"
-        [maxSize]="5"
+        [maxSize]="3"
         [rotate]="true"
-        [boundaryLinks]="true"
+        [boundaryLinks]="false"
         (pageChange)="onPageChange($event)"
         class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>
