@@ -53,7 +53,7 @@
   
   <!-- Header Toolbar: 2-Row Unified Layout -->
   <div class="p-2 p-sm-3 border-bottom bg-white">
-    <!-- Top Row: Status Tabs + Search Box & Page Size -->
+    <!-- Top Row: Status Tabs + Search Box & Page Size + View Toggle -->
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 gap-sm-3">
       
       <!-- Left: Status Filter Segmented Control -->
@@ -72,8 +72,20 @@
         </button>
       </div>
 
-      <!-- Right: Search Box with Clear Button & Page Size -->
+      <!-- Right: Search Box, Page Size & View Toggle -->
       <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <!-- View Toggle (Table / Cards) -->
+        <div class="view-switch-group d-flex align-items-center bg-light rounded-2 p-0.5 border flex-shrink-0">
+          <button type="button" class="btn btn-xs view-switch-btn" [class.active]="viewMode === 'table'" (click)="viewMode = 'table'" title="Table View (with Table Headers)">
+            <iconify-icon icon="solar:list-bold" class="fs-14 align-middle"></iconify-icon>
+            <span class="d-none d-md-inline ms-1 fs-11 fw-semibold">Table</span>
+          </button>
+          <button type="button" class="btn btn-xs view-switch-btn" [class.active]="viewMode === 'cards'" (click)="viewMode = 'cards'" title="Card View (with Column Labels)">
+            <iconify-icon icon="solar:widget-2-linear" class="fs-14 align-middle"></iconify-icon>
+            <span class="d-none d-md-inline ms-1 fs-11 fw-semibold">Cards</span>
+          </button>
+        </div>
+
         <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
@@ -140,191 +152,231 @@
     </div>
   }
 
-  <!-- Master Categories Table (Clean, Professional, Desktop >= 768px) -->
-  <div class="table-responsive d-none d-md-block">
-    <table class="table table-clean table-hover align-middle mb-0">
-      <thead>
-        <tr>
-          <th style="width: 38px;" class="text-center">
-            <div class="form-check m-0 d-flex justify-content-center">
-              <input type="checkbox" class="form-check-input cursor-pointer"
-                     [checked]="isAllSelected" 
-                     (change)="toggleSelectAll($event)">
-            </div>
-          </th>
-          <th style="min-width: 280px;">Master Category</th>
-          <th style="width: 170px;">Sub Categories</th>
-          <th style="width: 130px;">Total Products</th>
-          <th style="width: 100px;" class="text-center">Status</th>
-          <th style="width: 110px;" class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for(cat of paginatedCategories; track cat.id) {
-          <tr class="cat-row" [class.table-light]="isSelected(cat.id)">
-            
-            <!-- Checkbox -->
-            <td class="text-center">
-              <div class="form-check m-0 d-flex justify-content-center">
-                <input type="checkbox" class="form-check-input cursor-pointer"
-                       [checked]="isSelected(cat.id)"
-                       (change)="toggleSelect(cat.id)">
-              </div>
-            </td>
-
-            <!-- Category (Name + Description) -->
-            <td>
-              <div class="overflow-hidden">
-                <span class="fw-bold text-dark fs-13 d-block text-truncate">
-                  {{ cat.name }}
-                </span>
-                <small class="text-muted fs-11 d-block text-truncate" style="max-width: 320px;" [title]="cat.description">
-                  {{ cat.description }}
-                </small>
-              </div>
-            </td>
-
-            <!-- Sub Categories Link -->
-            <td>
-              <a [routerLink]="['/category/sub-category']" [queryParams]="{ category: cat.id }"
-                 class="cat-sub-link cursor-pointer" ngbTooltip="View subcategories">
-                <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-13"></iconify-icon>
-                <span>{{ cat.subCategoryCount }} Subcategories &rarr;</span>
-              </a>
-            </td>
-
-            <!-- Total Products -->
-            <td>
-              <span class="fw-bold text-dark fs-13 font-jost">{{ cat.totalProducts | number }}</span>
-              <span class="text-muted fs-11 ms-1">SKUs</span>
-            </td>
-
-            <!-- Status Switch -->
-            <td class="text-center">
-              <div class="form-check form-switch d-inline-block m-0 cursor-pointer">
-                <input class="form-check-input cursor-pointer" type="checkbox" role="switch"
-                       [checked]="cat.status === 'Active'"
-                       (change)="toggleStatus(cat, $event)"
-                       [id]="'switch-' + cat.id">
-              </div>
-            </td>
-
-            <!-- Action Buttons -->
-            <td class="text-end">
-              <div class="d-flex align-items-center justify-content-end gap-1.5">
-                <!-- Edit Category -->
-                <button type="button" (click)="openEditCategory(cat)"
-                   class="cat-action-btn cursor-pointer" ngbTooltip="Edit Category" aria-label="Edit category">
-                  <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
-                </button>
-
-                <!-- Delete Category -->
-                <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteCategory(cat)" ngbTooltip="Delete Category">
-                  <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
-                </button>
-              </div>
-            </td>
-
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="6" class="text-center py-5">
-              <div class="d-flex flex-column align-items-center justify-content-center">
-                <div class="rounded-circle p-3 bg-light text-muted mb-2">
-                  <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>
-                </div>
-                <h6 class="fw-bold text-dark mb-1">No Categories Found</h6>
-                <p class="text-muted fs-12 mb-3">No master departments match your search query "{{ searchTerm }}".</p>
-                <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" (click)="clearSearch(); setStatusFilter('all')">
-                  Reset Filters
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Master Categories Mobile Responsive Cards List (< 768px) -->
-  <div class="cat-mobile-list d-md-none">
-    <!-- Quick Select All Bar -->
-    <div class="p-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
-      <div class="form-check m-0 d-flex align-items-center gap-2">
-        <input type="checkbox" class="form-check-input cursor-pointer" id="catMobileSelectAll"
-               [checked]="isAllSelected" 
-               (change)="toggleSelectAll($event)">
-        <label for="catMobileSelectAll" class="form-check-label fs-12 fw-semibold text-muted cursor-pointer mb-0">
-          Select All
-        </label>
-      </div>
-      <span class="fs-11 text-muted">{{ paginatedCategories.length }} displayed</span>
+  <!-- ========================================================
+       MODE 1: RESPONSIVE TABLE VIEW (Default - Table Heads Visible Everywhere)
+       ======================================================== -->
+  @if (viewMode === 'table') {
+    <!-- Top Horizontal Scroll Helper (Immediate horizontal scrolling without scrolling down) -->
+    <div class="table-top-scroll-wrapper d-md-none" #topScroll (scroll)="onTopScroll(topScroll, tableContainer)">
+      <div class="table-top-scroll-inner"></div>
     </div>
 
-    @for(cat of paginatedCategories; track cat.id) {
-      <div class="cat-mobile-item p-3 border-bottom" [class.cat-mobile-selected]="isSelected(cat.id)">
-        <!-- Top Row: Checkbox + Name + Status Toggle -->
-        <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
-          <div class="d-flex align-items-center gap-2 min-w-0">
-            <input type="checkbox" class="form-check-input flex-shrink-0 cursor-pointer m-0"
-                   [checked]="isSelected(cat.id)"
-                   (change)="toggleSelect(cat.id)">
-            <span class="fw-bold text-dark fs-13 text-truncate">{{ cat.name }}</span>
-          </div>
+    <!-- Small Screen Horizontal Swipe Indicator Strip -->
+    <div class="d-md-none px-3 py-1 bg-light border-bottom d-flex align-items-center justify-content-between fs-11 text-muted">
+      <span>
+        <iconify-icon icon="solar:transfer-horizontal-linear" class="align-middle text-primary me-1 fs-13"></iconify-icon>
+        Scroll horizontally &bull; headers visible
+      </span>
+      <span class="badge bg-white text-dark border font-monospace fs-10">6 Columns</span>
+    </div>
 
-          <!-- Status Toggle Switch -->
-          <div class="form-check form-switch m-0 flex-shrink-0 cursor-pointer">
-            <input class="form-check-input cursor-pointer" type="checkbox" role="switch"
-                   [checked]="cat.status === 'Active'"
-                   (change)="toggleStatus(cat, $event)"
-                   [id]="'mobile-switch-' + cat.id">
-          </div>
+    <!-- Master Categories Table (Full Table with Table Heads on ALL Screens) -->
+    <div class="table-responsive" #tableContainer (scroll)="onTableScroll(tableContainer, topScroll)">
+      <table class="table table-clean table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width: 38px;" class="text-center th-checkbox">
+              <div class="form-check m-0 d-flex justify-content-center">
+                <input type="checkbox" class="form-check-input cursor-pointer"
+                       [checked]="isAllSelected" 
+                       (change)="toggleSelectAll($event)">
+              </div>
+            </th>
+            <th class="th-master-cat" style="min-width: 240px;">Master Category</th>
+            <th class="th-sub-cat" style="min-width: 140px;">Sub Categories</th>
+            <th class="th-products" style="min-width: 110px;">Total Products</th>
+            <th class="th-status" style="width: 90px;" class="text-center">Status</th>
+            <th class="th-actions" style="width: 100px;" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(cat of paginatedCategories; track cat.id) {
+            <tr class="cat-row" [class.table-light]="isSelected(cat.id)">
+              
+              <!-- Checkbox (Sticky on left on mobile) -->
+              <td class="text-center td-checkbox">
+                <div class="form-check m-0 d-flex justify-content-center">
+                  <input type="checkbox" class="form-check-input cursor-pointer"
+                         [checked]="isSelected(cat.id)"
+                         (change)="toggleSelect(cat.id)">
+                </div>
+              </td>
+
+              <!-- Category Name + Description (Sticky on left on mobile) -->
+              <td class="td-master-cat">
+                <div class="overflow-hidden">
+                  <span class="fw-bold text-dark fs-13 d-block text-truncate">
+                    {{ cat.name }}
+                  </span>
+                  <small class="text-muted fs-11 d-block text-truncate" style="max-width: 280px;" [title]="cat.description">
+                    {{ cat.description }}
+                  </small>
+                </div>
+              </td>
+
+              <!-- Sub Categories Link -->
+              <td class="td-sub-cat">
+                <a [routerLink]="['/category/sub-category']" [queryParams]="{ category: cat.id }"
+                   class="cat-sub-link cursor-pointer" ngbTooltip="View subcategories">
+                  <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-13"></iconify-icon>
+                  <span>{{ cat.subCategoryCount }} Subcategories &rarr;</span>
+                </a>
+              </td>
+
+              <!-- Total Products -->
+              <td class="td-products">
+                <span class="fw-bold text-dark fs-13 font-jost">{{ cat.totalProducts | number }}</span>
+                <span class="text-muted fs-11 ms-1">SKUs</span>
+              </td>
+
+              <!-- Status Switch -->
+              <td class="text-center td-status">
+                <div class="form-check form-switch d-inline-block m-0 cursor-pointer">
+                  <input class="form-check-input cursor-pointer" type="checkbox" role="switch"
+                         [checked]="cat.status === 'Active'"
+                         (change)="toggleStatus(cat, $event)"
+                         [id]="'switch-' + cat.id">
+                </div>
+              </td>
+
+              <!-- Action Buttons -->
+              <td class="text-end td-actions">
+                <div class="d-flex align-items-center justify-content-end gap-1.5">
+                  <button type="button" (click)="openEditCategory(cat)"
+                     class="cat-action-btn cursor-pointer" ngbTooltip="Edit Category" aria-label="Edit category">
+                    <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
+                  </button>
+
+                  <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteCategory(cat)" ngbTooltip="Delete Category">
+                    <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
+                  </button>
+                </div>
+              </td>
+
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                  <div class="rounded-circle p-3 bg-light text-muted mb-2">
+                    <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>
+                  </div>
+                  <h6 class="fw-bold text-dark mb-1">No Categories Found</h6>
+                  <p class="text-muted fs-12 mb-3">No master departments match your search query "{{ searchTerm }}".</p>
+                  <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" (click)="clearSearch(); setStatusFilter('all')">
+                    Reset Filters
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- ========================================================
+       MODE 2: CARD VIEW (Explicit Table Head Labels on Every Card)
+       ======================================================== -->
+  @if (viewMode === 'cards') {
+    <div class="cat-card-grid p-3">
+      <!-- Quick Select All Bar -->
+      <div class="p-2.5 px-3 bg-light rounded-2 border mb-3 d-flex align-items-center justify-content-between">
+        <div class="form-check m-0 d-flex align-items-center gap-2">
+          <input type="checkbox" class="form-check-input cursor-pointer" id="catCardSelectAll"
+                 [checked]="isAllSelected" 
+                 (change)="toggleSelectAll($event)">
+          <label for="catCardSelectAll" class="form-check-label fs-12 fw-semibold text-muted cursor-pointer mb-0">
+            Select All Categories
+          </label>
         </div>
+        <span class="fs-11 text-muted">{{ paginatedCategories.length }} displayed</span>
+      </div>
 
-        <!-- Description -->
-        @if (cat.description) {
-          <p class="text-muted fs-11 mb-2 line-clamp-2 ps-4" style="line-height: 1.4;">{{ cat.description }}</p>
+      <div class="row g-3">
+        @for(cat of paginatedCategories; track cat.id) {
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="cat-item-card p-3 border rounded-3 bg-white h-100 d-flex flex-column" [class.cat-item-selected]="isSelected(cat.id)">
+              
+              <!-- Table Head 1: Master Category + Table Head 4: Status -->
+              <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                <div class="d-flex align-items-start gap-2 min-w-0">
+                  <input type="checkbox" class="form-check-input flex-shrink-0 cursor-pointer mt-1"
+                         [checked]="isSelected(cat.id)"
+                         (change)="toggleSelect(cat.id)">
+                  <div class="min-w-0">
+                    <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block">Master Category</span>
+                    <span class="fw-bold text-dark fs-14 text-truncate d-block">{{ cat.name }}</span>
+                  </div>
+                </div>
+
+                <!-- Status Table Head & Toggle -->
+                <div class="text-end flex-shrink-0">
+                  <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block mb-1">Status</span>
+                  <div class="form-check form-switch m-0 d-inline-block cursor-pointer">
+                    <input class="form-check-input cursor-pointer" type="checkbox" role="switch"
+                           [checked]="cat.status === 'Active'"
+                           (change)="toggleStatus(cat, $event)"
+                           [id]="'card-switch-' + cat.id">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Description -->
+              @if (cat.description) {
+                <p class="text-muted fs-11 mb-2 line-clamp-2 ps-4" style="line-height: 1.4;">{{ cat.description }}</p>
+              }
+
+              <!-- Sub Categories & Total Products Table Heads Grid -->
+              <div class="row g-2 py-2 border-top border-bottom my-2 bg-light-subtle rounded-2 px-2 mt-auto">
+                <div class="col-6">
+                  <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block mb-1">Sub Categories</span>
+                  <a [routerLink]="['/category/sub-category']" [queryParams]="{ category: cat.id }"
+                     class="cat-sub-link py-1 px-2 fs-11">
+                    <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-12"></iconify-icon>
+                    <span>{{ cat.subCategoryCount }} Subcats &rarr;</span>
+                  </a>
+                </div>
+                <div class="col-6">
+                  <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold d-block mb-1">Total Products</span>
+                  <span class="badge bg-light text-dark border fs-11 fw-normal px-2 py-1">
+                    <strong class="fw-semibold font-jost">{{ cat.totalProducts | number }}</strong> SKUs
+                  </span>
+                </div>
+              </div>
+
+              <!-- Table Head 5: Actions -->
+              <div class="d-flex align-items-center justify-content-between pt-1">
+                <span class="column-header-badge text-uppercase text-muted fs-10 fw-bold">Actions</span>
+                <div class="d-flex align-items-center gap-1.5">
+                  <button type="button" (click)="openEditCategory(cat)"
+                          class="cat-action-btn" aria-label="Edit category" ngbTooltip="Edit Category">
+                    <iconify-icon icon="solar:pen-2-broken" class="fs-15"></iconify-icon>
+                  </button>
+                  <button type="button" class="cat-action-btn btn-delete" (click)="deleteCategory(cat)"
+                          aria-label="Delete category" ngbTooltip="Delete Category">
+                    <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-15"></iconify-icon>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        } @empty {
+          <div class="col-12 text-center py-5">
+            <div class="rounded-circle p-3 bg-light text-muted d-inline-flex mb-2">
+              <iconify-icon icon="solar:box-minimalistic-linear" class="fs-28"></iconify-icon>
+            </div>
+            <h6 class="fw-bold text-dark mb-1 fs-14">No Categories Found</h6>
+            <p class="text-muted fs-12 mb-3">No master departments match your search query "{{ searchTerm }}".</p>
+            <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" (click)="clearSearch(); setStatusFilter('all')">
+              Reset Filters
+            </button>
+          </div>
         }
-
-        <!-- Bottom Row: Subcategories Pill + SKUs Badge + Edit/Delete Buttons -->
-        <div class="d-flex align-items-center justify-content-between gap-2 pt-2 border-top border-light ps-4">
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <a [routerLink]="['/category/sub-category']" [queryParams]="{ category: cat.id }"
-               class="cat-sub-link py-1 px-2 fs-11">
-              <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-12"></iconify-icon>
-              <span>{{ cat.subCategoryCount }} Subcats &rarr;</span>
-            </a>
-
-            <span class="badge bg-light text-dark border fs-11 fw-normal px-2 py-1">
-              <strong class="fw-semibold font-jost">{{ cat.totalProducts | number }}</strong> SKUs
-            </span>
-          </div>
-
-          <div class="d-flex align-items-center gap-1.5">
-            <button type="button" (click)="openEditCategory(cat)"
-                    class="cat-action-btn" aria-label="Edit category" ngbTooltip="Edit">
-              <iconify-icon icon="solar:pen-2-broken" class="fs-15"></iconify-icon>
-            </button>
-            <button type="button" class="cat-action-btn btn-delete" (click)="deleteCategory(cat)"
-                    aria-label="Delete category" ngbTooltip="Delete">
-              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-15"></iconify-icon>
-            </button>
-          </div>
-        </div>
       </div>
-    } @empty {
-      <div class="text-center py-5 px-3">
-        <div class="rounded-circle p-3 bg-light text-muted d-inline-flex mb-2">
-          <iconify-icon icon="solar:box-minimalistic-linear" class="fs-28"></iconify-icon>
-        </div>
-        <h6 class="fw-bold text-dark mb-1 fs-14">No Categories Found</h6>
-        <p class="text-muted fs-12 mb-3">No master departments match your search query "{{ searchTerm }}".</p>
-        <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" (click)="clearSearch(); setStatusFilter('all')">
-          Reset Filters
-        </button>
-      </div>
-    }
-  </div>
+    </div>
+  }
 
   <!-- Footer Pagination & Count Info -->
   <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">

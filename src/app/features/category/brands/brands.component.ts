@@ -33,6 +33,9 @@ export class BrandsComponent implements OnInit {
   masterCategories: MasterCategory[] = MASTER_CATEGORIES;
   subCategories: SubCategory[] = SUB_CATEGORIES;
 
+  // View Mode: Table (default) or Cards
+  viewMode: 'table' | 'cards' = 'table';
+
   searchTerm: string = '';
   selectedCategoryFilter: string = 'all';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';
@@ -66,6 +69,19 @@ export class BrandsComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // Scroll Synchronization for Top Scrollbar
+  onTopScroll(top: HTMLElement, table: HTMLElement): void {
+    if (table && Math.abs(table.scrollLeft - top.scrollLeft) > 1) {
+      table.scrollLeft = top.scrollLeft;
+    }
+  }
+
+  onTableScroll(table: HTMLElement, top: HTMLElement): void {
+    if (top && Math.abs(top.scrollLeft - table.scrollLeft) > 1) {
+      top.scrollLeft = table.scrollLeft;
+    }
+  }
+
   get totalBrandProducts(): number {
     return this.brands.reduce((acc, b) => acc + (b.totalProducts || 0), 0);
   }
@@ -91,19 +107,15 @@ export class BrandsComponent implements OnInit {
     let result = this.brands.filter(b => {
       const matchesSearch = !term ||
         b.name.toLowerCase().includes(term) ||
-        b.description.toLowerCase().includes(term);
+        (b.description && b.description.toLowerCase().includes(term));
 
       const matchesStatus =
         this.statusFilter === 'all' ||
         b.status.toLowerCase() === this.statusFilter;
 
-      let matchesCategory = true;
-      if (this.selectedCategoryFilter !== 'all') {
-        const cat = this.masterCategories.find(c => c.id === this.selectedCategoryFilter);
-        const catName = cat ? cat.name : '';
-        matchesCategory = b.categoryNames.includes(catName) || 
-          b.categoryMappings?.some(m => m.categoryId === this.selectedCategoryFilter || m.categoryName === catName);
-      }
+      const matchesCategory =
+        this.selectedCategoryFilter === 'all' ||
+        b.categoryMappings.some(m => m.categoryId === this.selectedCategoryFilter);
 
       return matchesSearch && matchesStatus && matchesCategory;
     });
@@ -119,12 +131,17 @@ export class BrandsComponent implements OnInit {
   }
 
   get paginatedBrands(): Brand[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredBrands.slice(start, start + this.pageSize);
+    const list = this.filteredBrands;
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return list.slice(startIndex, startIndex + this.pageSize);
   }
 
   get currentEndIndex(): number {
     return Math.min(this.currentPage * this.pageSize, this.filteredBrands.length);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredBrands.length / this.pageSize) || 1;
   }
 
   get isAllSelected(): boolean {
@@ -133,48 +150,52 @@ export class BrandsComponent implements OnInit {
     return visible.every(b => this.selectedIds.has(b.id));
   }
 
-  // Filter controls
-  setStatusFilter(status: 'all' | 'active' | 'inactive'): void {
+  get selectedCount(): number {
+    return this.selectedIds.size;
+  }
+
+  // Filter & Search Controls
+  setStatusFilter(status: 'all' | 'active' | 'inactive') {
     this.statusFilter = status;
     this.currentPage = 1;
   }
 
-  onCategoryFilterChange(): void {
+  onCategoryFilterChange() {
     this.currentPage = 1;
   }
 
-  onSortChange(): void {
+  onSearchChange() {
     this.currentPage = 1;
   }
 
-  onSearchChange(): void {
-    this.currentPage = 1;
-  }
-
-  clearSearch(): void {
+  clearSearch() {
     this.searchTerm = '';
     this.currentPage = 1;
   }
 
-  resetFilters(): void {
+  resetFilters() {
     this.searchTerm = '';
-    this.selectedCategoryFilter = 'all';
     this.statusFilter = 'all';
+    this.selectedCategoryFilter = 'all';
     this.sortBy = 'skus_desc';
     this.currentPage = 1;
   }
 
-  onPageChange(page: number): void {
+  onSortChange() {
+    this.currentPage = 1;
+  }
+
+  onPageChange(page: number) {
     this.currentPage = page;
   }
 
-  onPageSizeChange(size: number): void {
+  onPageSizeChange(size: number) {
     this.pageSize = size;
     this.currentPage = 1;
   }
 
   // Selection
-  toggleSelectAll(event: any): void {
+  toggleSelectAll(event: any) {
     const checked = event.target.checked;
     const visible = this.paginatedBrands;
     if (checked) {
@@ -184,7 +205,7 @@ export class BrandsComponent implements OnInit {
     }
   }
 
-  toggleSelect(id: string): void {
+  toggleSelect(id: string) {
     if (this.selectedIds.has(id)) {
       this.selectedIds.delete(id);
     } else {
@@ -196,36 +217,26 @@ export class BrandsComponent implements OnInit {
     return this.selectedIds.has(id);
   }
 
-  toggleStatus(b: Brand): void {
+  clearSelection() {
+    this.selectedIds.clear();
+  }
+
+  toggleStatus(b: Brand) {
     b.status = b.status === 'Active' ? 'Inactive' : 'Active';
     this.triggerToast(`"${b.name}" status updated to ${b.status}`);
   }
 
-  async deleteBrand(brand: Brand): Promise<void> {
-    if (await confirmAction(`Are you sure you want to delete brand "${brand.name}"?`)) {
-      this.brands = this.brands.filter(b => b.id !== brand.id);
-      this.triggerToast(`"${brand.name}" deleted successfully`);
+  async deleteBrand(b: Brand): Promise<void> {
+    if (await confirmAction(`Are you sure you want to remove brand "${b.name}"?`)) {
+      this.brands = this.brands.filter(item => item.id !== b.id);
+      this.triggerToast(`"${b.name}" removed successfully`);
     }
   }
 
-  toggleModalSubCategory(subId: string) {
-    const idx = this.modalSelectedSubCategoryIds.indexOf(subId);
-    if (idx > -1) {
-      this.modalSelectedSubCategoryIds.splice(idx, 1);
-    } else {
-      this.modalSelectedSubCategoryIds.push(subId);
-    }
-  }
-
-  isSubSelected(subId: string): boolean {
-    return this.modalSelectedSubCategoryIds.includes(subId);
-  }
-
+  // Modal handlers
   openAddModal(content: any) {
     this.isEditMode = false;
     this.editingBrandId = null;
-    this.modalSelectedCategoryId = 'CAT-02';
-    this.modalSelectedSubCategoryIds = ['SUB-02-01'];
     this.newBrand = {
       name: '',
       origin: 'Local (Pakistan)',
@@ -235,47 +246,49 @@ export class BrandsComponent implements OnInit {
       logo: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=100&auto=format&fit=crop&q=80',
       description: ''
     };
+    this.modalSelectedCategoryId = this.masterCategories[0]?.id || 'CAT-01';
+    const firstSub = this.subCategories.find(s => s.parentCategoryId === this.modalSelectedCategoryId);
+    this.modalSelectedSubCategoryIds = firstSub ? [firstSub.id] : [];
     this.modalService.open(content, { size: 'lg', centered: true });
   }
 
-  openEditModal(brand: Brand, content: any) {
+  openEditModal(b: Brand, content: any) {
     this.isEditMode = true;
-    this.editingBrandId = brand.id;
-    this.newBrand = {
-      name: brand.name,
-      origin: brand.origin,
-      isVerified: brand.isVerified,
-      isInHouse: brand.isInHouse,
-      status: brand.status,
-      logo: brand.logo,
-      description: brand.description
-    };
-
-    if (brand.categoryMappings && brand.categoryMappings.length > 0) {
-      this.modalSelectedCategoryId = brand.categoryMappings[0].categoryId;
-      this.modalSelectedSubCategoryIds = [...(brand.categoryMappings[0].subCategoryIds || [])];
+    this.editingBrandId = b.id;
+    this.newBrand = { ...b };
+    const firstMapping = b.categoryMappings[0];
+    if (firstMapping) {
+      this.modalSelectedCategoryId = firstMapping.categoryId;
+      this.modalSelectedSubCategoryIds = [...firstMapping.subCategoryIds];
     } else {
-      const foundCat = this.masterCategories.find(c => brand.categoryNames.includes(c.name));
-      this.modalSelectedCategoryId = foundCat ? foundCat.id : 'CAT-02';
-      const foundSubs = this.subCategories.filter(s => 
-        s.parentCategoryId === this.modalSelectedCategoryId && 
-        brand.subCategoryNames?.includes(s.name)
-      );
-      this.modalSelectedSubCategoryIds = foundSubs.map(s => s.id);
+      this.modalSelectedCategoryId = this.masterCategories[0]?.id || 'CAT-01';
+      this.modalSelectedSubCategoryIds = [];
     }
-
     this.modalService.open(content, { size: 'lg', centered: true });
+  }
+
+  toggleModalSubCategory(subId: string) {
+    if (this.modalSelectedSubCategoryIds.includes(subId)) {
+      this.modalSelectedSubCategoryIds = this.modalSelectedSubCategoryIds.filter(id => id !== subId);
+    } else {
+      this.modalSelectedSubCategoryIds.push(subId);
+    }
+  }
+
+  isSubSelected(subId: string): boolean {
+    return this.modalSelectedSubCategoryIds.includes(subId);
   }
 
   saveBrand(modal: any) {
     if (!this.newBrand.name) {
-      void showSaveValidation('Please enter a brand name.');
+      void showSaveValidation('Please provide a valid brand name.');
       return;
     }
     const cat = this.masterCategories.find(c => c.id === this.modalSelectedCategoryId);
-    const catName = cat ? cat.name : 'Dairy, Bread & Eggs';
-    const selectedSubs = this.subCategories.filter(s => this.modalSelectedSubCategoryIds.includes(s.id));
-    const subNames = selectedSubs.map(s => s.name);
+    const catName = cat ? cat.name : 'Master Department';
+    const subNames = this.subCategories
+      .filter(s => this.modalSelectedSubCategoryIds.includes(s.id))
+      .map(s => s.name);
 
     const mapping: BrandCategoryMapping = {
       categoryId: this.modalSelectedCategoryId,
@@ -285,38 +298,32 @@ export class BrandsComponent implements OnInit {
     };
 
     if (this.isEditMode && this.editingBrandId) {
-      const idx = this.brands.findIndex(b => b.id === this.editingBrandId);
-      if (idx !== -1) {
-        this.brands[idx] = {
-          ...this.brands[idx],
-          name: this.newBrand.name,
-          slug: this.newBrand.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-          logo: this.newBrand.logo || this.brands[idx].logo,
-          origin: (this.newBrand.origin as any) || this.brands[idx].origin,
-          isInHouse: !!this.newBrand.isInHouse,
+      const index = this.brands.findIndex(b => b.id === this.editingBrandId);
+      if (index !== -1) {
+        this.brands[index] = {
+          ...this.brands[index],
+          ...this.newBrand,
           categoryMappings: [mapping],
           categoryNames: [catName],
-          subCategoryNames: subNames,
-          description: this.newBrand.description || this.brands[idx].description,
-          status: this.newBrand.status || this.brands[idx].status,
-        };
+          subCategoryNames: subNames
+        } as Brand;
         void showSaveSuccess(`"${this.newBrand.name}" updated successfully`);
       }
     } else {
       const newEntry: Brand = {
-        id: `BRD-${Date.now().toString().slice(-4)}`,
+        id: `BR-${Date.now().toString().slice(-4)}`,
         name: this.newBrand.name,
         slug: this.newBrand.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
         logo: this.newBrand.logo || 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=100&auto=format&fit=crop&q=80',
-        origin: (this.newBrand.origin as any) || 'Local (Pakistan)',
-        isVerified: true,
-        isInHouse: !!this.newBrand.isInHouse,
+        origin: this.newBrand.origin || 'Local (Pakistan)',
+        isVerified: this.newBrand.isVerified ?? true,
+        isInHouse: this.newBrand.isInHouse ?? false,
+        status: (this.newBrand.status as 'Active' | 'Inactive') || 'Active',
         categoryMappings: [mapping],
         categoryNames: [catName],
         subCategoryNames: subNames,
+        rating: 4.8,
         totalProducts: 0,
-        rating: 5.0,
-        status: (this.newBrand.status as 'Active' | 'Inactive') || 'Active',
         description: this.newBrand.description || 'Verified manufacturer partner for Rainbow Superstores.'
       };
       this.brands.unshift(newEntry);

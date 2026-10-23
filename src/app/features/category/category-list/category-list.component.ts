@@ -63,6 +63,9 @@ export class CategoryListComponent implements OnInit {
   allCategories: MasterCategory[] = MASTER_CATEGORIES;
   allSubCategories: SubCategory[] = SUB_CATEGORIES;
 
+  // View Mode: Table (default) or Cards
+  viewMode: 'table' | 'cards' = 'table';
+
   // Filter & Search
   searchTerm: string = '';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';
@@ -81,6 +84,19 @@ export class CategoryListComponent implements OnInit {
 
   ngOnInit(): void {
     // Initial setup
+  }
+
+  // Scroll Synchronization for Top Scrollbar
+  onTopScroll(top: HTMLElement, table: HTMLElement): void {
+    if (table && Math.abs(table.scrollLeft - top.scrollLeft) > 1) {
+      table.scrollLeft = top.scrollLeft;
+    }
+  }
+
+  onTableScroll(table: HTMLElement, top: HTMLElement): void {
+    if (top && Math.abs(top.scrollLeft - table.scrollLeft) > 1) {
+      top.scrollLeft = table.scrollLeft;
+    }
   }
 
   get categoryCounts() {
