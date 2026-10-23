@@ -3,17 +3,17 @@
      ======================================================== -->
 <div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
   <div class="d-flex align-items-center gap-2 flex-wrap">
-    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer"
+    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer"
             (click)="resetFilters()" ngbTooltip="Reset all filters">
       <iconify-icon icon="solar:restart-linear" class="fs-15"></iconify-icon>
       <span>Reset Filters</span>
     </button>
 
-    <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
+    <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
             style="background: #2e3192; border-color: #2e3192;"
             (click)="openCreateModal(couponModal)">
       <iconify-icon icon="solar:add-circle-bold" class="fs-16"></iconify-icon>
-      <span>+ Create Customer Coupon</span>
+      <span>Create Customer Coupon</span>
     </button>
   </div>
 </div>
@@ -138,18 +138,33 @@
     <table class="table table-clean align-middle mb-0">
       <thead>
         <tr>
-          <th style="min-width: 170px;">Coupon Code</th>
-          <th style="min-width: 180px;">Offer & Min Spend</th>
-          <th style="width: 170px;">Branch Coverage</th>
-          <th style="width: 150px;">Target Customers</th>
-          <th style="min-width: 160px;">Usage & Limits</th>
-          <th style="width: 110px;">Status</th>
-          <th style="width: 100px;" class="text-end">Actions</th>
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+          <th style="min-width: 160px;">Coupon Code</th>
+          <th style="min-width: 160px;">Offer & Min Spend</th>
+          <th class="d-none d-lg-table-cell" style="width: 170px;">Branch Coverage</th>
+          <th class="d-none d-lg-table-cell" style="width: 150px;">Target Customers</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 160px;">Usage & Limits</th>
+          <th class="d-none d-lg-table-cell" style="width: 110px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 100px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for (coupon of paginatedCoupons; track coupon.id) {
           <tr>
+            <!-- 0. Mobile expand/collapse control -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" 
+                      class="dtr-control-btn border-0 bg-transparent p-0" 
+                      (click)="toggleRowExpand(coupon.id)" 
+                      [attr.aria-expanded]="isRowExpanded(coupon.id)"
+                      [title]="isRowExpanded(coupon.id) ? 'Collapse details' : 'Expand details'">
+                <iconify-icon [icon]="isRowExpanded(coupon.id) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                              [class.text-danger]="isRowExpanded(coupon.id)" 
+                              [class.text-primary]="!isRowExpanded(coupon.id)" 
+                              class="fs-18"></iconify-icon>
+              </button>
+            </td>
+
             <!-- 1. Coupon Code -->
             <td>
               <div class="d-flex align-items-center gap-1.5">
@@ -191,7 +206,7 @@
             </td>
 
             <!-- 3. Branch Coverage -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               @if (coupon.branchSelection === 'all') {
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 d-inline-flex align-items-center gap-1">
                   <iconify-icon icon="solar:shop-2-bold" class="fs-12"></iconify-icon>
@@ -211,7 +226,7 @@
             </td>
 
             <!-- 4. Target Customers -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div>
                 @if (coupon.customerSegment.includes('New')) {
                   <span class="badge bg-success-subtle text-success border border-success-subtle fs-11">
@@ -233,7 +248,7 @@
             </td>
 
             <!-- 5. Usage & Limits -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div>
                 <div class="d-flex justify-content-between fs-11 mb-1">
                   <span class="text-dark fw-semibold">{{ coupon.usageCount | number }} / {{ coupon.usageLimitTotal | number }}</span>
@@ -253,7 +268,7 @@
             </td>
 
             <!-- 6. Status -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               @if (coupon.status === 'Active') {
                 <span class="badge bg-success-subtle text-success border border-success-subtle fs-11">
                   Active
@@ -274,7 +289,7 @@
             </td>
 
             <!-- 7. Actions (Edit & Delete only, play/pause removed) -->
-            <td class="text-end">
+            <td class="d-none d-lg-table-cell text-end">
               <div class="d-flex align-items-center justify-content-end gap-1.5">
                 <!-- Edit Coupon -->
                 <button type="button" 
@@ -294,9 +309,117 @@
               </div>
             </td>
           </tr>
+
+          <!-- Mobile Child Row -->
+          @if (isRowExpanded(coupon.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Branch Coverage</th>
+                        <td class="dtr-child-data">
+                          @if (coupon.branchSelection === 'all') {
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 d-inline-flex align-items-center gap-1">
+                              <iconify-icon icon="solar:shop-2-bold" class="fs-12"></iconify-icon>
+                              <span>All 10 Superstores</span>
+                            </span>
+                          } @else {
+                            <div>
+                              <span class="badge bg-info-subtle text-info border border-info-subtle fs-11 d-inline-flex align-items-center gap-1">
+                                <iconify-icon icon="solar:buildings-bold" class="fs-12"></iconify-icon>
+                                <span>{{ coupon.targetBranchIds.length }} Branches</span>
+                              </span>
+                              <div class="text-muted fs-11 mt-0.5">
+                                {{ coupon.targetBranchNames.join(', ') }}
+                              </div>
+                            </div>
+                          }
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Target Customers</th>
+                        <td class="dtr-child-data">
+                          @if (coupon.customerSegment.includes('New')) {
+                            <span class="badge bg-success-subtle text-success border border-success-subtle fs-11">
+                              New Customers
+                            </span>
+                          } @else if (coupon.customerSegment.includes('Repeat')) {
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle fs-11">
+                              Repeat VIP
+                            </span>
+                          } @else {
+                            <span class="badge bg-light text-dark border fs-11">
+                              All Shoppers
+                            </span>
+                          }
+                          <div class="text-muted fs-11 mt-0.5">
+                            Limit: {{ coupon.usageLimitPerCustomer }}x per user
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Usage & Limits</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex justify-content-between fs-11 mb-1" style="max-width: 220px;">
+                            <span class="text-dark fw-semibold">{{ coupon.usageCount | number }} / {{ coupon.usageLimitTotal | number }}</span>
+                            <span class="text-muted">{{ getUsagePercent(coupon.usageCount, coupon.usageLimitTotal) }}%</span>
+                          </div>
+                          <div class="progress" style="height: 5px; border-radius: 4px; max-width: 220px;">
+                            <div class="progress-bar" 
+                                 role="progressbar" 
+                                 style="background-color: #2e3192;"
+                                 [style.width.%]="getUsagePercent(coupon.usageCount, coupon.usageLimitTotal)">
+                            </div>
+                          </div>
+                          <small class="text-muted fs-10 d-block mt-1">
+                            Saved: Rs. {{ coupon.totalSavingsAwarded | number }}
+                          </small>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          @if (coupon.status === 'Active') {
+                            <span class="badge bg-success-subtle text-success border border-success-subtle fs-11">Active</span>
+                          } @else if (coupon.status === 'Scheduled') {
+                            <span class="badge bg-info-subtle text-info border border-info-subtle fs-11">Scheduled</span>
+                          } @else if (coupon.status === 'Paused') {
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle fs-11">Paused</span>
+                          } @else {
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fs-11">Expired</span>
+                          }
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Actions</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" 
+                                    (click)="openEditModal(coupon, couponModal)" 
+                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1">
+                              <iconify-icon icon="solar:pen-2-broken" class="fs-14 text-primary"></iconify-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button type="button" 
+                                    (click)="deleteCoupon(coupon)" 
+                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger">
+                              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-14"></iconify-icon>
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="7" class="text-center py-5">
+            <td colspan="8" class="text-center py-5">
               <div class="d-flex flex-column align-items-center justify-content-center">
                 <div class="rounded-circle p-3 bg-light text-muted mb-2">
                   <iconify-icon icon="solar:ticket-sale-bold-duotone" class="fs-32"></iconify-icon>
@@ -315,11 +438,11 @@
   </div>
 
   <!-- Footer Pagination -->
-  <div class="p-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="fs-12 text-muted">
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
       Showing <span class="fw-semibold text-dark">{{ filteredCoupons.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
       <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
-      <span class="fw-semibold text-dark">{{ filteredCoupons.length }}</span> Coupons
+      <span class="fw-semibold text-dark">{{ filteredCoupons.length }}</span>
     </div>
 
     @if (filteredCoupons.length > pageSize) {
@@ -327,9 +450,9 @@
         [(page)]="currentPage"
         [pageSize]="pageSize"
         [collectionSize]="filteredCoupons.length"
-        [maxSize]="5"
+        [maxSize]="3"
         [rotate]="true"
-        [boundaryLinks]="true"
+        [boundaryLinks]="false"
         (pageChange)="onPageChange($event)"
         class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>

@@ -24,11 +24,11 @@
     </div>
 
     <!-- Actions -->
-    <button type="button" (click)="resetFilters()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Reload / Reset Filters">
+    <button type="button" (click)="resetFilters()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Reload / Reset Filters">
       <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
       <span>Reload</span>
     </button>
-    <button type="button" (click)="exportToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12" title="Export CSV">
+    <button type="button" (click)="exportToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Export CSV">
       <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
       <span>Export CSV</span>
     </button>
@@ -78,9 +78,9 @@
         </button>
       </div>
 
-      <!-- Search Box with Clear Button -->
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <div class="search-box-wrapper">
+      <!-- Right: Search Box & Page Size (matching other tables) -->
+      <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -91,6 +91,13 @@
             </button>
           }
         </div>
+
+        <select [ngModel]="pageSize" (ngModelChange)="pageSize = $event; currentPage = 1"
+                class="form-select page-select-input shadow-none" title="Rows per page">
+          <option [ngValue]="8">8 / page</option>
+          <option [ngValue]="16">16 / page</option>
+          <option [ngValue]="24">24 / page</option>
+        </select>
       </div>
     </div>
   </div>
@@ -157,34 +164,46 @@
     <table class="table table-clean align-middle mb-0">
       <thead>
         <tr>
-          <th>RETURN REF / DATE</th>
-          <th>ORDER REFERENCE</th>
-          <th>CUSTOMER &amp; BRANCH</th>
-          <th>REFUND CLAIM</th>
-          <th class="text-center">STATUS</th>
-          <th class="text-end">ACTIONS</th>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+          <th style="min-width: 120px;">Return Ref / Order</th>
+          <th style="min-width: 160px;">Customer &amp; Branch</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Refund Claim</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 120px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for (ret of paginatedReturns; track ret.id) {
-          <tr>
-            <!-- Col 1: RETURN REF / DATE -->
+          <tr class="cat-row" [class.dtr-row-expanded]="isRowExpanded(ret.id)">
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(ret.id)"
+                      (click)="toggleRowExpand(ret.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(ret.id)"
+                      [title]="isRowExpanded(ret.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(ret.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
+            <!-- Col 1: RETURN REF / ORDER -->
             <td>
               <div class="fw-bold text-dark font-monospace fs-12">{{ ret.id }}</div>
-              <small class="text-muted fs-11 d-block mt-0.5">{{ ret.returnDate }}</small>
-            </td>
-
-            <!-- Col 2: ORDER REFERENCE -->
-            <td>
-              <div class="d-inline-block badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fs-11 px-2 py-0.5">
+              <div class="d-inline-block badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fs-10 px-1.5 py-0.5 mt-0.5">
                 #{{ ret.orderId }}
               </div>
-              <small class="text-muted d-block fs-11 mt-0.5">{{ ret.orderDate }}</small>
             </td>
 
-            <!-- Col 3: CUSTOMER & BRANCH -->
+            <!-- Col 2: CUSTOMER & BRANCH -->
             <td>
-              <span class="fw-bold text-dark fs-13 d-block mb-0.5">{{ ret.customer.name }}</span>
+              <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <span class="fw-bold text-dark fs-13">{{ ret.customer.name }}</span>
+              </div>
               <a [href]="'tel:' + ret.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
                 {{ ret.customer.phone }}
               </a>
@@ -194,20 +213,20 @@
               </small>
             </td>
 
-            <!-- Col 4: REFUND CLAIM -->
-            <td>
+            <!-- Col 3: REFUND CLAIM (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <span class="fw-bold text-dark fs-13 font-jost font-monospace">Rs. {{ ret.refundAmount | number }}</span>
             </td>
 
-            <!-- Col 5: STATUS -->
-            <td class="text-center">
+            <!-- Col 4: STATUS (Desktop) -->
+            <td class="text-center d-none d-lg-table-cell">
               <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(ret.status)">
                 {{ ret.status }}
               </span>
             </td>
 
-            <!-- Col 6: ACTIONS -->
-            <td class="text-end">
+            <!-- Col 5: ACTIONS (Desktop) -->
+            <td class="text-end d-none d-lg-table-cell">
               <div class="d-flex gap-1 justify-content-end align-items-center">
                 <button type="button" class="cat-action-btn" (click)="openReviewModal(ret, reviewModal)" ngbTooltip="Review Return Claim">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
@@ -223,9 +242,67 @@
               </div>
             </td>
           </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(ret.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Order Date</th>
+                        <td class="dtr-child-data">
+                          <span class="text-dark fs-12">{{ ret.orderDate }} (Returned on {{ ret.returnDate }})</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Refund Claim</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-bold text-dark fs-13 font-jost font-monospace">Rs. {{ ret.refundAmount | number }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(ret.status)">
+                            {{ ret.status }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
+                                    (click)="openReviewModal(ret, reviewModal)">
+                              <iconify-icon icon="solar:eye-linear" class="fs-14 text-primary"></iconify-icon>
+                              <span>Review</span>
+                            </button>
+                            @if (ret.status === 'Pending Review') {
+                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
+                                      (click)="approveReturn(ret)">
+                                <iconify-icon icon="solar:check-circle-bold" class="fs-14 text-success"></iconify-icon>
+                                <span>Approve</span>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
+                                      (click)="rejectReturn(ret)">
+                                <iconify-icon icon="solar:close-circle-bold" class="fs-14 text-danger"></iconify-icon>
+                                <span>Reject</span>
+                              </button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="6" class="text-center py-5">
+            <td colspan="7" class="text-center py-5">
               <iconify-icon icon="solar:box-broken" class="fs-36 text-muted mb-2"></iconify-icon>
               <h6 class="text-dark font-jost fs-14 fw-bold">No return claims match current criteria</h6>
               <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing status, reason, and branch filters.</p>
@@ -237,19 +314,20 @@
   </div>
 
   <!-- Table Pagination Footer -->
-  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="text-muted fs-12">
-      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredReturns.length }}</strong> return requests
+  <div class="p-2.5 p-sm-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredReturns.length ? currentStartIndex : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredReturns.length }}</span>
     </div>
     @if (filteredReturns.length > pageSize) {
       <ngb-pagination [collectionSize]="filteredReturns.length"
                       [(page)]="currentPage"
                       [pageSize]="pageSize"
-                      [maxSize]="5"
+                      [maxSize]="3"
                       [rotate]="true"
-                      [boundaryLinks]="true"
-                      size="sm"
-                      class="mb-0">
+                      [boundaryLinks]="false"
+                      class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>
     }
   </div>

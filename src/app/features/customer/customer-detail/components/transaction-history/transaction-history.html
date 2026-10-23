@@ -7,31 +7,71 @@
       <table class="table align-middle mb-0 table-hover table-centered">
         <thead class="bg-light-subtle">
           <tr>
+            <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
             <th>Invoice ID</th>
             <th>Status</th>
-            <th>Total Amount</th>
-            <th>Due Date</th>
-            <th>Payment Method</th>
+            <th class="d-none d-lg-table-cell">Total Amount</th>
+            <th class="d-none d-lg-table-cell">Due Date</th>
+            <th class="d-none d-lg-table-cell">Payment Method</th>
           </tr>
         </thead>
         <tbody>
           @for(item of transactionList;track $index){
           <tr>
-            <td><a href="javascript: void(0);" class="text-body">{{item.invoice}}</a> </td>
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" 
+                      class="dtr-control-btn border-0 bg-transparent p-0" 
+                      (click)="toggleRowExpand(item.invoice)" 
+                      [attr.aria-expanded]="isRowExpanded(item.invoice)"
+                      [title]="isRowExpanded(item.invoice) ? 'Collapse details' : 'Expand details'">
+                <iconify-icon [icon]="isRowExpanded(item.invoice) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                              [class.text-danger]="isRowExpanded(item.invoice)" 
+                              [class.text-primary]="!isRowExpanded(item.invoice)" 
+                              class="fs-18"></iconify-icon>
+              </button>
+            </td>
+            <td><a href="javascript: void(0);" class="text-body fw-semibold">{{item.invoice}}</a> </td>
             <td> <span class="badge py-1 px-2" [ngClass]="{'bg-success-subtle text-success':item.status == 'Completed','bg-danger-subtle text-danger':item.status == 'Pending' || item.status == 'Cancel'}">{{item.status}}</span> </td>
-            <td> ${{item.amount | number:'1.2'}} </td>
-            <td> {{item.date}}</td>
-            <td> {{item.payment_method}} </td>
+            <td class="d-none d-lg-table-cell"> ${{item.amount | number:'1.2'}} </td>
+            <td class="d-none d-lg-table-cell"> {{item.date}}</td>
+            <td class="d-none d-lg-table-cell"> {{item.payment_method}} </td>
           </tr>
+          @if (isRowExpanded(item.invoice)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Total Amount</th>
+                        <td class="dtr-child-data fw-bold text-dark">${{item.amount | number:'1.2'}}</td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Due Date</th>
+                        <td class="dtr-child-data">{{item.date}}</td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Payment Method</th>
+                        <td class="dtr-child-data">{{item.payment_method}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
           }
         </tbody>
       </table>
     </div>
   </div>
-  <div class="card-footer border-top">
-    <ngb-pagination [collectionSize]="30" [page]="1" class="pagination pagination-rounded m-0 justify-content-end">
-      <ng-template ngbPaginationPrevious><i class="bx bx-left-arrow-alt"></i></ng-template>
-      <ng-template ngbPaginationNext><i class="bx bx-right-arrow-alt"></i></ng-template>
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">1</span> to
+      <span class="fw-semibold text-dark">{{ transactionList.length }}</span> of
+      <span class="fw-semibold text-dark">{{ transactionList.length }}</span>
+    </div>
+    <ngb-pagination [collectionSize]="transactionList.length" [page]="1" [pageSize]="10" [maxSize]="3" [rotate]="true" [boundaryLinks]="false" class="pagination-sm mb-0 cursor-pointer">
     </ngb-pagination>
   </div>
 </div>

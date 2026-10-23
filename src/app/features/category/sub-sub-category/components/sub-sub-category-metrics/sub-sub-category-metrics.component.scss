@@ -25,6 +25,40 @@
   flex-shrink: 0;
 }
 
+.metric-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 22px;
+}
+
+.metric-subtext {
+  font-size: 11px;
+}
+
 .font-jost {
   font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@media (max-width: 767.98px) {
+  .cat-metric-card {
+    padding: 9px 12px;
+    border-radius: 9px;
+  }
+  .cat-metric-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    font-size: 16px;
+  }
+  .metric-label {
+    font-size: 10.5px;
+    letter-spacing: 0.3px;
+  }
+  .metric-value {
+    font-size: 16px;
+  }
 }

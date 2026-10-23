@@ -15,31 +15,32 @@
     <table class="table mb-0">
       <thead class="bg-light bg-opacity-50">
         <tr>
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
           <th class="ps-3">
             Order ID.
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Date
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Product
           </th>
           <th>
             Customer Name
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Email ID
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Phone No.
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Address
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Payment Type
           </th>
-          <th>
+          <th class="d-none d-lg-table-cell">
             Status
           </th>
         </tr>
@@ -48,24 +49,79 @@
       <tbody>
         @for(item of orders;track $index){
         <tr>
+          <!-- 0. Mobile expand/collapse control -->
+          <td class="dtr-control-col d-lg-none text-center">
+            <button type="button" 
+                    class="dtr-control-btn border-0 bg-transparent p-0" 
+                    (click)="toggleRowExpand(item.order_id)" 
+                    [attr.aria-expanded]="isRowExpanded(item.order_id)"
+                    [title]="isRowExpanded(item.order_id) ? 'Collapse details' : 'Expand details'">
+              <iconify-icon [icon]="isRowExpanded(item.order_id) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                            [class.text-danger]="isRowExpanded(item.order_id)" 
+                            [class.text-primary]="!isRowExpanded(item.order_id)" 
+                            class="fs-18"></iconify-icon>
+            </button>
+          </td>
           <td class="ps-3">
-            <a routerLink="/orders/detail">{{item.order_id}}</a>
+            <a routerLink="/orders/detail" class="fw-semibold text-primary font-monospace">{{item.order_id}}</a>
           </td>
-          <td>{{item.date}}</td>
-          <td>
-            <img [src]="item.image" alt="product-1(1)" class="img-fluid avatar-sm">
+          <td class="d-none d-lg-table-cell">{{item.date}}</td>
+          <td class="d-none d-lg-table-cell">
+            <img [src]="item.image" alt="product" class="img-fluid avatar-sm">
           </td>
           <td>
-            <a href="javascript:void(0);">{{item.name}}</a>
+            <a href="javascript:void(0);" class="fw-medium text-dark">{{item.name}}</a>
+            <div class="d-lg-none text-muted fs-11 mt-0.5">{{item.date}}</div>
           </td>
-          <td>{{item.email}}</td>
-          <td>{{item.phone}}</td>
-          <td>{{item.location}}</td>
-          <td>{{item.payment_method}}</td>
-          <td>
+          <td class="d-none d-lg-table-cell">{{item.email}}</td>
+          <td class="d-none d-lg-table-cell">{{item.phone}}</td>
+          <td class="d-none d-lg-table-cell">{{item.location}}</td>
+          <td class="d-none d-lg-table-cell">{{item.payment_method}}</td>
+          <td class="d-none d-lg-table-cell">
             <i class="bx bxs-circle me-1" [ngClass]="{'text-success':item.status=='Completed','text-primary':item.status=='Processing'}"></i>{{item.status}}
           </td>
         </tr>
+
+        <!-- Mobile Child Row -->
+        @if (isRowExpanded(item.order_id)) {
+          <tr class="dtr-child-row d-lg-none">
+            <td colspan="100%" class="p-0 border-0">
+              <div class="dtr-child-box">
+                <table class="table dtr-child-table mb-0">
+                  <tbody>
+                    <tr>
+                      <th class="dtr-child-title">Date</th>
+                      <td class="dtr-child-data">{{item.date}}</td>
+                    </tr>
+                    <tr>
+                      <th class="dtr-child-title">Contact</th>
+                      <td class="dtr-child-data">
+                        <div>{{item.email}}</div>
+                        <div class="text-muted fs-11">{{item.phone}}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="dtr-child-title">Address</th>
+                      <td class="dtr-child-data">{{item.location}}</td>
+                    </tr>
+                    <tr>
+                      <th class="dtr-child-title">Payment</th>
+                      <td class="dtr-child-data">{{item.payment_method}}</td>
+                    </tr>
+                    <tr>
+                      <th class="dtr-child-title">Status</th>
+                      <td class="dtr-child-data">
+                        <span class="badge px-2 py-1 fs-11" [ngClass]="item.status=='Completed' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'">
+                          <i class="bx bxs-circle me-1"></i>{{item.status}}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        }
         }
       </tbody>
       
@@ -74,24 +130,13 @@
   </div>
   
 
-  <div class="card-footer border-top">
-    <div class="row g-3">
-      <div class="col-sm">
-        <div class="text-muted">
-          Showing
-          <span class="fw-semibold">5</span>
-          of
-          <span class="fw-semibold">90,521</span>
-          orders
-        </div>
-      </div>
-
-      <div class="col-sm-auto">
-        <ngb-pagination [collectionSize]="30" [page]="1" class="m-0">
-          <ng-template ngbPaginationPrevious><i class="bx bx-left-arrow-alt"></i></ng-template>
-          <ng-template ngbPaginationNext><i class="bx bx-right-arrow-alt"></i></ng-template>
-        </ngb-pagination>
-      </div>
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">1</span> to
+      <span class="fw-semibold text-dark">{{ orders.length }}</span> of
+      <span class="fw-semibold text-dark">{{ orders.length }}</span>
     </div>
+    <ngb-pagination [collectionSize]="orders.length" [page]="1" [pageSize]="5" [maxSize]="3" [rotate]="true" [boundaryLinks]="false" class="pagination-sm mb-0 cursor-pointer">
+    </ngb-pagination>
   </div>
 </div>

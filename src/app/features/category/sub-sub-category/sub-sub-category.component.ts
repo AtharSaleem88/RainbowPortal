@@ -34,6 +34,21 @@ export class SubSubCategoryComponent implements OnInit {
   subCategories: SubCategory[] = SUB_CATEGORIES;
   allSubSubCategories: SubSubCategory[] = SUB_SUB_CATEGORIES;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   selectedSubCategoryId: string = 'all';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';
   searchTerm: string = '';
@@ -98,7 +113,6 @@ export class SubSubCategoryComponent implements OnInit {
       const matchesSearch = !term ||
         item.name.toLowerCase().includes(term) ||
         item.subCategoryName.toLowerCase().includes(term) ||
-        item.parentCategoryName.toLowerCase().includes(term) ||
         item.slug.toLowerCase().includes(term);
 
       const matchesStatus =
@@ -119,52 +133,61 @@ export class SubSubCategoryComponent implements OnInit {
   }
 
   get paginatedList(): SubSubCategory[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredList.slice(start, start + this.pageSize);
+    const list = this.filteredList;
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return list.slice(startIndex, startIndex + this.pageSize);
   }
 
   get currentEndIndex(): number {
     return Math.min(this.currentPage * this.pageSize, this.filteredList.length);
   }
 
+  get totalPages(): number {
+    return Math.ceil(this.filteredList.length / this.pageSize) || 1;
+  }
+
   get isAllSelected(): boolean {
     const visible = this.paginatedList;
     if (visible.length === 0) return false;
-    return visible.every(item => this.selectedIds.has(item.id));
+    return visible.every(i => this.selectedIds.has(i.id));
   }
 
-  // Filter controls
-  setStatusFilter(status: 'all' | 'active' | 'inactive'): void {
+  get selectedCount(): number {
+    return this.selectedIds.size;
+  }
+
+  // Filter & Search Controls
+  setStatusFilter(status: 'all' | 'active' | 'inactive') {
     this.statusFilter = status;
     this.currentPage = 1;
   }
 
-  onSearchChange(): void {
+  onSubCategoryFilterChange() {
     this.currentPage = 1;
   }
 
-  clearSearch(): void {
+  onSearchChange() {
+    this.currentPage = 1;
+  }
+
+  clearSearch() {
     this.searchTerm = '';
     this.currentPage = 1;
   }
 
-  resetFilters(): void {
+  resetFilters() {
     this.searchTerm = '';
-    this.selectedSubCategoryId = 'all';
     this.statusFilter = 'all';
+    this.selectedSubCategoryId = 'all';
     this.sortBy = 'skus_desc';
     this.currentPage = 1;
   }
 
-  onSubCategoryFilterChange(): void {
+  onSortChange() {
     this.currentPage = 1;
   }
 
-  onSortChange(): void {
-    this.currentPage = 1;
-  }
-
-  onPageChange(page: number): void {
+  onPageChange(page: number) {
     this.currentPage = page;
   }
 

@@ -372,11 +372,192 @@ import { AuthenticationService } from '@core/services/auth.service';
         border-color: #25287a;
       }
     }
+
+    /* Responsive Child Rows (Mobile / Small Screens) */
+    .cat-row {
+      transition: background-color 0.15s ease;
+      cursor: default;
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+
+    .dtr-control-col {
+      width: 36px;
+      min-width: 36px;
+      padding: 8px 6px !important;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .dtr-control-btn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+      border-radius: 50%;
+      transition: transform 0.15s ease;
+
+      iconify-icon {
+        font-size: 19px;
+        display: block;
+      }
+
+      &:hover {
+        transform: scale(1.12);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .dtr-child-row {
+      background: #ffffff;
+
+      td {
+        padding: 0 !important;
+        border: none !important;
+      }
+    }
+
+    .dtr-child-box {
+      background: #ffffff;
+      border-bottom: 2px solid #e2e8f0;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .dtr-child-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      tr {
+        border-bottom: 1px solid #f1f5f9;
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      .dtr-child-title {
+        width: 30%;
+        min-width: 90px;
+        padding: 8px 10px !important;
+        font-size: 11.5px !important;
+        font-weight: 600;
+        color: #475569;
+        background: #f8fafc;
+        border-right: 1px solid #f1f5f9;
+        vertical-align: middle;
+        white-space: normal !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        line-height: 1.3 !important;
+      }
+
+      .dtr-child-data {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+        color: #1e293b;
+        vertical-align: middle;
+        background: #ffffff;
+        word-break: break-word;
+        line-height: 1.4 !important;
+      }
+    }
+
+    .toolbar-search-group {
+      margin-left: auto;
+    }
+
+    @media (max-width: 767.98px) {
+      .toolbar-search-group {
+        width: 100%;
+        margin-left: 0 !important;
+        display: flex;
+        align-items: center;
+
+        .search-box-wrapper {
+          flex: 1 1 auto;
+          min-width: 0;
+          max-width: none;
+        }
+
+        .page-select-input {
+          width: 85px;
+          min-width: 85px;
+          padding-left: 6px;
+          padding-right: 20px;
+          font-size: 11.5px;
+        }
+      }
+
+      .filter-segmented-control {
+        width: 100%;
+        display: flex;
+
+        .segment-btn {
+          flex: 1;
+          justify-content: center;
+          padding: 5px 6px;
+          font-size: 11.5px;
+          gap: 4px;
+
+          .count-pill {
+            font-size: 10px;
+            padding: 1px 5px;
+          }
+        }
+      }
+
+      .filter-bar-strip {
+        padding: 8px 10px;
+
+        .filter-control-wrap {
+          width: 100%;
+          .filter-dropdown {
+            width: 100%;
+            min-width: 0 !important;
+          }
+        }
+      }
+
+      .table-clean th {
+        font-size: 11px;
+        padding: 9px 10px;
+      }
+      .table-clean td {
+        padding: 9px 10px;
+        font-size: 12.5px;
+      }
+
+      tbody tr.cat-row:nth-of-type(odd) {
+        background-color: #fafbfc;
+      }
+    }
   `]
 })
 export class OrdersListComponent implements OnInit {
   title = 'Customer Orders & Dispatch Console';
   orders: RainbowOrder[] = RAINBOW_ORDERS;
+
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
 
   authService = inject(AuthenticationService);
   currentUser = this.authService.user;
@@ -468,6 +649,11 @@ export class OrdersListComponent implements OnInit {
 
   get currentEndIndex(): number {
     return Math.min(this.currentPage * this.pageSize, this.filteredOrders.length);
+  }
+
+  onPageSizeChange(newSize: any) {
+    this.pageSize = Number(newSize);
+    this.currentPage = 1;
   }
 
   onSearchChange() {

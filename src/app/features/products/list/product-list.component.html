@@ -4,17 +4,17 @@
 <div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
   <div class="d-flex align-items-center gap-2 flex-wrap">
     <!-- Export CSV Button -->
-    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer"
+    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer"
             (click)="exportCSV()" ngbTooltip="Export catalog SKUs to CSV">
       <iconify-icon icon="solar:download-linear" class="fs-15"></iconify-icon>
       <span>Export CSV</span>
     </button>
 
     <!-- Add Product Action -->
-    <a routerLink="/product/manage" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
+    <a routerLink="/product/manage" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
        style="background: #2e3192; border-color: #2e3192;">
       <iconify-icon icon="solar:add-circle-bold" class="fs-16"></iconify-icon>
-      <span>+ Add New Product</span>
+      <span>Add New Product</span>
     </a>
   </div>
 </div>
@@ -95,13 +95,13 @@
 
     </div>
 
-    <!-- Secondary Filter Bar: Branch, Category, Sort & Reset -->
-    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-3 mt-3 rounded-2">
+    <!-- Secondary Filter Bar: Branch, Category, Sub Category, Brand, Sort & Reset -->
+    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-2 gap-sm-3 mt-3 rounded-2">
       
       <!-- Branch Selector -->
       <div class="filter-control-wrap">
         <span class="filter-title">Branch:</span>
-        <select [(ngModel)]="selectedBranchId" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 220px; max-width: 270px;">
+        <select [(ngModel)]="selectedBranchId" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 200px; max-width: 260px;">
           <option value="all">Consolidated (All 10 Superstores)</option>
           @for(branch of branches; track branch.id){
             <option [value]="branch.id">{{ branch.name }}</option>
@@ -112,24 +112,33 @@
       <!-- Category Selector -->
       <div class="filter-control-wrap">
         <span class="filter-title">Category:</span>
-        <select [(ngModel)]="selectedCategory" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
-          <option value="all">All Departments</option>
-          <option value="Frozen Food">Frozen Food</option>
-          <option value="Dairy, Bread & Eggs">Dairy, Bread & Eggs</option>
-          <option value="Fruits & Vegetables">Fruits & Vegetables</option>
-          <option value="Oil & Ghee">Oil & Ghee</option>
-          <option value="Tea & Coffee">Tea & Coffee</option>
+        <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="form-select filter-dropdown shadow-none" style="min-width: 160px;">
+          <option value="all">All Categories</option>
+          @for(cat of categories; track cat){
+            <option [value]="cat">{{ cat }}</option>
+          }
         </select>
       </div>
 
-      <!-- Storage Type Filter -->
+      <!-- Sub Category Selector -->
       <div class="filter-control-wrap">
-        <span class="filter-title">Storage:</span>
-        <select [(ngModel)]="selectedStorage" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 150px;">
-          <option value="all">All Storage</option>
-          <option value="Ambient">Ambient</option>
-          <option value="Chilled">Chilled</option>
-          <option value="Frozen">Frozen</option>
+        <span class="filter-title">Sub Category:</span>
+        <select [(ngModel)]="selectedSubCategory" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
+          <option value="all">All Sub Categories</option>
+          @for(sub of availableSubCategories; track sub){
+            <option [value]="sub">{{ sub }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Brand Selector -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Brand:</span>
+        <select [(ngModel)]="selectedBrand" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 160px;">
+          <option value="all">All Brands</option>
+          @for(b of brands; track b){
+            <option [value]="b">{{ b }}</option>
+          }
         </select>
       </div>
 
@@ -146,7 +155,7 @@
       </div>
 
       <!-- Reset Filters Button -->
-      <button type="button" class="btn btn-sm btn-light border text-muted fs-12 ms-auto d-inline-flex align-items-center gap-1.5 px-2.5 py-1 cursor-pointer"
+      <button type="button" class="btn btn-sm btn-light border text-muted fs-12 ms-auto d-inline-flex align-items-center gap-1.5 px-2.5 py-1 cursor-pointer btn-reset-filters"
               (click)="resetAllFilters()">
         <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
         <span>Reset Filters</span>
@@ -174,11 +183,14 @@
     </div>
   }
 
-  <!-- Products Table (Order: Product & Barcode, Category, Brand, Price, Labels, Stock, Actions) -->
+  <!-- Products Table (Order: Product, Barcode, Category, Sub Category, Brand, Price, Stock, Actions) -->
   <div class="table-responsive">
     <table class="table table-clean table-hover align-middle mb-0">
       <thead>
         <tr>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+
           <th style="width: 38px;" class="text-center">
             <div class="form-check m-0 d-flex justify-content-center">
               <input type="checkbox" class="form-check-input cursor-pointer" 
@@ -186,18 +198,35 @@
                      (change)="toggleSelectAll($event)">
             </div>
           </th>
-          <th style="min-width: 260px;">Product & Barcode</th>
-          <th style="width: 170px;">Category</th>
-          <th style="width: 140px;">Brand</th>
-          <th style="width: 130px;">Price</th>
-          <th style="width: 170px;">Branch Stock (Geo)</th>
-          <th style="width: 120px;" class="text-end">Actions</th>
+          <th style="min-width: 180px;">Product</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Barcode</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 120px;">Category</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 120px;">Sub Category</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Brand</th>
+          <th class="d-none d-md-table-cell" style="min-width: 90px;">Price</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Branch Stock</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for(item of paginatedProducts; track item.id) {
-          <tr class="cat-row" [class.table-light]="isSelected(item.id)">
+          <tr class="cat-row" [class.table-light]="isSelected(item.id)" [class.dtr-row-expanded]="isRowExpanded(item.id)">
             
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(item.id)"
+                      (click)="toggleRowExpand(item.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(item.id)"
+                      [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(item.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
             <!-- Checkbox -->
             <td class="text-center">
               <div class="form-check m-0 d-flex justify-content-center">
@@ -207,78 +236,72 @@
               </div>
             </td>
 
-            <!-- 1. Product & Barcode -->
+            <!-- 1. Product -->
             <td>
               <div class="overflow-hidden">
-                  <span class="fw-bold text-dark fs-13 d-block text-truncate" [title]="item.name">
-                    {{ item.name }}
-                  </span>
-                  <div class="d-flex align-items-center gap-1.5 mt-0.5">
-                    <span class="badge bg-light text-secondary border font-monospace fs-10" title="Product Barcode">
-                      <iconify-icon icon="solar:barcode-linear" class="align-middle me-0.5 fs-11"></iconify-icon>
-                      {{ item.barcode || item.sku }}
-                    </span>
-                    @if (item.weight) {
-                      <span class="text-muted fs-11">&bull; {{ item.weight }}</span>
-                    }
-                  </div>
-                </div>
-            </td>
-
-            <!-- 2. Category & Subcategory -->
-            <td>
-              <div>
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 mb-0.5">
-                  {{ item.category }}
+                <span class="fw-bold text-dark fs-13 d-block text-truncate" [title]="item.name">
+                  {{ item.name }}
                 </span>
-                <small class="text-muted fs-11 d-block text-truncate" style="max-width: 160px;">
-                  {{ item.subCategory }}
-                </small>
+                <span class="d-md-none fw-bold text-primary fs-12 font-jost mt-0.5 d-block">
+                  Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}
+                </span>
               </div>
             </td>
 
-            <!-- 3. Brand -->
-            <td>
+            <!-- 2. Barcode (Desktop) -->
+            <td class="d-none d-lg-table-cell">
+              <span class="badge bg-light text-secondary border font-monospace fs-11" [title]="'Barcode: ' + (item.barcode || item.sku)">
+                {{ item.barcode || item.sku }}
+              </span>
+            </td>
+
+            <!-- 3. Category (Desktop) -->
+            <td class="d-none d-lg-table-cell">
+              <span class="text-dark fs-12 fw-medium d-block text-truncate" [title]="item.category">
+                {{ item.category }}
+              </span>
+            </td>
+
+            <!-- 4. Sub Category (Desktop) -->
+            <td class="d-none d-lg-table-cell">
+              <span class="text-dark fs-12 fw-medium d-block text-truncate" [title]="item.subCategory">
+                {{ item.subCategory || '—' }}
+              </span>
+            </td>
+
+            <!-- 5. Brand (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <span class="fw-semibold text-dark fs-13 d-block">{{ item.brand }}</span>
             </td>
 
-            <!-- 4. Price (Only Price, no cutoff price, no save label) -->
-            <td>
+            <!-- 6. Price (Desktop / Tablet) -->
+            <td class="d-none d-md-table-cell">
               <span class="text-dark fw-bold fs-14 font-jost">Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}</span>
             </td>
 
-            <!-- 5. Branch Stock (Geo Fulfillment) -->
-            <td>
+            <!-- 7. Branch Stock (Geo Fulfillment) (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               @let stockStatus = getBranchStockForProduct(item);
               <div>
                 <span class="badge" [ngClass]="stockStatus.stock > 30 ? 'bg-success-subtle text-success border border-success-subtle' : (stockStatus.stock > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle')">
                   {{ stockStatus.inStock ? 'In Stock (' + stockStatus.stock + ')' : 'Out of Stock' }}
                 </span>
-                <button type="button" class="btn btn-xs btn-outline-primary py-0.5 px-2 fs-11 d-inline-flex align-items-center gap-1 mt-1 cursor-pointer"
-                        (click)="openBranchStockModal(branchModal, item)"
-                        ngbTooltip="Configure live stock across 10 superstore branches">
-                  <iconify-icon icon="solar:point-on-map-bold" class="fs-12"></iconify-icon>
-                  <span>10 Branches Geo</span>
-                </button>
               </div>
             </td>
 
-            <!-- 6. Action Buttons (Working Icons with Tooltips & Cursor Pointer) -->
-            <td class="text-end">
+            <!-- 8. Action Buttons (Desktop) -->
+            <td class="text-end d-none d-lg-table-cell">
               <div class="d-flex align-items-center justify-content-end gap-1.5">
-                <!-- Edit Product -->
                 <a [routerLink]="['/product/manage']" [queryParams]="{ id: item.id }"
                    class="cat-action-btn cursor-pointer" ngbTooltip="Edit Product">
                   <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
                 </a>
 
-                <!-- Branch Stock Matrix -->
                 <button type="button" class="cat-action-btn btn-geo cursor-pointer" 
                         (click)="openBranchStockModal(branchModal, item)" ngbTooltip="Branch Stock Matrix">
                   <iconify-icon icon="solar:point-on-map-bold" class="fs-16"></iconify-icon>
                 </button>
 
-                <!-- Delete Product -->
                 <button type="button" class="cat-action-btn btn-delete cursor-pointer" 
                         (click)="deleteProduct(item)" ngbTooltip="Delete SKU">
                   <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
@@ -287,9 +310,90 @@
             </td>
 
           </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(item.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Barcode</th>
+                        <td class="dtr-child-data">
+                          <span class="badge bg-light text-secondary border font-monospace fs-11">
+                            {{ item.barcode || item.sku }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Category</th>
+                        <td class="dtr-child-data">
+                          <span class="text-dark fs-12 fw-medium">{{ item.category }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Sub Category</th>
+                        <td class="dtr-child-data">
+                          <span class="text-dark fs-12 fw-medium">{{ item.subCategory || '—' }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Brand</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-semibold text-dark fs-13">{{ item.brand }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Price</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-bold text-dark fs-13 font-jost">
+                            Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Branch Stock</th>
+                        <td class="dtr-child-data">
+                          @let stockStatusM = getBranchStockForProduct(item);
+                          <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge" [ngClass]="stockStatusM.stock > 30 ? 'bg-success-subtle text-success border border-success-subtle' : (stockStatusM.stock > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle')">
+                              {{ stockStatusM.inStock ? 'In Stock (' + stockStatusM.stock + ')' : 'Out of Stock' }}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <a [routerLink]="['/product/manage']" [queryParams]="{ id: item.id }"
+                               class="btn btn-xs btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2 fs-11 cursor-pointer text-decoration-none">
+                              <iconify-icon icon="solar:pen-2-broken" class="fs-13"></iconify-icon>
+                              <span>Edit</span>
+                            </a>
+                            <button type="button" (click)="openBranchStockModal(branchModal, item)"
+                                    class="btn btn-xs btn-light border d-inline-flex align-items-center gap-1 py-1 px-2 fs-11 cursor-pointer">
+                              <iconify-icon icon="solar:point-on-map-bold" class="fs-13 text-primary"></iconify-icon>
+                              <span>Stock</span>
+                            </button>
+                            <button type="button" (click)="deleteProduct(item)"
+                                    class="btn btn-xs btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2 fs-11 cursor-pointer">
+                              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-13"></iconify-icon>
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="7" class="text-center py-5">
+            <td colspan="10" class="text-center py-5">
               <div class="d-flex flex-column align-items-center justify-content-center">
                 <div class="rounded-circle p-3 bg-light text-muted mb-2">
                   <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>
@@ -309,11 +413,11 @@
   </div>
 
   <!-- Footer Pagination & Count Info -->
-  <div class="p-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="fs-12 text-muted">
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
       Showing <span class="fw-semibold text-dark">{{ filteredProducts.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
       <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
-      <span class="fw-semibold text-dark">{{ filteredProducts.length }}</span> Products
+      <span class="fw-semibold text-dark">{{ filteredProducts.length }}</span>
     </div>
 
     @if (filteredProducts.length > pageSize) {
@@ -321,9 +425,9 @@
         [(page)]="currentPage"
         [pageSize]="pageSize"
         [collectionSize]="filteredProducts.length"
-        [maxSize]="5"
+        [maxSize]="3"
         [rotate]="true"
-        [boundaryLinks]="true"
+        [boundaryLinks]="false"
         (pageChange)="onPageChange($event)"
         class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>

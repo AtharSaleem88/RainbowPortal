@@ -312,6 +312,21 @@ export class CustomerWalletsComponent implements OnInit {
   wallets: CustomerWalletAccount[] = MOCK_CUSTOMER_WALLETS;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
 
+  // Responsive row expand state (mobile child rows)
+  expandedWalletIds = new Set<string>();
+
+  toggleWalletExpand(id: string): void {
+    if (this.expandedWalletIds.has(id)) {
+      this.expandedWalletIds.delete(id);
+    } else {
+      this.expandedWalletIds.add(id);
+    }
+  }
+
+  isWalletExpanded(id: string): boolean {
+    return this.expandedWalletIds.has(id);
+  }
+
   // Filter state
   searchTerm: string = '';
   selectedBranch: string = 'all';

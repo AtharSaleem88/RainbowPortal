@@ -1,19 +1,19 @@
 <!-- ========================================================
      Executive Page Header & Actions
      ======================================================== -->
-<div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
-  <div class="d-flex align-items-center gap-2 flex-wrap">
+<div class="d-flex flex-wrap align-items-center justify-content-between justify-content-sm-end gap-2 mb-3">
+  <div class="d-flex align-items-center gap-1.5 gap-sm-2 flex-wrap w-100 w-sm-auto justify-content-between justify-content-sm-end">
     <!-- Back to Sub Categories -->
-    <a routerLink="/category/sub-category" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer">
+    <a routerLink="/category/sub-category" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer">
       <iconify-icon icon="solar:arrow-left-linear" class="fs-15"></iconify-icon>
       <span>Sub Categories</span>
     </a>
 
     <!-- Add Sub-Sub Action -->
-    <button type="button" (click)="openAddModal(subSubModal)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm"
+    <button type="button" (click)="openAddModal(subSubModal)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer shadow-sm ms-auto ms-sm-0"
             style="background: #2e3192; border-color: #2e3192;">
       <iconify-icon icon="solar:add-circle-bold" class="fs-16"></iconify-icon>
-      <span>+ Add Sub-Sub Category</span>
+      <span>Add Sub-Sub Category</span>
     </button>
   </div>
 </div>
@@ -44,14 +44,14 @@
 <div class="cat-main-card overflow-hidden mb-4">
   
   <!-- Header Toolbar: 2-Row Unified Layout -->
-  <div class="p-3 border-bottom bg-white">
-    <!-- Top Row: Status Tabs + Search Box & Page Size -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+  <div class="p-2 p-sm-3 border-bottom bg-white">
+    <!-- Top Row: Status Tabs + Search Box & Page Size + View Toggle -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 gap-sm-3">
       
       <!-- Left: Status Filter Segmented Control -->
       <div class="filter-segmented-control">
         <button type="button" class="segment-btn" [class.active]="statusFilter === 'all'" (click)="setStatusFilter('all')">
-          <span>All Sub-Sub</span>
+          <span>All <span class="d-none d-sm-inline">Sub-Sub</span></span>
           <span class="count-pill">{{ subSubCategoryCounts.all }}</span>
         </button>
         <button type="button" class="segment-btn" [class.active]="statusFilter === 'active'" (click)="setStatusFilter('active')">
@@ -64,9 +64,9 @@
         </button>
       </div>
 
-      <!-- Right: Search Box with Clear Button & Page Size -->
-      <div class="d-flex align-items-center gap-2 ms-auto" style="gap: 12px;">
-        <div class="search-box-wrapper">
+      <!-- Right: Search Box & Page Size -->
+      <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -79,21 +79,21 @@
         </div>
 
         <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
-          <option [ngValue]="10">10 / page</option>
-          <option [ngValue]="20">20 / page</option>
-          <option [ngValue]="50">50 / page</option>
+          <option [ngValue]="10">10 / pg</option>
+          <option [ngValue]="20">20 / pg</option>
+          <option [ngValue]="50">50 / pg</option>
         </select>
       </div>
 
     </div>
 
     <!-- Secondary Filter Strip: Subcategory, Sort & Reset -->
-    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-3 mt-3 rounded-2">
+    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-2 gap-sm-3 mt-2 mt-sm-3 rounded-2">
       
       <!-- Parent Subcategory Filter -->
-      <div class="filter-control-wrap">
+      <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Subcategory:</span>
-        <select [(ngModel)]="selectedSubCategoryId" (change)="onSubCategoryFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 220px;">
+        <select [(ngModel)]="selectedSubCategoryId" (change)="onSubCategoryFilterChange()" class="form-select filter-dropdown shadow-none">
           <option value="all">All Subcategories</option>
           @for(sub of subCategories; track sub.id){
             <option [value]="sub.id">{{ sub.name }} ({{ sub.parentCategoryName }})</option>
@@ -102,9 +102,9 @@
       </div>
 
       <!-- Sort By -->
-      <div class="filter-control-wrap">
+      <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Sort:</span>
-        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
+        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none">
           <option value="skus_desc">Products: High to Low</option>
           <option value="skus_asc">Products: Low to High</option>
           <option value="name_asc">Name: A to Z</option>
@@ -121,11 +121,15 @@
     </div>
   </div>
 
-  <!-- Sub-Sub Categories Table -->
+  <!-- Sub-Sub Categories Table (Responsive Child-Row Expand on Small Screens) -->
   <div class="table-responsive">
     <table class="table table-clean table-hover align-middle mb-0">
       <thead>
         <tr>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+
+          <!-- Checkbox -->
           <th style="width: 38px;" class="text-center">
             <div class="form-check m-0 d-flex justify-content-center">
               <input type="checkbox" class="form-check-input cursor-pointer" 
@@ -133,17 +137,37 @@
                      (change)="toggleSelectAll($event)">
             </div>
           </th>
-          <th style="min-width: 240px;">Sub-Sub Category</th>
-          <th style="min-width: 260px;">Parent Hierarchy</th>
-          <th style="width: 120px;">SKUs</th>
-          <th style="width: 100px;" class="text-center">Status</th>
-          <th style="width: 110px;" class="text-end">Actions</th>
+
+          <!-- Sub-Sub Category (Always visible) -->
+          <th style="min-width: 180px;">Sub-Sub Category</th>
+
+          <!-- Desktop Columns (Hidden on < 992px, shown in child row) -->
+          <th class="d-none d-lg-table-cell" style="min-width: 200px;">Parent Hierarchy</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 100px;">SKUs</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 90px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 100px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for(item of paginatedList; track item.id){
-          <tr class="cat-row" [class.table-light]="isSelected(item.id)">
+          <!-- Parent Row -->
+          <tr class="cat-row" [class.table-light]="isSelected(item.id)" [class.dtr-row-expanded]="isRowExpanded(item.id)">
             
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(item.id)"
+                      (click)="toggleRowExpand(item.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(item.id)"
+                      [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(item.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
             <!-- Checkbox -->
             <td class="text-center">
               <div class="form-check m-0 d-flex justify-content-center">
@@ -161,8 +185,8 @@
               <small class="text-muted font-monospace fs-11">/{{ item.slug }}</small>
             </td>
 
-            <!-- Parent Hierarchy -->
-            <td>
+            <!-- Parent Hierarchy (Desktop only) -->
+            <td class="d-none d-lg-table-cell">
               <div class="d-flex align-items-center gap-1.5 flex-wrap">
                 <span class="badge bg-light text-muted border fs-10 font-monospace">
                   {{ item.parentCategoryName }}
@@ -174,14 +198,14 @@
               </div>
             </td>
 
-            <!-- SKUs Count -->
-            <td>
+            <!-- SKUs Count (Desktop only) -->
+            <td class="d-none d-lg-table-cell">
               <span class="fw-bold text-dark fs-13 font-jost">{{ item.totalProducts | number }}</span>
               <span class="text-muted fs-11 ms-1">SKUs</span>
             </td>
 
-            <!-- Status Switch (Clean toggle, NO "Active" label text) -->
-            <td class="text-center">
+            <!-- Status Switch (Desktop only) -->
+            <td class="text-center d-none d-lg-table-cell">
               <div class="form-check form-switch d-inline-block m-0 cursor-pointer">
                 <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
                        [checked]="item.status === 'Active'" 
@@ -189,15 +213,13 @@
               </div>
             </td>
 
-            <!-- Actions -->
-            <td class="text-end">
+            <!-- Actions (Desktop only) -->
+            <td class="text-end d-none d-lg-table-cell">
               <div class="d-flex align-items-center justify-content-end gap-1.5">
-                <!-- Edit -->
-                <button type="button" class="cat-action-btn cursor-pointer" (click)="openEditModal(item, subSubModal)" ngbTooltip="Edit">
+                <button type="button" class="cat-action-btn cursor-pointer" (click)="openEditModal(item, subSubModal)" ngbTooltip="Edit Sub-Sub Category">
                   <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
                 </button>
 
-                <!-- Delete -->
                 <button type="button" class="cat-action-btn btn-delete cursor-pointer" (click)="deleteSubSub(item)" ngbTooltip="Delete">
                   <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
                 </button>
@@ -205,15 +227,82 @@
             </td>
 
           </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(item.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Parent Hierarchy</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <span class="badge bg-light text-muted border fs-10 font-monospace">
+                              {{ item.parentCategoryName }}
+                            </span>
+                            <span class="text-muted fs-11">&gt;</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-semibold">
+                              {{ item.subCategoryName }}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Total Products</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-bold text-dark fs-13 font-jost">{{ item.totalProducts | number }}</span>
+                          <span class="text-muted fs-11 ms-1">SKUs</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="form-check form-switch m-0 d-inline-block cursor-pointer">
+                              <input class="form-check-input cursor-pointer" type="checkbox" role="switch" 
+                                     [checked]="item.status === 'Active'" 
+                                     (change)="toggleStatus(item)">
+                            </div>
+                            <span class="badge" [class.bg-success-subtle]="item.status === 'Active'" [class.text-success]="item.status === 'Active'" [class.bg-danger-subtle]="item.status !== 'Active'" [class.text-danger]="item.status !== 'Active'">
+                              {{ item.status }}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" (click)="openEditModal(item, subSubModal)"
+                                    class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer">
+                              <iconify-icon icon="solar:pen-2-broken" class="fs-14"></iconify-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button type="button" (click)="deleteSubSub(item)"
+                                    class="btn btn-sm btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer">
+                              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-14"></iconify-icon>
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="6" class="text-center py-5">
+            <td colspan="7" class="text-center py-5">
               <div class="d-flex flex-column align-items-center justify-content-center">
                 <div class="rounded-circle p-3 bg-light text-muted mb-2">
                   <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>
                 </div>
                 <h6 class="fw-bold text-dark mb-1">No Sub-Sub Categories Found</h6>
-                <p class="text-muted fs-12 mb-3">No categories match your filters or search query.</p>
+                <p class="text-muted fs-12 mb-3">No records match your filters or search query.</p>
                 <button type="button" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer" 
                         (click)="clearSearch(); selectedSubCategoryId = 'all'; setStatusFilter('all')">
                   Reset All Filters
@@ -227,11 +316,11 @@
   </div>
 
   <!-- Footer Pagination & Count Info -->
-  <div class="p-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="fs-12 text-muted">
-      Showing <span class="fw-semibold text-dark">{{ ((currentPage - 1) * pageSize) + 1 }}</span> to
+  <div class="p-2.5 p-sm-3 bg-white border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredList.length ? ((currentPage - 1) * pageSize) + 1 : 0 }}</span> to
       <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
-      <span class="fw-semibold text-dark">{{ filteredList.length }}</span> Sub-Sub Categories
+      <span class="fw-semibold text-dark">{{ filteredList.length }}</span>
     </div>
 
     @if (filteredList.length > pageSize) {
@@ -239,9 +328,9 @@
         [(page)]="currentPage"
         [pageSize]="pageSize"
         [collectionSize]="filteredList.length"
-        [maxSize]="5"
+        [maxSize]="3"
         [rotate]="true"
-        [boundaryLinks]="true"
+        [boundaryLinks]="false"
         (pageChange)="onPageChange($event)"
         class="pagination-sm mb-0 cursor-pointer">
       </ngb-pagination>

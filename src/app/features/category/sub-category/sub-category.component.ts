@@ -33,6 +33,21 @@ export class SubCategoryComponent implements OnInit {
   masterCategories: MasterCategory[] = MASTER_CATEGORIES;
   allSubCategories: SubCategory[] = SUB_CATEGORIES;
   
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   selectedCategoryId: string = 'all';
   searchTerm: string = '';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';
@@ -108,12 +123,17 @@ export class SubCategoryComponent implements OnInit {
   }
 
   get paginatedSubCategories(): SubCategory[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredSubCategories.slice(start, start + this.pageSize);
+    const list = this.filteredSubCategories;
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return list.slice(startIndex, startIndex + this.pageSize);
   }
 
   get currentEndIndex(): number {
     return Math.min(this.currentPage * this.pageSize, this.filteredSubCategories.length);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredSubCategories.length / this.pageSize) || 1;
   }
 
   get isAllSelected(): boolean {
@@ -122,48 +142,52 @@ export class SubCategoryComponent implements OnInit {
     return visible.every(s => this.selectedIds.has(s.id));
   }
 
-  // Filter controls
-  setStatusFilter(status: 'all' | 'active' | 'inactive'): void {
+  get selectedCount(): number {
+    return this.selectedIds.size;
+  }
+
+  // Filter & Search Controls
+  setStatusFilter(status: 'all' | 'active' | 'inactive') {
     this.statusFilter = status;
     this.currentPage = 1;
   }
 
-  onSearchChange(): void {
+  onCategoryFilterChange() {
     this.currentPage = 1;
   }
 
-  clearSearch(): void {
+  onSearchChange() {
+    this.currentPage = 1;
+  }
+
+  clearSearch() {
     this.searchTerm = '';
     this.currentPage = 1;
   }
 
-  resetFilters(): void {
+  resetFilters() {
     this.searchTerm = '';
-    this.selectedCategoryId = 'all';
     this.statusFilter = 'all';
+    this.selectedCategoryId = 'all';
     this.sortBy = 'skus_desc';
     this.currentPage = 1;
   }
 
-  onCategoryFilterChange(): void {
+  onSortChange() {
     this.currentPage = 1;
   }
 
-  onSortChange(): void {
-    this.currentPage = 1;
-  }
-
-  onPageChange(page: number): void {
+  onPageChange(page: number) {
     this.currentPage = page;
   }
 
-  onPageSizeChange(size: number): void {
+  onPageSizeChange(size: number) {
     this.pageSize = size;
     this.currentPage = 1;
   }
 
-  // Selection
-  toggleSelectAll(event: any): void {
+  // Selection Handlers
+  toggleSelectAll(event: any) {
     const checked = event.target.checked;
     const visible = this.paginatedSubCategories;
     if (checked) {
@@ -173,7 +197,7 @@ export class SubCategoryComponent implements OnInit {
     }
   }
 
-  toggleSelect(id: string): void {
+  toggleSelect(id: string) {
     if (this.selectedIds.has(id)) {
       this.selectedIds.delete(id);
     } else {
@@ -185,13 +209,15 @@ export class SubCategoryComponent implements OnInit {
     return this.selectedIds.has(id);
   }
 
-  // Status toggle
+  clearSelection() {
+    this.selectedIds.clear();
+  }
+
   toggleStatus(sub: SubCategory) {
     sub.status = sub.status === 'Active' ? 'Inactive' : 'Active';
     this.triggerToast(`"${sub.name}" status updated to ${sub.status}`);
   }
 
-  // Delete
   async deleteSubCategory(sub: SubCategory): Promise<void> {
     if (await confirmAction(`Are you sure you want to delete subcategory "${sub.name}"?`)) {
       this.allSubCategories = this.allSubCategories.filter(s => s.id !== sub.id);
@@ -199,7 +225,7 @@ export class SubCategoryComponent implements OnInit {
     }
   }
 
-  // Modal actions
+  // Modal Handlers
   openAddModal(content: any) {
     this.modalMode = 'add';
     this.subCategoryForm = {
@@ -213,7 +239,13 @@ export class SubCategoryComponent implements OnInit {
 
   openEditModal(sub: SubCategory, content: any) {
     this.modalMode = 'edit';
-    this.subCategoryForm = { ...sub };
+    this.subCategoryForm = {
+      id: sub.id,
+      name: sub.name,
+      parentCategoryId: sub.parentCategoryId,
+      status: sub.status,
+      image: sub.image
+    };
     this.modalService.open(content, { centered: true });
   }
 
@@ -222,8 +254,8 @@ export class SubCategoryComponent implements OnInit {
       void showSaveValidation('Please enter a subcategory name.');
       return;
     }
-    const parent = this.masterCategories.find(c => c.id === this.subCategoryForm.parentCategoryId);
-    const parentName = parent ? parent.name : 'Dairy, Bread & Eggs';
+    const parentCat = this.masterCategories.find(c => c.id === this.subCategoryForm.parentCategoryId);
+    const parentName = parentCat ? parentCat.name : 'Master Department';
 
     if (this.modalMode === 'add') {
       const newEntry: SubCategory = {

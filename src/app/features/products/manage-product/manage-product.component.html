@@ -341,9 +341,10 @@
           <table class="table table-clean table-inventory align-middle mb-0">
             <thead>
               <tr>
+                <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
                 <th class="ps-3">Superstore Branch</th>
-                <th>City / Zone</th>
-                <th>Coordinates & Radius</th>
+                <th class="d-none d-lg-table-cell">City / Zone</th>
+                <th class="d-none d-lg-table-cell">Coordinates & Radius</th>
                 <th class="text-center" style="width: 110px;">Stock (Units)</th>
                 <th class="pe-3 text-end">Store Visibility</th>
               </tr>
@@ -351,14 +352,27 @@
             <tbody>
               @for(stock of product.branchStock; track stock.branchId){
                 <tr [ngClass]="{ 'bg-light-subtle opacity-75': !stock.inStock }">
+                  <!-- 0. Mobile expand/collapse control -->
+                  <td class="dtr-control-col d-lg-none text-center">
+                    <button type="button" 
+                            class="dtr-control-btn border-0 bg-transparent p-0" 
+                            (click)="toggleBranchExpand(stock.branchId)" 
+                            [attr.aria-expanded]="isBranchExpanded(stock.branchId)"
+                            [title]="isBranchExpanded(stock.branchId) ? 'Collapse details' : 'Expand details'">
+                      <iconify-icon [icon]="isBranchExpanded(stock.branchId) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                                    [class.text-danger]="isBranchExpanded(stock.branchId)" 
+                                    [class.text-primary]="!isBranchExpanded(stock.branchId)" 
+                                    class="fs-18"></iconify-icon>
+                    </button>
+                  </td>
                   <td class="ps-3">
                     <strong class="text-dark fs-12 d-block">{{ stock.branchName }}</strong>
                     <small class="text-muted font-monospace fs-10">ID: {{ stock.branchId }}</small>
                   </td>
-                  <td>
+                  <td class="d-none d-lg-table-cell">
                     <span class="badge bg-light text-dark border fs-11">{{ stock.city }}</span>
                   </td>
-                  <td>
+                  <td class="d-none d-lg-table-cell">
                     <small class="text-muted font-monospace fs-11">{{ stock.latitude }}, {{ stock.longitude }}</small>
                     <span class="badge bg-info-subtle text-info border border-info-subtle d-block mt-0.5" style="width: fit-content; font-size: 10px;">
                       Radius: {{ stock.deliveryRadiusKm }} km
@@ -381,6 +395,33 @@
                     </div>
                   </td>
                 </tr>
+
+                <!-- Mobile Child Row -->
+                @if (isBranchExpanded(stock.branchId)) {
+                  <tr class="dtr-child-row d-lg-none">
+                    <td colspan="100%" class="p-0 border-0">
+                      <div class="dtr-child-box">
+                        <table class="table dtr-child-table mb-0">
+                          <tbody>
+                            <tr>
+                              <th class="dtr-child-title">City / Zone</th>
+                              <td class="dtr-child-data"><span class="badge bg-light text-dark border fs-11">{{ stock.city }}</span></td>
+                            </tr>
+                            <tr>
+                              <th class="dtr-child-title">Coordinates & Radius</th>
+                              <td class="dtr-child-data">
+                                <small class="text-muted font-monospace fs-11">{{ stock.latitude }}, {{ stock.longitude }}</small>
+                                <span class="badge bg-info-subtle text-info border border-info-subtle d-block mt-0.5" style="width: fit-content; font-size: 10px;">
+                                  Radius: {{ stock.deliveryRadiusKm }} km
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
             </tbody>
           </table>

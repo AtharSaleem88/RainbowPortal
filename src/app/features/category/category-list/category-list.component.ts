@@ -63,6 +63,21 @@ export class CategoryListComponent implements OnInit {
   allCategories: MasterCategory[] = MASTER_CATEGORIES;
   allSubCategories: SubCategory[] = SUB_CATEGORIES;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   // Filter & Search
   searchTerm: string = '';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';

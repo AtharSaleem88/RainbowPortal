@@ -332,18 +332,33 @@
     <table class="table table-clean align-middle mb-0">
       <thead>
         <tr>
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
           <th>CUSTOMER</th>
-          <th>PREFERRED BRANCH</th>
-          <th class="text-center">STATUS</th>
-          <th>WALLET BALANCE</th>
-          <th>LIFETIME ACTIVITY</th>
-          <th>CASHBACK</th>
-          <th class="text-end">ACTIONS</th>
+          <th class="d-none d-lg-table-cell">PREFERRED BRANCH</th>
+          <th class="d-none d-lg-table-cell text-center">STATUS</th>
+          <th class="d-none d-lg-table-cell">WALLET BALANCE</th>
+          <th class="d-none d-lg-table-cell">LIFETIME ACTIVITY</th>
+          <th class="d-none d-lg-table-cell">CASHBACK</th>
+          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
         @for(wallet of paginatedWallets; track wallet.customerId) {
           <tr>
+            <!-- 0. Mobile expand/collapse control -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" 
+                      class="dtr-control-btn border-0 bg-transparent p-0" 
+                      (click)="toggleWalletExpand(wallet.customerId)" 
+                      [attr.aria-expanded]="isWalletExpanded(wallet.customerId)"
+                      [title]="isWalletExpanded(wallet.customerId) ? 'Collapse details' : 'Expand details'">
+                <iconify-icon [icon]="isWalletExpanded(wallet.customerId) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
+                              [class.text-danger]="isWalletExpanded(wallet.customerId)" 
+                              [class.text-primary]="!isWalletExpanded(wallet.customerId)" 
+                              class="fs-18"></iconify-icon>
+              </button>
+            </td>
+
             <!-- Customer (Name & Email Only) -->
             <td>
               <div class="fw-bold text-dark fs-13">{{ wallet.customerName }}</div>
@@ -351,13 +366,13 @@
             </td>
 
             <!-- Branch & City -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div class="fs-12 fw-medium text-dark">{{ wallet.preferredBranch }}</div>
               <span class="text-muted fs-10">{{ wallet.city }}</span>
             </td>
 
             <!-- Wallet Status -->
-            <td class="text-center">
+            <td class="d-none d-lg-table-cell text-center">
               <span class="badge px-2 py-1 fs-11 cursor-pointer"
                     [ngClass]="wallet.walletStatus === 'Active' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'"
                     (click)="toggleWalletFreeze(wallet)"
@@ -368,7 +383,7 @@
             </td>
 
             <!-- Current Wallet Balance -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <span class="badge rounded-pill px-2.5 py-1 fw-bold fs-12 border"
                     style="background-color: #fff8e1; color: #f57f17; border-color: #ffe082 !important;">
                 <iconify-icon icon="solar:wallet-money-bold" class="fs-13 me-1 align-middle"></iconify-icon>
@@ -377,7 +392,7 @@
             </td>
 
             <!-- Lifetime Top-ups / Spend -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <div class="fs-11 text-muted">
                 Top-ups: <strong class="text-success">+Rs {{ wallet.lifetimeTopups | number:'1.0-0' }}</strong>
               </div>
@@ -387,12 +402,12 @@
             </td>
 
             <!-- Total Cashback Received -->
-            <td>
+            <td class="d-none d-lg-table-cell">
               <strong class="text-info fs-11 font-jost">+Rs {{ wallet.totalCashbackReceived | number:'1.0-0' }}</strong>
             </td>
 
             <!-- Actions -->
-            <td class="text-end">
+            <td class="d-none d-lg-table-cell text-end">
               <div class="d-flex gap-1 justify-content-end">
                 <button type="button" class="cat-action-btn" (click)="openAdjustModal(wallet, adjustModal)" ngbTooltip="Credit or Debit Balance">
                   <iconify-icon icon="solar:pen-new-square-linear" class="fs-15"></iconify-icon>
@@ -403,9 +418,79 @@
               </div>
             </td>
           </tr>
+
+          <!-- Mobile Child Row -->
+          @if (isWalletExpanded(wallet.customerId)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Branch &amp; City</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-medium text-dark fs-12">{{ wallet.preferredBranch }}</span>
+                          <span class="text-muted fs-11 ms-1">({{ wallet.city }})</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-11 cursor-pointer"
+                                [ngClass]="wallet.walletStatus === 'Active' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'"
+                                (click)="toggleWalletFreeze(wallet)">
+                            <iconify-icon [icon]="wallet.walletStatus === 'Active' ? 'solar:shield-check-bold' : 'solar:lock-bold'" class="align-middle me-1"></iconify-icon>
+                            {{ wallet.walletStatus }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Wallet Balance</th>
+                        <td class="dtr-child-data">
+                          <span class="badge rounded-pill px-2.5 py-1 fw-bold fs-12 border"
+                                style="background-color: #fff8e1; color: #f57f17; border-color: #ffe082 !important;">
+                            <iconify-icon icon="solar:wallet-money-bold" class="fs-13 me-1 align-middle"></iconify-icon>
+                            Rs {{ wallet.currentBalance | number:'1.2-2' }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Activity</th>
+                        <td class="dtr-child-data">
+                          <span class="text-muted fs-11 me-2">Top-ups: <strong class="text-success">+Rs {{ wallet.lifetimeTopups | number:'1.0-0' }}</strong></span>
+                          <span class="text-muted fs-11">Spent: <span class="text-danger">-Rs {{ wallet.lifetimeSpend | number:'1.0-0' }}</span></span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Cashback</th>
+                        <td class="dtr-child-data">
+                          <strong class="text-info fs-11 font-jost">+Rs {{ wallet.totalCashbackReceived | number:'1.0-0' }}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Actions</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-primary" (click)="openAdjustModal(wallet, adjustModal)">
+                              <iconify-icon icon="solar:pen-new-square-linear" class="fs-14"></iconify-icon>
+                              <span>Adjust</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1" (click)="openStatementModal(wallet, statementModal)">
+                              <iconify-icon icon="solar:document-text-linear" class="fs-14"></iconify-icon>
+                              <span>Statement</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="7" class="text-center py-5">
+            <td colspan="8" class="text-center py-5">
               <iconify-icon icon="solar:wallet-money-bold" class="fs-36 text-muted mb-2"></iconify-icon>
               <h6 class="text-dark font-jost fs-14 fw-bold">No customer wallets match criteria</h6>
               <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing status and branch filters.</p>
@@ -417,12 +502,16 @@
   </div>
 
   <!-- Pagination Footer -->
-  <div class="p-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
-    <div class="text-muted fs-12">
-      Showing <strong>{{ currentStartIndex }}</strong> to <strong>{{ currentEndIndex }}</strong> of <strong>{{ filteredWallets.length }}</strong> accounts
+  <div class="p-2.5 p-sm-3 border-top bg-white d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="fs-11 fs-sm-12 text-muted">
+      Showing <span class="fw-semibold text-dark">{{ filteredWallets.length ? currentStartIndex : 0 }}</span> to
+      <span class="fw-semibold text-dark">{{ currentEndIndex }}</span> of
+      <span class="fw-semibold text-dark">{{ filteredWallets.length }}</span>
     </div>
-    <ngb-pagination [collectionSize]="filteredWallets.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5" class="pagination-sm mb-0">
-    </ngb-pagination>
+    @if (filteredWallets.length > pageSize) {
+      <ngb-pagination [collectionSize]="filteredWallets.length" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="3" [rotate]="true" [boundaryLinks]="false" class="pagination-sm mb-0 cursor-pointer">
+      </ngb-pagination>
+    }
   </div>
 </div>
 

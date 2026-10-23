@@ -28,6 +28,21 @@ export class OrderFeedbackComponent implements OnInit {
   title = 'Customer Feedback & Reviews Console';
   feedbacks: RainbowOrderFeedback[] = RAINBOW_FEEDBACK;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   authService = inject(AuthenticationService);
   currentUser = this.authService.user;
 
