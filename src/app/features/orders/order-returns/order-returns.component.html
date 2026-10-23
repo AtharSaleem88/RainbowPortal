@@ -78,9 +78,9 @@
         </button>
       </div>
 
-      <!-- Search Box with Clear Button -->
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <div class="search-box-wrapper">
+      <!-- Right: Search Box & Page Size (matching other tables) -->
+      <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -91,6 +91,13 @@
             </button>
           }
         </div>
+
+        <select [ngModel]="pageSize" (ngModelChange)="pageSize = $event; currentPage = 1"
+                class="form-select page-select-input shadow-none" title="Rows per page">
+          <option [ngValue]="8">8 / page</option>
+          <option [ngValue]="16">16 / page</option>
+          <option [ngValue]="24">24 / page</option>
+        </select>
       </div>
     </div>
   </div>
@@ -159,11 +166,11 @@
         <tr>
           <!-- Expand/Collapse Control Column: Visible only on < 992px -->
           <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
-          <th>RETURN REF / ORDER</th>
-          <th>CUSTOMER &amp; BRANCH</th>
-          <th class="d-none d-md-table-cell">REFUND CLAIM</th>
-          <th class="d-none d-md-table-cell text-center">STATUS</th>
-          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
+          <th style="min-width: 120px;">Return Ref / Order</th>
+          <th style="min-width: 160px;">Customer &amp; Branch</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Refund Claim</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 120px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -196,9 +203,6 @@
             <td>
               <div class="d-flex align-items-center gap-1.5 flex-wrap">
                 <span class="fw-bold text-dark fs-13">{{ ret.customer.name }}</span>
-                <span class="d-md-none badge px-2 py-0.5 fs-10 fw-semibold ms-auto" [ngClass]="getStatusBadgeClass(ret.status)">
-                  {{ ret.status }}
-                </span>
               </div>
               <a [href]="'tel:' + ret.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
                 {{ ret.customer.phone }}
@@ -209,13 +213,13 @@
               </small>
             </td>
 
-            <!-- Col 3: REFUND CLAIM (Desktop / Tablet) -->
-            <td class="d-none d-md-table-cell">
+            <!-- Col 3: REFUND CLAIM (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <span class="fw-bold text-dark fs-13 font-jost font-monospace">Rs. {{ ret.refundAmount | number }}</span>
             </td>
 
-            <!-- Col 4: STATUS (Desktop / Tablet) -->
-            <td class="text-center d-none d-md-table-cell">
+            <!-- Col 4: STATUS (Desktop) -->
+            <td class="text-center d-none d-lg-table-cell">
               <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(ret.status)">
                 {{ ret.status }}
               </span>
@@ -269,19 +273,19 @@
                       <tr>
                         <th class="dtr-child-title">Action</th>
                         <td class="dtr-child-data">
-                          <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
                                     (click)="openReviewModal(ret, reviewModal)">
-                              <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>
+                              <iconify-icon icon="solar:eye-linear" class="fs-14 text-primary"></iconify-icon>
                               <span>Review</span>
                             </button>
                             @if (ret.status === 'Pending Review') {
-                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
                                       (click)="approveReturn(ret)">
                                 <iconify-icon icon="solar:check-circle-bold" class="fs-14 text-success"></iconify-icon>
                                 <span>Approve</span>
                               </button>
-                              <button type="button" class="btn btn-sm btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                              <button type="button" class="btn btn-sm btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
                                       (click)="rejectReturn(ret)">
                                 <iconify-icon icon="solar:close-circle-bold" class="fs-14 text-danger"></iconify-icon>
                                 <span>Reject</span>

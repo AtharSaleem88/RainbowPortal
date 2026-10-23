@@ -210,13 +210,13 @@
         <tr>
           <!-- Expand/Collapse Control Column: Visible only on < 992px -->
           <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
-          <th>ORDER NO</th>
-          <th>CUSTOMER DETAILS</th>
-          <th class="d-none d-lg-table-cell">DATE &amp; TIME</th>
-          <th class="d-none d-lg-table-cell">STORE BRANCH</th>
-          <th class="d-none d-md-table-cell text-center">STATUS</th>
-          <th class="d-none d-md-table-cell text-end">NET TOTAL</th>
-          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
+          <th style="min-width: 100px;">Order No</th>
+          <th style="min-width: 160px;">Customer Details</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Date &amp; Time</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Store Branch</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 110px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 110px;">Net Total</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -251,9 +251,6 @@
                     Repeat ({{item.customer.totalOrders}})
                   </span>
                 }
-                <span class="d-md-none badge px-2 py-0.5 fs-10 fw-semibold ms-auto" [ngClass]="getStatusBadgeClass(item.status)">
-                  {{item.status}}
-                </span>
               </div>
               <a [href]="'tel:' + item.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
                 {{item.customer.phone}}
@@ -271,15 +268,15 @@
               <span class="text-dark fw-semibold fs-12">{{item.branch}}</span>
             </td>
 
-            <!-- Col 5: STATUS (Desktop / Tablet) -->
-            <td class="text-center d-none d-md-table-cell">
+            <!-- Col 5: STATUS (Desktop) -->
+            <td class="text-center d-none d-lg-table-cell">
               <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(item.status)">
                 {{item.status}}
               </span>
             </td>
 
-            <!-- Col 6: AMOUNT (Desktop / Tablet) -->
-            <td class="text-end d-none d-md-table-cell">
+            <!-- Col 6: AMOUNT (Desktop) -->
+            <td class="text-end d-none d-lg-table-cell">
               <span class="fw-bold text-dark fs-13 font-monospace font-jost">Rs {{item.totalAmount | number:'1.2-2'}}</span>
             </td>
 
@@ -338,7 +335,7 @@
                       <tr>
                         <th class="dtr-child-title">Action</th>
                         <td class="dtr-child-data">
-                          <div class="d-flex align-items-center gap-2">
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
                             <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
                                     (click)="openOrderModal(item, orderDetailsModal)">
                               <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>

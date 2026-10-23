@@ -78,9 +78,9 @@
         </button>
       </div>
 
-      <!-- Search Box with Clear Button -->
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <div class="search-box-wrapper">
+      <!-- Right: Search Box & Page Size (matching other tables) -->
+      <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -91,6 +91,13 @@
             </button>
           }
         </div>
+
+        <select [ngModel]="pageSize" (ngModelChange)="pageSize = $event; currentPage = 1"
+                class="form-select page-select-input shadow-none" title="Rows per page">
+          <option [ngValue]="8">8 / page</option>
+          <option [ngValue]="16">16 / page</option>
+          <option [ngValue]="24">24 / page</option>
+        </select>
       </div>
     </div>
   </div>
@@ -151,11 +158,11 @@
         <tr>
           <!-- Expand/Collapse Control Column: Visible only on < 992px -->
           <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
-          <th>ORDER &amp; RATING</th>
-          <th>CUSTOMER &amp; BRANCH</th>
-          <th class="d-none d-lg-table-cell">REVIEW COMMENT &amp; REPLY</th>
-          <th class="d-none d-md-table-cell text-center">STOREFRONT STATUS</th>
-          <th class="d-none d-lg-table-cell text-end">MODERATION ACTIONS</th>
+          <th style="min-width: 140px;">Order &amp; Rating</th>
+          <th style="min-width: 170px;">Customer &amp; Branch</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 250px;">Review Comment &amp; Reply</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 130px;">Storefront Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -225,8 +232,8 @@
               }
             </td>
 
-            <!-- Col 4: STATUS (Desktop / Tablet) -->
-            <td class="text-center d-none d-md-table-cell">
+            <!-- Col 4: STATUS (Desktop) -->
+            <td class="text-center d-none d-lg-table-cell">
               <span class="badge px-2 py-1 fs-11 fw-semibold d-inline-flex align-items-center gap-1" [ngClass]="getStatusBadgeClass(item.status)">
                 @if (item.status === 'Approved') {
                   <iconify-icon icon="solar:check-circle-bold" class="fs-12"></iconify-icon>
@@ -292,14 +299,14 @@
                       <tr>
                         <th class="dtr-child-title">Action</th>
                         <td class="dtr-child-data">
-                          <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
                                     (click)="openDetailModal(item, detailModal)">
-                              <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>
+                              <iconify-icon icon="solar:eye-linear" class="fs-14 text-primary"></iconify-icon>
                               <span>Reply</span>
                             </button>
                             @if (item.status === 'Pending Moderation') {
-                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-nowrap"
                                       (click)="approveFeedback(item)">
                                 <iconify-icon icon="solar:check-circle-bold" class="fs-14 text-success"></iconify-icon>
                                 <span>Publish</span>
