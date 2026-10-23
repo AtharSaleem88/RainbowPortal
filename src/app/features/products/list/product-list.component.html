@@ -198,14 +198,14 @@
                      (change)="toggleSelectAll($event)">
             </div>
           </th>
-          <th style="min-width: 200px;">Product</th>
-          <th class="d-none d-lg-table-cell" style="width: 130px;">Barcode</th>
-          <th class="d-none d-lg-table-cell" style="width: 140px;">Category</th>
-          <th class="d-none d-lg-table-cell" style="width: 140px;">Sub Category</th>
-          <th class="d-none d-lg-table-cell" style="width: 130px;">Brand</th>
-          <th class="d-none d-md-table-cell" style="width: 120px;">Price</th>
-          <th class="d-none d-lg-table-cell" style="width: 160px;">Branch Stock (Geo)</th>
-          <th class="d-none d-lg-table-cell text-end" style="width: 110px;">Actions</th>
+          <th style="min-width: 180px;">Product</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Barcode</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 120px;">Category</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 120px;">Sub Category</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Brand</th>
+          <th class="d-none d-md-table-cell" style="min-width: 90px;">Price</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Branch Stock (Geo)</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -251,21 +251,20 @@
             <!-- 2. Barcode (Desktop) -->
             <td class="d-none d-lg-table-cell">
               <span class="badge bg-light text-secondary border font-monospace fs-11" [title]="'Barcode: ' + (item.barcode || item.sku)">
-                <iconify-icon icon="solar:barcode-linear" class="align-middle me-0.5 fs-12"></iconify-icon>
                 {{ item.barcode || item.sku }}
               </span>
             </td>
 
             <!-- 3. Category (Desktop) -->
             <td class="d-none d-lg-table-cell">
-              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11">
+              <span class="text-dark fs-12 fw-medium d-block text-truncate" [title]="item.category">
                 {{ item.category }}
               </span>
             </td>
 
             <!-- 4. Sub Category (Desktop) -->
             <td class="d-none d-lg-table-cell">
-              <span class="text-dark fs-12 fw-medium d-block text-truncate" style="max-width: 140px;" [title]="item.subCategory">
+              <span class="text-dark fs-12 fw-medium d-block text-truncate" [title]="item.subCategory">
                 {{ item.subCategory || '—' }}
               </span>
             </td>
@@ -329,7 +328,6 @@
                         <th class="dtr-child-title">Barcode</th>
                         <td class="dtr-child-data">
                           <span class="badge bg-light text-secondary border font-monospace fs-11">
-                            <iconify-icon icon="solar:barcode-linear" class="align-middle me-0.5 fs-12"></iconify-icon>
                             {{ item.barcode || item.sku }}
                           </span>
                         </td>
@@ -337,9 +335,7 @@
                       <tr>
                         <th class="dtr-child-title">Category</th>
                         <td class="dtr-child-data">
-                          <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11">
-                            {{ item.category }}
-                          </span>
+                          <span class="text-dark fs-12 fw-medium">{{ item.category }}</span>
                         </td>
                       </tr>
                       <tr>
