@@ -311,4 +311,26 @@
         justify-content: center;
         margin-top: 4px;
       }
+
+      .table-clean {
+        th, td {
+          padding: 8px 8px;
+        }
+      }
+
+      .dtr-child-table {
+        .dtr-child-title {
+          width: 28%;
+          min-width: 75px !important;
+          max-width: 95px !important;
+          padding: 7px 8px !important;
+          font-size: 11px !important;
+          white-space: nowrap;
+        }
+
+        .dtr-child-data {
+          padding: 7px 8px !important;
+          font-size: 12px !important;
+        }
+      }
     }
