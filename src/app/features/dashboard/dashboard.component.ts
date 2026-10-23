@@ -317,6 +317,21 @@ export class DashboardComponent implements OnInit {
   // Recent Live Store Orders
   recentOrders: RainbowOrder[] = RAINBOW_ORDERS.slice(0, 6);
 
+  // Mobile / Small Screen Row Expansion
+  expandedRowIds = new Set<string | number>();
+
+  toggleRowExpand(id: string | number): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string | number): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   // ApexCharts
   performanceChart!: Partial<ChartOptions>;
   heatMapChart!: Partial<ChartOptions>;

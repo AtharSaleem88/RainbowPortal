@@ -4,23 +4,23 @@
 <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-sm-end gap-2 mb-3">
   <div class="d-flex align-items-center gap-1.5 gap-sm-2 flex-wrap w-100 w-sm-auto justify-content-between justify-content-sm-end">
     <!-- Export CSV Button -->
-    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12 cursor-pointer"
+    <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer"
             (click)="exportCSV()" ngbTooltip="Export master departments to CSV">
       <iconify-icon icon="solar:download-linear" class="fs-15"></iconify-icon>
-      <span class="d-none d-sm-inline">Export</span> <span>CSV</span>
+      <span><span class="d-none d-sm-inline">Export </span>CSV</span>
     </button>
 
     <!-- Sub Categories Link -->
-    <a routerLink="/category/sub-category" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5 py-1 px-2.5 fs-12 cursor-pointer">
+    <a routerLink="/category/sub-category" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer">
       <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-15"></iconify-icon>
       <span>Sub Categories</span>
     </a>
 
     <!-- Add Category Action -->
-    <button type="button" (click)="openAddCategory()" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 py-1.5 px-3 fs-12 cursor-pointer shadow-sm ms-auto ms-sm-0"
+    <button type="button" (click)="openAddCategory()" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12 cursor-pointer shadow-sm ms-auto ms-sm-0"
        style="background: #2e3192; border-color: #2e3192;">
       <iconify-icon icon="solar:add-circle-bold" class="fs-16"></iconify-icon>
-      <span>+ Add <span class="d-none d-sm-inline">Master</span> Category</span>
+      <span>Add <span class="d-none d-sm-inline">Master </span>Category</span>
     </button>
   </div>
 </div>
