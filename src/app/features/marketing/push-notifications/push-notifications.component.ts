@@ -223,25 +223,17 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
     }
 
     .campaign-table {
-      table-layout: fixed;
-      min-width: 1040px;
+      width: 100%;
 
       th {
-        padding: 14px 18px;
+        padding: 12px 16px;
         white-space: nowrap;
-        font-size: 10px;
+        font-size: 11px;
       }
 
-      th:nth-child(1) { width: 32%; }
-      th:nth-child(2) { width: 21%; }
-      th:nth-child(3) { width: 17%; }
-      th:nth-child(4) { width: 10%; }
-      th:nth-child(5) { width: 10%; }
-      th:nth-child(6) { width: 10%; }
-
       td {
-        padding: 18px;
-        line-height: 1.5;
+        padding: 14px 16px;
+        line-height: 1.4;
       }
 
       .text-dark { color: #334155 !important; }
@@ -261,7 +253,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
         align-items: center;
         justify-content: center;
         gap: 4px;
-        min-height: 25px;
+        min-height: 24px;
         max-width: 100%;
         white-space: normal;
         text-align: left;
@@ -269,11 +261,6 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
         font-weight: 600;
 
         iconify-icon { flex-shrink: 0; }
-      }
-
-      td:nth-child(3) > div,
-      td:nth-child(4) > div {
-        white-space: nowrap;
       }
 
       .cat-action-btn {
@@ -428,6 +415,38 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
       &:hover {
         background: #25287a;
         border-color: #25287a;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .filter-segmented-control {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        justify-content: flex-start;
+      }
+      .search-box-wrapper {
+        min-width: 100%;
+        max-width: 100%;
+      }
+      .filter-bar-strip {
+        padding: 8px 12px;
+      }
+      .filter-control-wrap {
+        width: 100%;
+        .filter-dropdown {
+          flex: 1;
+          width: 100%;
+        }
+      }
+      .table-clean th,
+      .table-clean td {
+        padding: 10px 12px;
+      }
+      .campaign-table {
+        th, td {
+          padding: 10px 12px;
+        }
       }
     }
   `]

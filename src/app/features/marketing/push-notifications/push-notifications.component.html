@@ -458,12 +458,12 @@
       <thead>
         <tr>
           <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
-          <th>NOTIFICATION DETAILS</th>
-          <th class="d-none d-lg-table-cell">TARGET AUDIENCE</th>
-          <th class="d-none d-lg-table-cell">DISPATCH / SCHEDULE</th>
-          <th class="d-none d-lg-table-cell">RECIPIENTS</th>
-          <th class="d-none d-lg-table-cell text-center">STATUS</th>
-          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
+          <th style="min-width: 240px;">NOTIFICATION DETAILS</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 170px;">TARGET AUDIENCE</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 160px;">DISPATCH / SCHEDULE</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">RECIPIENTS</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 110px;">STATUS</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
@@ -624,12 +624,12 @@
                       <tr>
                         <th class="dtr-child-title">Actions</th>
                         <td class="dtr-child-data">
-                          <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1" (click)="openDetailsModal(item, detailsModal)">
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 cursor-pointer" (click)="openDetailsModal(item, detailsModal)">
                               <iconify-icon icon="solar:eye-linear" class="fs-14 text-primary"></iconify-icon>
                               <span>Details</span>
                             </button>
-                            <button *ngIf="item.status === 'Scheduled'" type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger" (click)="cancelScheduledNotification(item)">
+                            <button *ngIf="item.status === 'Scheduled'" type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 fs-12 px-2 py-1 text-danger cursor-pointer" (click)="cancelScheduledNotification(item)">
                               <iconify-icon icon="solar:close-circle-linear" class="fs-14"></iconify-icon>
                               <span>Cancel</span>
                             </button>
