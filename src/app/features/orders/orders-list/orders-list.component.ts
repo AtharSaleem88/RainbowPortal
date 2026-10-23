@@ -378,6 +378,21 @@ export class OrdersListComponent implements OnInit {
   title = 'Customer Orders & Dispatch Console';
   orders: RainbowOrder[] = RAINBOW_ORDERS;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   authService = inject(AuthenticationService);
   currentUser = this.authService.user;
 

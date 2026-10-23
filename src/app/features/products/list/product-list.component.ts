@@ -46,6 +46,21 @@ export class ProductListComponent implements OnInit {
   // Selection
   selectedIds: Set<string> = new Set<string>();
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   // Toast feedback
   toastMessage: string | null = null;
   toastType: 'success' | 'info' | 'warning' = 'success';

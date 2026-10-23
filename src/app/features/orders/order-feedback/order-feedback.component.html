@@ -149,29 +149,54 @@
     <table class="feedback-table table table-clean align-middle mb-0">
       <thead>
         <tr>
-          <th>ORDER REF / DATE</th>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+          <th>ORDER &amp; RATING</th>
           <th>CUSTOMER &amp; BRANCH</th>
-          <th>RATING</th>
-          <th >REVIEW COMMENT &amp; REPLY</th>
-          <th class="text-center">STOREFRONT STATUS</th>
-          <th class="text-end">MODERATION ACTIONS</th>
+          <th class="d-none d-lg-table-cell">REVIEW COMMENT &amp; REPLY</th>
+          <th class="d-none d-md-table-cell text-center">STOREFRONT STATUS</th>
+          <th class="d-none d-lg-table-cell text-end">MODERATION ACTIONS</th>
         </tr>
       </thead>
       <tbody>
         @for (item of paginatedFeedbacks; track item.id) {
-          <tr>
-            <!-- Col 1: ORDER REF / DATE -->
+          <tr class="cat-row" [class.dtr-row-expanded]="isRowExpanded(item.id)">
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(item.id)"
+                      (click)="toggleRowExpand(item.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(item.id)"
+                      [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(item.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
+            <!-- Col 1: ORDER & RATING -->
             <td>
-              <div class="d-inline-block badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fs-11 px-2 py-1">
+              <div class="d-inline-block badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fs-11 px-2 py-0.5">
                 #{{ item.orderId }}
               </div>
-              <small class="feedback-date text-muted fs-11 d-block mt-1">{{ item.date.split(' ')[0] }}</small>
-              <small class="feedback-date text-muted fs-11 d-block">{{ item.date.split(' ').slice(1).join(' ') }}</small>
+              <div class="feedback-rating d-flex align-items-center gap-0.5 text-warning fs-12 mt-1">
+                @for (star of getStarArray(item.rating); track $index) {
+                  @if (star === 1) {
+                    <iconify-icon icon="solar:star-bold"></iconify-icon>
+                  } @else {
+                    <iconify-icon icon="solar:star-line-duotone" class="text-muted"></iconify-icon>
+                  }
+                }
+                <span class="text-dark fw-bold fs-11 ms-0.5">({{ item.rating }}.0)</span>
+              </div>
+              <small class="feedback-date text-muted fs-11 d-block mt-0.5">{{ item.date }}</small>
             </td>
 
             <!-- Col 2: CUSTOMER & BRANCH -->
             <td>
-              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+              <div class="d-flex align-items-center gap-2 mb-0.5 flex-wrap">
                 <span class="fw-bold text-dark fs-13">{{ item.customer.name }}</span>
                 @if (item.customer.totalOrders > 1) {
                   <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10 fw-semibold">
@@ -182,28 +207,14 @@
               <a [href]="'tel:' + item.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
                 {{ item.customer.phone }}
               </a>
-              <small class="text-muted text-truncate d-block fs-11"  [title]="item.branch">
+              <small class="text-muted text-truncate d-block fs-11" [title]="item.branch">
                 <iconify-icon icon="solar:shop-2-bold" class="text-muted me-1"></iconify-icon>
                 {{ item.branch }}
               </small>
             </td>
 
-            <!-- Col 3: RATING -->
-            <td>
-              <div class="feedback-rating d-flex align-items-center gap-1 text-warning fs-13">
-                @for (star of getStarArray(item.rating); track $index) {
-                  @if (star === 1) {
-                    <iconify-icon icon="solar:star-bold"></iconify-icon>
-                  } @else {
-                    <iconify-icon icon="solar:star-line-duotone" class="text-muted"></iconify-icon>
-                  }
-                }
-                <span class="text-dark fw-bold fs-11 ms-1">({{ item.rating }}.0)</span>
-              </div>
-            </td>
-
-            <!-- Col 4: REVIEW COMMENT -->
-            <td >
+            <!-- Col 3: REVIEW COMMENT (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <p class="feedback-comment fs-12 text-dark mb-0" [title]="item.comment">
                 &ldquo;{{ item.comment }}&rdquo;
               </p>
@@ -214,8 +225,8 @@
               }
             </td>
 
-            <!-- Col 5: STATUS -->
-            <td class="text-center">
+            <!-- Col 4: STATUS (Desktop / Tablet) -->
+            <td class="text-center d-none d-md-table-cell">
               <span class="badge px-2 py-1 fs-11 fw-semibold d-inline-flex align-items-center gap-1" [ngClass]="getStatusBadgeClass(item.status)">
                 @if (item.status === 'Approved') {
                   <iconify-icon icon="solar:check-circle-bold" class="fs-12"></iconify-icon>
@@ -230,8 +241,8 @@
               </span>
             </td>
 
-            <!-- Col 6: ACTIONS -->
-            <td class="text-end">
+            <!-- Col 5: ACTIONS (Desktop) -->
+            <td class="text-end d-none d-lg-table-cell">
               <div class="d-flex gap-2 justify-content-end align-items-center">
                 <button type="button" class="cat-action-btn" (click)="openDetailModal(item, detailModal)" ngbTooltip="Review & Reply" aria-label="Review and reply">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
@@ -251,9 +262,61 @@
               </div>
             </td>
           </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(item.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Customer Review</th>
+                        <td class="dtr-child-data">
+                          <p class="fs-12 text-dark mb-1">&ldquo;{{ item.comment }}&rdquo;</p>
+                          @if (item.adminReply) {
+                            <div class="p-2 rounded-2 bg-light border text-muted fs-11">
+                              <strong class="text-primary">Reply:</strong> {{ item.adminReply }}
+                            </div>
+                          }
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Storefront Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-11 fw-semibold d-inline-flex align-items-center gap-1" [ngClass]="getStatusBadgeClass(item.status)">
+                            {{ item.status }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                                    (click)="openDetailModal(item, detailModal)">
+                              <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>
+                              <span>Reply</span>
+                            </button>
+                            @if (item.status === 'Pending Moderation') {
+                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                                      (click)="approveFeedback(item)">
+                                <iconify-icon icon="solar:check-circle-bold" class="fs-14 text-success"></iconify-icon>
+                                <span>Publish</span>
+                              </button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="6" class="text-center py-5">
+            <td colspan="7" class="text-center py-5">
               <iconify-icon icon="solar:chat-square-like-bold" class="fs-36 text-muted mb-2"></iconify-icon>
               <h6 class="text-dark font-jost fs-14 fw-bold">No customer reviews match current criteria</h6>
               <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing rating and branch filters.</p>

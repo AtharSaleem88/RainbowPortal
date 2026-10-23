@@ -179,6 +179,9 @@
     <table class="table table-clean table-hover align-middle mb-0">
       <thead>
         <tr>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+
           <th style="width: 38px;" class="text-center">
             <div class="form-check m-0 d-flex justify-content-center">
               <input type="checkbox" class="form-check-input cursor-pointer" 
@@ -186,18 +189,33 @@
                      (change)="toggleSelectAll($event)">
             </div>
           </th>
-          <th style="min-width: 260px;">Product & Barcode</th>
-          <th style="width: 170px;">Category</th>
-          <th style="width: 140px;">Brand</th>
-          <th style="width: 130px;">Price</th>
-          <th style="width: 170px;">Branch Stock (Geo)</th>
-          <th style="width: 120px;" class="text-end">Actions</th>
+          <th style="min-width: 220px;">Product & Barcode</th>
+          <th class="d-none d-lg-table-cell" style="width: 170px;">Category</th>
+          <th class="d-none d-lg-table-cell" style="width: 140px;">Brand</th>
+          <th class="d-none d-md-table-cell" style="width: 130px;">Price</th>
+          <th class="d-none d-lg-table-cell" style="width: 170px;">Branch Stock (Geo)</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 120px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for(item of paginatedProducts; track item.id) {
-          <tr class="cat-row" [class.table-light]="isSelected(item.id)">
+          <tr class="cat-row" [class.table-light]="isSelected(item.id)" [class.dtr-row-expanded]="isRowExpanded(item.id)">
             
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(item.id)"
+                      (click)="toggleRowExpand(item.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(item.id)"
+                      [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(item.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
             <!-- Checkbox -->
             <td class="text-center">
               <div class="form-check m-0 d-flex justify-content-center">
@@ -210,23 +228,26 @@
             <!-- 1. Product & Barcode -->
             <td>
               <div class="overflow-hidden">
-                  <span class="fw-bold text-dark fs-13 d-block text-truncate" [title]="item.name">
-                    {{ item.name }}
+                <span class="fw-bold text-dark fs-13 d-block text-truncate" [title]="item.name">
+                  {{ item.name }}
+                </span>
+                <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                  <span class="badge bg-light text-secondary border font-monospace fs-10" title="Product Barcode">
+                    <iconify-icon icon="solar:barcode-linear" class="align-middle me-0.5 fs-11"></iconify-icon>
+                    {{ item.barcode || item.sku }}
                   </span>
-                  <div class="d-flex align-items-center gap-1.5 mt-0.5">
-                    <span class="badge bg-light text-secondary border font-monospace fs-10" title="Product Barcode">
-                      <iconify-icon icon="solar:barcode-linear" class="align-middle me-0.5 fs-11"></iconify-icon>
-                      {{ item.barcode || item.sku }}
-                    </span>
-                    @if (item.weight) {
-                      <span class="text-muted fs-11">&bull; {{ item.weight }}</span>
-                    }
-                  </div>
+                  @if (item.weight) {
+                    <span class="text-muted fs-11">&bull; {{ item.weight }}</span>
+                  }
+                  <span class="d-md-none fw-bold text-primary fs-12 ms-auto font-jost">
+                    Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}
+                  </span>
                 </div>
+              </div>
             </td>
 
-            <!-- 2. Category & Subcategory -->
-            <td>
+            <!-- 2. Category & Subcategory (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <div>
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 mb-0.5">
                   {{ item.category }}
@@ -237,18 +258,18 @@
               </div>
             </td>
 
-            <!-- 3. Brand -->
-            <td>
+            <!-- 3. Brand (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <span class="fw-semibold text-dark fs-13 d-block">{{ item.brand }}</span>
             </td>
 
-            <!-- 4. Price (Only Price, no cutoff price, no save label) -->
-            <td>
+            <!-- 4. Price (Desktop / Tablet) -->
+            <td class="d-none d-md-table-cell">
               <span class="text-dark fw-bold fs-14 font-jost">Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}</span>
             </td>
 
-            <!-- 5. Branch Stock (Geo Fulfillment) -->
-            <td>
+            <!-- 5. Branch Stock (Geo Fulfillment) (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               @let stockStatus = getBranchStockForProduct(item);
               <div>
                 <span class="badge" [ngClass]="stockStatus.stock > 30 ? 'bg-success-subtle text-success border border-success-subtle' : (stockStatus.stock > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle')">
@@ -263,22 +284,19 @@
               </div>
             </td>
 
-            <!-- 6. Action Buttons (Working Icons with Tooltips & Cursor Pointer) -->
-            <td class="text-end">
+            <!-- 6. Action Buttons (Desktop) -->
+            <td class="text-end d-none d-lg-table-cell">
               <div class="d-flex align-items-center justify-content-end gap-1.5">
-                <!-- Edit Product -->
                 <a [routerLink]="['/product/manage']" [queryParams]="{ id: item.id }"
                    class="cat-action-btn cursor-pointer" ngbTooltip="Edit Product">
                   <iconify-icon icon="solar:pen-2-broken" class="fs-16"></iconify-icon>
                 </a>
 
-                <!-- Branch Stock Matrix -->
                 <button type="button" class="cat-action-btn btn-geo cursor-pointer" 
                         (click)="openBranchStockModal(branchModal, item)" ngbTooltip="Branch Stock Matrix">
                   <iconify-icon icon="solar:point-on-map-bold" class="fs-16"></iconify-icon>
                 </button>
 
-                <!-- Delete Product -->
                 <button type="button" class="cat-action-btn btn-delete cursor-pointer" 
                         (click)="deleteProduct(item)" ngbTooltip="Delete SKU">
                   <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-16"></iconify-icon>
@@ -287,9 +305,84 @@
             </td>
 
           </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(item.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Category</th>
+                        <td class="dtr-child-data">
+                          <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 me-1">
+                            {{ item.category }}
+                          </span>
+                          <span class="text-muted fs-12">{{ item.subCategory }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Brand</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-semibold text-dark fs-13">{{ item.brand }}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Price</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-bold text-dark fs-13 font-jost">
+                            Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Branch Stock</th>
+                        <td class="dtr-child-data">
+                          @let stockStatusM = getBranchStockForProduct(item);
+                          <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge" [ngClass]="stockStatusM.stock > 30 ? 'bg-success-subtle text-success border border-success-subtle' : (stockStatusM.stock > 0 ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle')">
+                              {{ stockStatusM.inStock ? 'In Stock (' + stockStatusM.stock + ')' : 'Out of Stock' }}
+                            </span>
+                            <button type="button" class="btn btn-xs btn-outline-primary py-0.5 px-2 fs-11 d-inline-flex align-items-center gap-1 cursor-pointer"
+                                    (click)="openBranchStockModal(branchModal, item)">
+                              <iconify-icon icon="solar:point-on-map-bold" class="fs-12"></iconify-icon>
+                              <span>10 Branches Geo</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <a [routerLink]="['/product/manage']" [queryParams]="{ id: item.id }"
+                               class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer text-decoration-none">
+                              <iconify-icon icon="solar:pen-2-broken" class="fs-14"></iconify-icon>
+                              <span>Edit</span>
+                            </a>
+                            <button type="button" (click)="openBranchStockModal(branchModal, item)"
+                                    class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer">
+                              <iconify-icon icon="solar:point-on-map-bold" class="fs-14 text-primary"></iconify-icon>
+                              <span>Stock</span>
+                            </button>
+                            <button type="button" (click)="deleteProduct(item)"
+                                    class="btn btn-sm btn-danger-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer">
+                              <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="fs-14"></iconify-icon>
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="7" class="text-center py-5">
+            <td colspan="8" class="text-center py-5">
               <div class="d-flex flex-column align-items-center justify-content-center">
                 <div class="rounded-circle p-3 bg-light text-muted mb-2">
                   <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>

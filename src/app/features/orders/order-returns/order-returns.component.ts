@@ -29,6 +29,21 @@ export class OrderReturnsComponent implements OnInit {
   title = 'Returns & Refund Claims Console';
   returns: RainbowOrderReturn[] = RAINBOW_RETURNS;
 
+  // Responsive row expand state (mobile child rows)
+  expandedRowIds = new Set<string>();
+
+  toggleRowExpand(id: string): void {
+    if (this.expandedRowIds.has(id)) {
+      this.expandedRowIds.delete(id);
+    } else {
+      this.expandedRowIds.add(id);
+    }
+  }
+
+  isRowExpanded(id: string): boolean {
+    return this.expandedRowIds.has(id);
+  }
+
   authService = inject(AuthenticationService);
   currentUser = this.authService.user;
 

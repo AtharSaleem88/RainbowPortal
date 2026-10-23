@@ -331,11 +331,11 @@
         <tr>
           <th style="width: 38px;" class="text-center"></th>
           <th style="min-width: 200px;">CUSTOMER DETAILS</th>
-          <th style="min-width: 150px;">USER ORDERS</th>
-          <th style="min-width: 160px;">ORDER TIMELINE</th>
-          <th style="min-width: 170px;">LOYALTY & WALLET</th>
-          <th style="width: 90px;" class="text-center">BLACKLIST</th>
-          <th style="width: 70px;" class="text-center">PROFILE</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 150px;">USER ORDERS</th>
+          <th class="d-none d-xl-table-cell" style="min-width: 160px;">ORDER TIMELINE</th>
+          <th class="d-none d-md-table-cell" style="min-width: 170px;">LOYALTY &amp; WALLET</th>
+          <th class="d-none d-md-table-cell text-center" style="width: 90px;">BLACKLIST</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 70px;">PROFILE</th>
         </tr>
       </thead>
       <tbody>
@@ -344,11 +344,12 @@
           <tr [class.table-light]="expandedRowMap[item.id]">
             <!-- Col 1: Expand Button -->
             <td class="text-center px-2">
-              <button class="btn btn-sm p-0 rounded-circle border-0 d-inline-flex align-items-center justify-content-center"
-                      style="width: 22px; height: 22px; background-color: #5e35b1; color: #fff;"
+              <button class="dtr-control-btn"
+                      [class.expanded]="expandedRowMap[item.id]"
                       (click)="toggleRowExpansion(item.id)"
                       [title]="expandedRowMap[item.id] ? 'Collapse Details' : 'Expand Details'">
-                <iconify-icon [icon]="expandedRowMap[item.id] ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" class="fs-18"></iconify-icon>
+                <iconify-icon [icon]="expandedRowMap[item.id] ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'"
+                              [class]="expandedRowMap[item.id] ? 'fs-18 text-danger' : 'fs-18 text-primary'"></iconify-icon>
               </button>
             </td>
 
@@ -366,15 +367,19 @@
                                 [class]="item.isVip ? 'text-warning fs-16 align-middle' : 'text-muted fs-16 align-middle'"></iconify-icon>
                 </button>
               </div>
-              <!-- Email -->
-              <div class="d-flex align-items-center text-muted small mt-1" style="font-size: 12px;">
-                <iconify-icon icon="solar:letter-bold" class="fs-13 me-1 text-muted"></iconify-icon>
-                <span>{{ item.email }}</span>
+              <!-- Phone & Email -->
+              <div class="d-flex align-items-center gap-2 flex-wrap text-muted small mt-1" style="font-size: 12px;">
+                <a [href]="'tel:' + item.phone" class="text-primary text-decoration-none fw-medium">
+                  <iconify-icon icon="solar:phone-bold" class="fs-12 me-0.5 text-primary"></iconify-icon>
+                  {{ item.phone }}
+                </a>
+                <span>&bull;</span>
+                <span class="text-muted text-truncate" style="max-width: 170px;">{{ item.email }}</span>
               </div>
             </td>
 
-            <!-- Col 3: User Orders -->
-            <td>
+            <!-- Col 3: User Orders (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <div class="d-flex align-items-center justify-content-between mb-1" style="max-width: 150px;">
                 <span class="text-muted small" style="font-size: 12px;">Orders:</span>
                 <span class="badge rounded-pill fw-bold px-2 py-1" style="background-color: #ede7f6; color: #5e35b1; min-width: 28px;">
@@ -389,8 +394,8 @@
               </div>
             </td>
 
-            <!-- Col 4: Order Timeline -->
-            <td>
+            <!-- Col 4: Order Timeline (Wide Screens) -->
+            <td class="d-none d-xl-table-cell">
               <div class="text-muted" style="font-size: 11px;">First Order Date:</div>
               <div class="fw-semibold text-dark" style="font-size: 12px;">{{ item.firstOrderDate }}</div>
               <hr class="my-1 border-light opacity-50">
@@ -398,8 +403,8 @@
               <div class="fw-semibold text-dark" style="font-size: 12px;">{{ item.lastOrderDate }}</div>
             </td>
 
-            <!-- Col 5: Loyalty & Wallet -->
-            <td>
+            <!-- Col 5: Loyalty & Wallet (Desktop / Tablet) -->
+            <td class="d-none d-md-table-cell">
               <!-- Loyalty -->
               <div class="d-flex align-items-center gap-1 mb-1">
                 <span class="text-muted small" style="font-size: 12px;">Loyalty:</span>
@@ -407,7 +412,6 @@
                   {{ item.loyaltyPoints }}
                 </span>
               </div>
-
               <!-- Wallet Balance -->
               <div class="d-flex align-items-center gap-1">
                 <span class="badge rounded-pill px-2 py-1 fw-bold border" style="background-color: #fff8e1; color: #f57f17; border-color: #ffe082 !important;" title="Rainbow Wallet Balance">
@@ -417,8 +421,8 @@
               </div>
             </td>
 
-            <!-- Col 8: Blacklist Toggle -->
-            <td class="text-center">
+            <!-- Col 6: Blacklist Toggle (Desktop / Tablet) -->
+            <td class="text-center d-none d-md-table-cell">
               <div class="form-check form-switch d-inline-block mb-0">
                 <input class="form-check-input cursor-pointer" type="checkbox"
                        [checked]="item.isBlacklisted"
@@ -427,8 +431,8 @@
               </div>
             </td>
 
-            <!-- Col 9: Profile Action Button -->
-            <td class="text-center">
+            <!-- Col 7: Profile Action Button (Desktop) -->
+            <td class="text-center d-none d-lg-table-cell">
               <button type="button" class="btn btn-sm d-inline-flex align-items-center justify-content-center p-2 rounded-2 border-0"
                       style="background-color: #ede7f6; color: #5e35b1;"
                       (click)="openProfileModal(item, profileModal)" title="View Customer Profile">

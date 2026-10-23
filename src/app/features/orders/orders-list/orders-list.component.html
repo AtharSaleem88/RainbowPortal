@@ -201,30 +201,41 @@
     <table class="table table-clean align-middle mb-0">
       <thead>
         <tr>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
+          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
           <th>ORDER NO</th>
-          <th>DATE &amp; TIME</th>
           <th>CUSTOMER DETAILS</th>
-          <th>STORE BRANCH</th>
-          <th class="text-center">STATUS</th>
-          <th class="text-end">NET TOTAL</th>
-          <th class="text-end">ACTIONS</th>
+          <th class="d-none d-lg-table-cell">DATE &amp; TIME</th>
+          <th class="d-none d-lg-table-cell">STORE BRANCH</th>
+          <th class="d-none d-md-table-cell text-center">STATUS</th>
+          <th class="d-none d-md-table-cell text-end">NET TOTAL</th>
+          <th class="d-none d-lg-table-cell text-end">ACTIONS</th>
         </tr>
       </thead>
       <tbody>
         @for(item of paginatedOrders; track item.id){
-          <tr>
+          <tr class="cat-row" [class.dtr-row-expanded]="isRowExpanded(item.id)">
+            <!-- Mobile Expand Toggle (+) / (-) -->
+            <td class="dtr-control-col d-lg-none text-center">
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(item.id)"
+                      (click)="toggleRowExpand(item.id); $event.stopPropagation()"
+                      [attr.aria-expanded]="isRowExpanded(item.id)"
+                      [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
+                @if (isRowExpanded(item.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
+              </button>
+            </td>
+
             <!-- Col 1: ORDER NO -->
             <td>
               <span class="fw-bold text-dark font-monospace fs-13">#{{item.id}}</span>
             </td>
 
-            <!-- Col 2: DATE & TIME -->
-            <td>
-              <div class="text-dark fw-medium fs-12">{{item.time}}</div>
-              <small class="text-muted fs-11">{{item.date}}</small>
-            </td>
-
-            <!-- Col 3: CUSTOMER DETAILS -->
+            <!-- Col 2: CUSTOMER DETAILS -->
             <td>
               <div class="d-flex align-items-center gap-1.5 mb-0.5 flex-wrap">
                 <span class="fw-bold text-dark fs-13">{{item.customer.name}}</span>
@@ -233,31 +244,40 @@
                     Repeat ({{item.customer.totalOrders}})
                   </span>
                 }
+                <span class="d-md-none badge px-2 py-0.5 fs-10 fw-semibold ms-auto" [ngClass]="getStatusBadgeClass(item.status)">
+                  {{item.status}}
+                </span>
               </div>
               <a [href]="'tel:' + item.customer.phone" class="text-primary fs-11 text-decoration-none fw-medium d-block">
                 {{item.customer.phone}}
               </a>
             </td>
 
-            <!-- Col 4: STORE BRANCH -->
-            <td>
+            <!-- Col 3: DATE & TIME (Desktop) -->
+            <td class="d-none d-lg-table-cell">
+              <div class="text-dark fw-medium fs-12">{{item.time}}</div>
+              <small class="text-muted fs-11">{{item.date}}</small>
+            </td>
+
+            <!-- Col 4: STORE BRANCH (Desktop) -->
+            <td class="d-none d-lg-table-cell">
               <span class="text-dark fw-semibold fs-12">{{item.branch}}</span>
             </td>
 
-            <!-- Col 5: STATUS -->
-            <td class="text-center">
+            <!-- Col 5: STATUS (Desktop / Tablet) -->
+            <td class="text-center d-none d-md-table-cell">
               <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(item.status)">
                 {{item.status}}
               </span>
             </td>
 
-            <!-- Col 6: AMOUNT -->
-            <td class="text-end">
+            <!-- Col 6: AMOUNT (Desktop / Tablet) -->
+            <td class="text-end d-none d-md-table-cell">
               <span class="fw-bold text-dark fs-13 font-monospace font-jost">Rs {{item.totalAmount | number:'1.2-2'}}</span>
             </td>
 
-            <!-- Col 7: ACTIONS -->
-            <td class="text-end">
+            <!-- Col 7: ACTIONS (Desktop) -->
+            <td class="text-end d-none d-lg-table-cell">
               <div class="d-flex gap-1 justify-content-end">
                 <button type="button" class="cat-action-btn" (click)="openOrderModal(item, orderDetailsModal)" ngbTooltip="View Order Details">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
@@ -274,9 +294,74 @@
               </div>
             </td>
           </tr>
+
+          <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
+          @if (isRowExpanded(item.id)) {
+            <tr class="dtr-child-row d-lg-none">
+              <td colspan="100%" class="p-0 border-0">
+                <div class="dtr-child-box">
+                  <table class="table dtr-child-table mb-0">
+                    <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Date &amp; Time</th>
+                        <td class="dtr-child-data">
+                          <span class="text-dark fw-medium fs-12">{{item.date}} &bull; {{item.time}}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Store Branch</th>
+                        <td class="dtr-child-data">
+                          <span class="text-dark fw-semibold fs-12">{{item.branch}}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Net Total</th>
+                        <td class="dtr-child-data">
+                          <span class="fw-bold text-dark fs-13 font-monospace font-jost">Rs {{item.totalAmount | number:'1.2-2'}}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Status</th>
+                        <td class="dtr-child-data">
+                          <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(item.status)">
+                            {{item.status}}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="dtr-child-title">Action</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                                    (click)="openOrderModal(item, orderDetailsModal)">
+                              <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>
+                              <span>Details</span>
+                            </button>
+                            @if(item.assignedRider){
+                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                                      (click)="openAssignRiderModal(item, assignRiderModal)">
+                                <iconify-icon icon="solar:scooter-bold" class="fs-14 text-success"></iconify-icon>
+                                <span>Rider: {{item.assignedRider.name}}</span>
+                              </button>
+                            } @else if(item.status === 'Pending' || item.status === 'Accepted'){
+                              <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                                      (click)="openAssignRiderModal(item, assignRiderModal)">
+                                <iconify-icon icon="solar:scooter-linear" class="fs-14"></iconify-icon>
+                                <span>Assign Rider</span>
+                              </button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td colspan="7" class="text-center py-5">
+            <td colspan="8" class="text-center py-5">
               <iconify-icon icon="solar:bag-3-linear" class="fs-36 text-muted mb-2"></iconify-icon>
               <h6 class="text-dark font-jost fs-14 fw-bold">No orders match current criteria</h6>
               <p class="text-muted fs-12 mb-0">Try clearing your search keyword or relaxing status and store filters.</p>

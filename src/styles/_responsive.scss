@@ -109,3 +109,95 @@
     .dashboard-abandoned-metrics h4 { font-size: 16px !important; }
   }
 }
+
+
+/* ========================================================
+   Universal Responsive DataTables Child Rows (Expand / Collapse)
+   ======================================================== */
+.dtr-control-col {
+  width: 36px;
+  min-width: 36px;
+  padding: 8px 6px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dtr-control-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  border-radius: 50%;
+  transition: transform 0.15s ease;
+
+  iconify-icon {
+    font-size: 19px;
+    display: block;
+  }
+
+  &:hover {
+    transform: scale(1.12);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.dtr-child-row {
+  background: #ffffff;
+
+  td {
+    padding: 0 !important;
+    border: none !important;
+  }
+}
+
+.dtr-child-box {
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.dtr-child-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  tr {
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .dtr-child-title {
+    width: 38%;
+    min-width: 120px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    background: #f8fafc;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  .dtr-child-data {
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #1e293b;
+    vertical-align: middle;
+    background: #ffffff;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .table-responsive tbody tr:not(.dtr-child-row):nth-of-type(4n + 1) {
+    background-color: #fafbfc;
+  }
+}
