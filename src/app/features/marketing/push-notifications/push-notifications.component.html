@@ -369,11 +369,11 @@
      Main Campaigns Console Card (History & Analytics)
      ======================================================== -->
 <div class="cat-main-card overflow-hidden mb-4">
-  <!-- Header Toolbar: Status Tabs + Search Box -->
+  <!-- Header Toolbar: Status Tabs + Search Box + Page Size -->
   <div class="p-3 border-bottom bg-white">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
       <!-- Status Filter Segmented Control -->
-      <div class="filter-segmented-control">
+      <div class="filter-segmented-control flex-grow-1 flex-md-grow-0">
         <button type="button" class="segment-btn" [class.active]="filterStatus === 'all'" (click)="setStatusTab('all')">
           <span>All Campaigns</span>
           <span class="count-pill">{{ counts.all }}</span>
@@ -392,9 +392,9 @@
         </button>
       </div>
 
-      <!-- Search Box with Clear Button -->
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <div class="search-box-wrapper">
+      <!-- Right: Search Box & Page Size (matching other tables) -->
+      <div class="d-flex align-items-center gap-2 toolbar-search-group">
+        <div class="search-box-wrapper flex-grow-1">
           <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
           <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
                  class="form-control search-input shadow-none"
@@ -405,6 +405,13 @@
             </button>
           }
         </div>
+
+        <select [ngModel]="pageSize" (ngModelChange)="pageSize = $event; currentPage = 1"
+                class="form-select page-select-input shadow-none" title="Rows per page">
+          <option [ngValue]="6">6 / page</option>
+          <option [ngValue]="12">12 / page</option>
+          <option [ngValue]="24">24 / page</option>
+        </select>
       </div>
     </div>
   </div>
@@ -454,39 +461,51 @@
 
   <!-- Table Body -->
   <div class="table-responsive">
-    <table class="table table-clean campaign-table align-middle mb-0">
+    <table class="table table-clean table-hover campaign-table align-middle mb-0">
       <thead>
         <tr>
+          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
           <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
-          <th style="min-width: 240px;">NOTIFICATION DETAILS</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 170px;">TARGET AUDIENCE</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 160px;">DISPATCH / SCHEDULE</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 110px;">RECIPIENTS</th>
-          <th class="d-none d-lg-table-cell text-center" style="width: 110px;">STATUS</th>
-          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">ACTIONS</th>
+
+          <!-- Notification Details (Always visible) -->
+          <th style="min-width: 180px;">Notification Details</th>
+
+          <!-- Desktop Columns (Hidden on < 992px, shown in child row) -->
+          <th class="d-none d-lg-table-cell" style="min-width: 170px;">Target Audience</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 160px;">Dispatch / Schedule</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Recipients</th>
+          <th class="d-none d-lg-table-cell text-center" style="width: 110px;">Status</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for(item of paginatedNotifications; track item.id) {
-          <tr>
-            <!-- 0. Mobile expand/collapse control -->
+          <tr class="cat-row" [class.dtr-row-expanded]="isRowExpanded(item.id)">
+            <!-- Mobile Expand Toggle (+) / (-) -->
             <td class="dtr-control-col d-lg-none text-center">
-              <button type="button" 
-                      class="dtr-control-btn border-0 bg-transparent p-0" 
-                      (click)="toggleRowExpand(item.id)" 
+              <button type="button" class="dtr-control-btn"
+                      [class.expanded]="isRowExpanded(item.id)"
+                      (click)="toggleRowExpand(item.id); $event.stopPropagation()"
                       [attr.aria-expanded]="isRowExpanded(item.id)"
                       [title]="isRowExpanded(item.id) ? 'Collapse details' : 'Expand details'">
-                <iconify-icon [icon]="isRowExpanded(item.id) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'" 
-                              [class.text-danger]="isRowExpanded(item.id)" 
-                              [class.text-primary]="!isRowExpanded(item.id)" 
-                              class="fs-18"></iconify-icon>
+                @if (isRowExpanded(item.id)) {
+                  <iconify-icon icon="solar:minus-circle-bold" class="fs-18 text-danger align-middle"></iconify-icon>
+                } @else {
+                  <iconify-icon icon="solar:add-circle-bold" class="fs-18 text-primary align-middle"></iconify-icon>
+                }
               </button>
             </td>
 
             <!-- Col 1: Notification Details -->
             <td>
               <div>
-                <div class="campaign-title fw-bold text-dark fs-13 mb-1" [title]="item.title">{{ item.title }}</div>
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-0.5">
+                  <span class="campaign-title fw-bold text-dark fs-13" [title]="item.title">{{ item.title }}</span>
+                  <span class="d-lg-none badge px-2 py-0.5 fs-10 fw-semibold flex-shrink-0"
+                        [ngClass]="item.status === 'Sent' ? 'bg-success-subtle text-success' : (item.status === 'Scheduled' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary')">
+                    {{ item.status }}
+                  </span>
+                </div>
                 <div class="campaign-message text-muted fs-11" [title]="item.message">{{ item.message }}</div>
               </div>
             </td>
