@@ -166,7 +166,7 @@
     </div>
   </div>
 
-  <!-- Secondary Filter Strip -->
+  <!-- Secondary Filter Strip: Branch & Priority Tiers Filter -->
   <div class="filter-bar-strip d-flex flex-wrap align-items-center justify-content-between gap-3">
     <div class="d-flex flex-wrap align-items-center gap-3">
       <!-- Branch Filter -->
@@ -186,6 +186,33 @@
         }
       </div>
 
+      <!-- Priority Filter Segmented Control -->
+      <div class="filter-segmented-control flex-wrap">
+        <button type="button" class="segment-btn" [class.active]="selectedPriority === 'all'" (click)="setPriorityTab('all')">
+          <span>All Orders</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedPriority === 'urgent'" (click)="setPriorityTab('urgent')">
+          <iconify-icon icon="solar:bolt-bold" class="text-danger fs-13 align-middle"></iconify-icon>
+          <span>Urgent (ASAP)</span>
+          <span class="count-pill">{{ statusCounts.urgent }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedPriority === 'standard'" (click)="setPriorityTab('standard')">
+          <iconify-icon icon="solar:box-bold" class="text-primary fs-13 align-middle"></iconify-icon>
+          <span>Standard</span>
+          <span class="count-pill">{{ statusCounts.standard }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedPriority === 'scheduled'" (click)="setPriorityTab('scheduled')">
+          <iconify-icon icon="solar:calendar-bold" class="text-secondary fs-13 align-middle"></iconify-icon>
+          <span>Scheduled</span>
+          <span class="count-pill">{{ statusCounts.scheduled }}</span>
+        </button>
+        <button type="button" class="segment-btn" [class.active]="selectedPriority === 'exceptions'" (click)="setPriorityTab('exceptions')"
+                [ngClass]="statusCounts.exceptions > 0 ? 'border border-danger-subtle bg-danger-subtle text-danger' : ''">
+          <iconify-icon icon="solar:danger-triangle-bold" class="fs-13 align-middle"></iconify-icon>
+          <span>Issues / Flagged</span>
+          <span class="count-pill bg-danger text-white">{{ statusCounts.exceptions }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Active Filter Counter & Reset -->
@@ -193,7 +220,7 @@
       <span class="text-muted fs-11">
         Found <strong>{{ filteredOrders.length }}</strong> orders
       </span>
-      @if (searchTerm || (!isBranchLocked && selectedBranch !== 'all') || selectedStatus !== 'all') {
+      @if (searchTerm || (!isBranchLocked && selectedBranch !== 'all') || selectedStatus !== 'all' || selectedPriority !== 'all') {
         <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fs-11 text-danger d-inline-flex align-items-center gap-1"
                 (click)="resetFilters()">
           <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
@@ -211,12 +238,13 @@
           <!-- Expand/Collapse Control Column: Visible only on < 992px -->
           <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
           <th style="min-width: 100px;">Order No</th>
+          <th class="d-none d-md-table-cell" style="min-width: 135px;">Priority &amp; SLA</th>
           <th style="min-width: 160px;">Customer Details</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Date &amp; Time</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Store Branch</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 130px;">Date &amp; Time</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 130px;">Store Branch</th>
           <th class="d-none d-lg-table-cell text-center" style="width: 110px;">Status</th>
           <th class="d-none d-lg-table-cell text-end" style="width: 110px;">Net Total</th>
-          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
+          <th class="d-none d-lg-table-cell text-end" style="width: 100px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -242,7 +270,40 @@
               <span class="fw-bold text-dark font-monospace fs-13">#{{item.id}}</span>
             </td>
 
-            <!-- Col 2: CUSTOMER DETAILS -->
+            <!-- Col 2: PRIORITY & SLA (Desktop / Tablet) -->
+            <td class="d-none d-md-table-cell">
+              <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                @if (item.urgency === 'Urgent' || item.priorityTier === 'P1' || item.priorityTier === 'P2') {
+                  <button type="button" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 fs-11 fw-bold cursor-pointer"
+                          (click)="openPriorityModal(item, priorityModal); $event.stopPropagation()"
+                          title="Click to adjust urgency">
+                    <iconify-icon icon="solar:bolt-bold" class="align-middle me-1"></iconify-icon>Urgent (ASAP)
+                  </button>
+                  <small class="text-muted fs-10 d-block">10m Pick Target</small>
+                } @else if (item.urgency === 'Scheduled' || item.priorityTier === 'P4') {
+                  <button type="button" class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 fs-11 fw-bold cursor-pointer"
+                          (click)="openPriorityModal(item, priorityModal); $event.stopPropagation()"
+                          title="Click to adjust urgency">
+                    <iconify-icon icon="solar:calendar-bold" class="align-middle me-1"></iconify-icon>Scheduled
+                  </button>
+                  <small class="text-muted fs-10 d-block">Slot Hold</small>
+                } @else {
+                  <button type="button" class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-11 fw-bold cursor-pointer"
+                          (click)="openPriorityModal(item, priorityModal); $event.stopPropagation()"
+                          title="Click to adjust urgency">
+                    <iconify-icon icon="solar:box-bold" class="align-middle me-1"></iconify-icon>Standard
+                  </button>
+                  <small class="text-muted fs-10 d-block">20m Pick Target</small>
+                }
+              </div>
+              @if(item.priorityDetails?.isOverridden){
+                <small class="text-warning-emphasis fs-10 fw-semibold d-block mt-0.5" [title]="'Reason: ' + item.priorityDetails?.overrideReason">
+                  Adjusted: {{item.priorityDetails?.overrideReason}}
+                </small>
+              }
+            </td>
+
+            <!-- Col 3: CUSTOMER DETAILS -->
             <td>
               <div class="d-flex align-items-center gap-1.5 mb-0.5 flex-wrap">
                 <span class="fw-bold text-dark fs-13">{{item.customer.name}}</span>
@@ -257,42 +318,40 @@
               </a>
             </td>
 
-            <!-- Col 3: DATE & TIME (Desktop) -->
+            <!-- Col 4: DATE & TIME (Desktop) -->
             <td class="d-none d-lg-table-cell">
               <div class="text-dark fw-medium fs-12">{{item.time}}</div>
               <small class="text-muted fs-11">{{item.date}}</small>
             </td>
 
-            <!-- Col 4: STORE BRANCH (Desktop) -->
+            <!-- Col 5: STORE BRANCH (Desktop) -->
             <td class="d-none d-lg-table-cell">
               <span class="text-dark fw-semibold fs-12">{{item.branch}}</span>
             </td>
 
-            <!-- Col 5: STATUS (Desktop) -->
+            <!-- Col 6: STATUS (Desktop) -->
             <td class="text-center d-none d-lg-table-cell">
-              <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(item.status)">
+              <span class="badge px-2.5 py-1 fs-11 fw-semibold d-inline-block status-badge" [ngClass]="getStatusBadgeClass(item.status)">
                 {{item.status}}
               </span>
             </td>
 
-            <!-- Col 6: AMOUNT (Desktop) -->
+            <!-- Col 7: AMOUNT (Desktop) -->
             <td class="text-end d-none d-lg-table-cell">
               <span class="fw-bold text-dark fs-13 font-monospace font-jost">Rs {{item.totalAmount | number:'1.2-2'}}</span>
             </td>
 
-            <!-- Col 7: ACTIONS (Desktop) -->
+            <!-- Col 8: ACTIONS (Desktop: Compact & Clean) -->
             <td class="text-end d-none d-lg-table-cell">
-              <div class="d-flex gap-1 justify-content-end">
-                <button type="button" class="cat-action-btn" (click)="openOrderModal(item, orderDetailsModal)" ngbTooltip="View Order Details">
+              <div class="d-flex gap-1.5 justify-content-end align-items-center">
+                <!-- Details Button (Opens full modal with all operational workflows) -->
+                <button type="button" class="cat-action-btn text-primary border-primary-subtle bg-primary-subtle" (click)="openOrderModal(item, orderDetailsModal)" ngbTooltip="View Order Details &amp; Actions">
                   <iconify-icon icon="solar:eye-linear" class="fs-15"></iconify-icon>
                 </button>
-                @if(item.assignedRider){
-                  <button type="button" class="cat-action-btn" (click)="openAssignRiderModal(item, assignRiderModal)" [ngbTooltip]="'Rider: ' + item.assignedRider.name + ' (' + item.assignedRider.phone + ')'">
-                    <iconify-icon icon="solar:scooter-bold" class="fs-15 text-success"></iconify-icon>
-                  </button>
-                } @else if(item.status === 'Pending' || item.status === 'Accepted'){
-                  <button type="button" class="cat-action-btn" (click)="openAssignRiderModal(item, assignRiderModal)" ngbTooltip="Assign Rider">
-                    <iconify-icon icon="solar:scooter-linear" class="fs-15 text-primary"></iconify-icon>
+                <!-- Cancel Order Button (Opens reason popup) -->
+                @if(item.status !== 'Delivered' && item.status !== 'Cancelled' && item.status !== 'Refunded'){
+                  <button type="button" class="cat-action-btn text-danger border-danger-subtle bg-danger-subtle" (click)="openCancelOrderModal(item, cancelReasonModal)" ngbTooltip="Cancel Order">
+                    <iconify-icon icon="solar:close-circle-linear" class="fs-15"></iconify-icon>
                   </button>
                 }
               </div>
@@ -306,6 +365,46 @@
                 <div class="dtr-child-box">
                   <table class="table dtr-child-table mb-0">
                     <tbody>
+                      <tr>
+                        <th class="dtr-child-title">Fulfillment Urgency</th>
+                        <td class="dtr-child-data">
+                          <div class="d-flex align-items-center gap-2">
+                            @if (item.urgency === 'Urgent' || item.priorityTier === 'P1' || item.priorityTier === 'P2') {
+                              <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 fs-11 fw-bold">
+                                <iconify-icon icon="solar:bolt-bold" class="align-middle me-1"></iconify-icon>Urgent (ASAP)
+                              </span>
+                            } @else if (item.urgency === 'Scheduled' || item.priorityTier === 'P4') {
+                              <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 fs-11 fw-bold">
+                                <iconify-icon icon="solar:calendar-bold" class="align-middle me-1"></iconify-icon>Scheduled
+                              </span>
+                            } @else {
+                              <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-11 fw-bold">
+                                <iconify-icon icon="solar:box-bold" class="align-middle me-1"></iconify-icon>Standard
+                              </span>
+                            }
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 fs-10"
+                                    (click)="openPriorityModal(item, priorityModal)">
+                              Adjust
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      @if(item.hasException){
+                        <tr>
+                          <th class="dtr-child-title text-danger">Exception</th>
+                          <td class="dtr-child-data">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                              <span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-11">
+                                {{ item.exception?.title }}
+                              </span>
+                              <button type="button" class="btn btn-xs btn-danger py-0.5 px-2 fs-10"
+                                      (click)="openExceptionModal(item, exceptionModal)">
+                                Resolve
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      }
                       <tr>
                         <th class="dtr-child-title">Date &amp; Time</th>
                         <td class="dtr-child-data">
@@ -324,34 +423,68 @@
                           <span class="fw-bold text-dark fs-13 font-monospace font-jost">Rs {{item.totalAmount | number:'1.2-2'}}</span>
                         </td>
                       </tr>
+                      @if(item.substitutionPreference || item.hasOutOfStockItems){
+                        <tr>
+                          <th class="dtr-child-title">Substitution Preference</th>
+                          <td class="dtr-child-data">
+                            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                              @if(item.substitutionPreference === 'Call Me'){
+                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle fs-11">
+                                  <iconify-icon icon="solar:phone-calling-bold" class="text-warning align-middle me-1"></iconify-icon>Call for Replacement
+                                </span>
+                              } @else if(item.substitutionPreference === 'Best Alternative'){
+                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fs-11">
+                                  <iconify-icon icon="solar:refresh-circle-bold" class="align-middle me-1"></iconify-icon>Best Alternative
+                                </span>
+                              } @else if(item.substitutionPreference === 'Remove & Refund'){
+                                <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle fs-11">
+                                  <iconify-icon icon="solar:trash-bin-trash-bold" class="align-middle me-1"></iconify-icon>Remove &amp; Refund
+                                </span>
+                              } @else {
+                                <span class="badge bg-secondary-subtle text-dark border border-secondary-subtle fs-11">
+                                  {{ item.substitutionPreference || 'Best Alternative' }}
+                                </span>
+                              }
+                              @if(item.hasOutOfStockItems){
+                                <span class="badge bg-danger text-white fs-10 fw-bold">OOS Item Flagged</span>
+                              }
+                            </div>
+                          </td>
+                        </tr>
+                      }
                       <tr>
-                        <th class="dtr-child-title">Status</th>
+                        <th class="dtr-child-title">Status &amp; Queue</th>
                         <td class="dtr-child-data">
-                          <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(item.status)">
-                            {{item.status}}
-                          </span>
+                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                            <span class="badge px-2 py-1 fs-11 fw-semibold status-badge" [ngClass]="getStatusBadgeClass(item.status)">
+                              {{item.status}}
+                            </span>
+                            @if(item.dispatcherQueueStatus === 'In Dispatcher Queue'){
+                              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10">
+                                In Queue ({{ item.assignedDispatcher?.bayNumber || 'Bay 1' }})
+                              </span>
+                            } @else if(item.dispatcherQueueStatus === 'Ready to Pick'){
+                              <span class="badge bg-success-subtle text-success border border-success-subtle fs-10">
+                                Ready to Pick
+                              </span>
+                            }
+                          </div>
                         </td>
                       </tr>
                       <tr>
                         <th class="dtr-child-title">Action</th>
                         <td class="dtr-child-data">
-                          <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                            <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-sm btn-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-3 fs-12 cursor-pointer"
                                     (click)="openOrderModal(item, orderDetailsModal)">
                               <iconify-icon icon="solar:eye-linear" class="fs-14"></iconify-icon>
                               <span>Details</span>
                             </button>
-                            @if(item.assignedRider){
-                              <button type="button" class="btn btn-sm btn-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
-                                      (click)="openAssignRiderModal(item, assignRiderModal)">
-                                <iconify-icon icon="solar:scooter-bold" class="fs-14 text-success"></iconify-icon>
-                                <span>Rider: {{item.assignedRider.name}}</span>
-                              </button>
-                            } @else if(item.status === 'Pending' || item.status === 'Accepted'){
-                              <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 py-1 px-2.5 fs-12 cursor-pointer"
-                                      (click)="openAssignRiderModal(item, assignRiderModal)">
-                                <iconify-icon icon="solar:scooter-linear" class="fs-14"></iconify-icon>
-                                <span>Assign Rider</span>
+                            @if(item.status !== 'Delivered' && item.status !== 'Cancelled' && item.status !== 'Refunded'){
+                              <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 py-1 px-3 fs-12 cursor-pointer"
+                                      (click)="openCancelOrderModal(item, cancelReasonModal)">
+                                <iconify-icon icon="solar:close-circle-linear" class="fs-14"></iconify-icon>
+                                <span>Cancel Order</span>
                               </button>
                             }
                           </div>
@@ -411,6 +544,124 @@
     </div>
 
     <div class="order-details-body modal-body p-4 bg-light-subtle">
+      <!-- Lifecycle Status Stepper -->
+      <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="fs-11 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Order Lifecycle Journey</span>
+          <span class="badge px-2.5 py-1 fs-11 fw-bold status-badge" [ngClass]="getStatusBadgeClass(selectedOrder.status)">
+            Current Status: {{ selectedOrder.status }}
+          </span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between position-relative px-2 py-1 overflow-x-auto">
+          <!-- Step 1: Placed -->
+          <div class="d-flex flex-column align-items-center text-center flex-shrink-0" style="width: 85px;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white mb-1"
+                 [ngClass]="selectedOrder.status !== 'Cancelled' ? 'bg-success' : 'bg-secondary'" style="width: 28px; height: 28px; font-size: 13px;">
+              <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
+            </div>
+            <span class="fs-10 fw-semibold text-dark">1. Placed</span>
+            <span class="fs-9 text-muted font-monospace">{{ selectedOrder.time }}</span>
+          </div>
+
+          <div class="flex-grow-1 border-top border-2 mx-1" [ngClass]="selectedOrder.verifiedAt || (selectedOrder.status !== 'Placed' && selectedOrder.status !== 'Pending') ? 'border-success' : 'border-light-subtle'"></div>
+
+          <!-- Step 2: Customer Verified -->
+          <div class="d-flex flex-column align-items-center text-center flex-shrink-0" style="width: 95px;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center mb-1"
+                 [ngClass]="selectedOrder.verifiedAt || (selectedOrder.status !== 'Placed' && selectedOrder.status !== 'Pending') ? 'bg-success text-white' : 'bg-light text-muted border'" style="width: 28px; height: 28px; font-size: 13px;">
+              <iconify-icon icon="solar:verified-check-bold"></iconify-icon>
+            </div>
+            <span class="fs-10 fw-semibold text-dark">2. Verified</span>
+            <span class="fs-9 text-muted font-monospace">{{ selectedOrder.verifiedAt || 'Pending' }}</span>
+          </div>
+
+          <div class="flex-grow-1 border-top border-2 mx-1" [ngClass]="selectedOrder.dispatcherQueueStatus === 'In Dispatcher Queue' || selectedOrder.dispatcherQueueStatus === 'Ready to Pick' || selectedOrder.dispatcherQueueStatus === 'Dispatched' || selectedOrder.status === 'Packed' || selectedOrder.status === 'Dispatch' || selectedOrder.status === 'Delivered' ? 'border-success' : 'border-light-subtle'"></div>
+
+          <!-- Step 3: In Dispatcher Queue -->
+          <div class="d-flex flex-column align-items-center text-center flex-shrink-0" style="width: 105px;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center mb-1"
+                 [ngClass]="selectedOrder.dispatcherQueueStatus === 'In Dispatcher Queue' || selectedOrder.dispatcherQueueStatus === 'Ready to Pick' || selectedOrder.dispatcherQueueStatus === 'Dispatched' || selectedOrder.status === 'Packed' || selectedOrder.status === 'Dispatch' || selectedOrder.status === 'Delivered' ? 'bg-success text-white' : 'bg-light text-muted border'" style="width: 28px; height: 28px; font-size: 13px;">
+              <iconify-icon icon="solar:user-check-bold"></iconify-icon>
+            </div>
+            <span class="fs-10 fw-semibold text-dark">3. In Dispatch Queue</span>
+            <span class="fs-9 text-muted font-monospace">{{ selectedOrder.assignedDispatcher?.name || 'Dispatcher' }}</span>
+          </div>
+
+          <div class="flex-grow-1 border-top border-2 mx-1" [ngClass]="selectedOrder.dispatcherQueueStatus === 'Ready to Pick' || selectedOrder.dispatcherQueueStatus === 'Dispatched' || selectedOrder.status === 'Packed' || selectedOrder.status === 'Rider assigned' || selectedOrder.status === 'Dispatch' || selectedOrder.status === 'Delivered' ? 'border-success' : 'border-light-subtle'"></div>
+
+          <!-- Step 4: Ready to Pick -->
+          <div class="d-flex flex-column align-items-center text-center flex-shrink-0" style="width: 95px;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center mb-1"
+                 [ngClass]="selectedOrder.dispatcherQueueStatus === 'Ready to Pick' || selectedOrder.dispatcherQueueStatus === 'Dispatched' || selectedOrder.status === 'Packed' || selectedOrder.status === 'Rider assigned' || selectedOrder.status === 'Dispatch' || selectedOrder.status === 'Delivered' ? 'bg-success text-white' : 'bg-light text-muted border'" style="width: 28px; height: 28px; font-size: 13px;">
+              <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
+            </div>
+            <span class="fs-10 fw-semibold text-dark">4. Ready to Pick</span>
+            <span class="fs-9 text-muted font-monospace">{{ selectedOrder.status === 'Packed' || selectedOrder.dispatcherQueueStatus === 'Ready to Pick' ? 'Ready' : 'Pending' }}</span>
+          </div>
+
+          <div class="flex-grow-1 border-top border-2 mx-1" [ngClass]="selectedOrder.assignedRider || selectedOrder.status === 'Dispatch' || selectedOrder.status === 'Delivered' ? 'border-success' : 'border-light-subtle'"></div>
+
+          <!-- Step 5: Rider Dispatched -->
+          <div class="d-flex flex-column align-items-center text-center flex-shrink-0" style="width: 95px;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center mb-1"
+                 [ngClass]="selectedOrder.assignedRider || selectedOrder.status === 'Dispatch' || selectedOrder.status === 'Delivered' ? 'bg-success text-white' : 'bg-light text-muted border'" style="width: 28px; height: 28px; font-size: 13px;">
+              <iconify-icon icon="solar:scooter-bold"></iconify-icon>
+            </div>
+            <span class="fs-10 fw-semibold text-dark">5. Rider Assign</span>
+            <span class="fs-9 text-muted font-monospace">{{ selectedOrder.assignedRider?.name ? 'Assigned' : 'Awaiting' }}</span>
+          </div>
+
+          <div class="flex-grow-1 border-top border-2 mx-1" [ngClass]="selectedOrder.status === 'Delivered' ? 'border-success' : 'border-light-subtle'"></div>
+
+          <!-- Step 6: Delivered -->
+          <div class="d-flex flex-column align-items-center text-center flex-shrink-0" style="width: 85px;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center mb-1"
+                 [ngClass]="selectedOrder.status === 'Delivered' ? 'bg-success text-white' : 'bg-light text-muted border'" style="width: 28px; height: 28px; font-size: 13px;">
+              <iconify-icon icon="solar:home-smile-bold"></iconify-icon>
+            </div>
+            <span class="fs-10 fw-semibold text-dark">6. Delivered</span>
+            <span class="fs-9 text-muted font-monospace">{{ selectedOrder.status === 'Delivered' ? 'Complete' : 'Pending' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Queue & Priority Card (Threshold Workflow) -->
+      <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="fs-12 fw-bold text-dark font-jost text-uppercase" style="letter-spacing: 0.5px;">Queue Priority:</span>
+            @if (isOrderPriority(selectedOrder)) {
+              <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1 fs-12 fw-bold d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:bolt-bold" class="fs-14 flex-shrink-0"></iconify-icon>
+                <span>Priority Order (Dispatcher &amp; Rider Fast-Track)</span>
+              </span>
+            } @else if (selectedOrder.urgency === 'Scheduled' || selectedOrder.priorityTier === 'P4') {
+              <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2.5 py-1 fs-12 fw-semibold d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:calendar-bold" class="fs-14 flex-shrink-0"></iconify-icon>
+                <span>Scheduled Order (Slot: {{ selectedOrder.deliverySlotWindow || selectedOrder.deliveryTimeType }})</span>
+              </span>
+            } @else {
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 fs-12 fw-semibold d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:box-bold" class="fs-14 flex-shrink-0"></iconify-icon>
+                <span>Standard Store Order</span>
+              </span>
+            }
+          </div>
+
+          <!-- Quick Toggle Priority for Dispatcher & Rider -->
+          <div class="d-flex align-items-center gap-2">
+            <button type="button"
+                    class="btn btn-xs py-1 px-2.5 fs-11 fw-semibold d-inline-flex align-items-center gap-1.5 cursor-pointer shadow-none"
+                    [ngClass]="isOrderPriority(selectedOrder) ? 'btn-outline-danger' : 'btn-outline-primary'"
+                    (click)="togglePriority(selectedOrder)"
+                    title="Toggle Priority fast-track for Dispatcher and Rider queues">
+              <iconify-icon [icon]="isOrderPriority(selectedOrder) ? 'solar:bolt-bold' : 'solar:bolt-linear'" class="fs-14 flex-shrink-0"></iconify-icon>
+              <span>{{ isOrderPriority(selectedOrder) ? 'Priority Active (Click to Revert)' : 'Set as Priority Order' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Customer & Delivery Summary Card -->
       <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none">
         <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center pb-2 mb-3 border-bottom">
@@ -469,6 +720,85 @@
         </div>
       </div>
 
+      <!-- Store Dispatcher Card -->
+      <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none" style="border-left: 3px solid #2e3192 !important;">
+        <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold text-dark fs-12 font-jost text-uppercase" style="letter-spacing: 0.5px;">Store Dispatcher</span>
+            @if(selectedOrder.dispatcherQueueStatus === 'In Dispatcher Queue'){
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10 d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:user-check-bold" class="fs-12 flex-shrink-0"></iconify-icon>
+                <span>In Dispatcher Queue</span>
+              </span>
+            } @else if(selectedOrder.dispatcherQueueStatus === 'Ready to Pick'){
+              <span class="badge bg-success-subtle text-success border border-success-subtle fs-10 d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:check-circle-bold" class="fs-12 flex-shrink-0"></iconify-icon>
+                <span>Ready to Pick</span>
+              </span>
+            } @else {
+              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning fs-10 d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:clock-circle-bold" class="fs-12 flex-shrink-0"></iconify-icon>
+                <span>Awaiting Customer Verification</span>
+              </span>
+            }
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            @if(selectedOrder.status === 'Pending' || selectedOrder.status === 'Placed' || selectedOrder.dispatcherQueueStatus === 'Pending Verification'){
+              <button type="button" class="btn btn-xs btn-primary px-3 py-1.5 fs-11 fw-semibold d-inline-flex align-items-center gap-2 cursor-pointer shadow-sm"
+                      (click)="verifyAndQueueOrder(selectedOrder)"
+                      style="background: #2e3192; border-color: #2e3192;">
+                <iconify-icon icon="solar:verified-check-bold" class="fs-14 flex-shrink-0"></iconify-icon>
+                <span>Verify &amp; Admit to Queue</span>
+              </button>
+            }
+            @if(selectedOrder.dispatcherQueueStatus === 'In Dispatcher Queue'){
+              <button type="button" class="btn btn-xs btn-success px-3 py-1.5 fs-11 fw-semibold d-inline-flex align-items-center gap-2 cursor-pointer shadow-sm"
+                      (click)="markOrderReadyToPick(selectedOrder)">
+                <iconify-icon icon="solar:box-minimalistic-check-bold" class="fs-14 flex-shrink-0"></iconify-icon>
+                <span>Mark Ready to Pick</span>
+              </button>
+            }
+            <button type="button" class="btn btn-xs btn-outline-secondary px-3 py-1.5 fs-11 cursor-pointer d-inline-flex align-items-center"
+                    style="gap: 8px;"
+                    (click)="openReassignDispatcherModal(selectedOrder, reassignDispatcherModal)">
+              <iconify-icon icon="solar:pen-linear" class="fs-13 flex-shrink-0" style="margin-right: 4px;"></iconify-icon>
+              <span>Reassign Dispatcher</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-2 align-items-center">
+          <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold fs-14 flex-shrink-0" style="width: 38px; height: 38px;">
+                {{ (selectedOrder.assignedDispatcher?.name || 'Haris Mehmood').charAt(0) }}
+              </div>
+              <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <h6 class="fw-bold text-dark mb-0 fs-13 font-jost">{{ selectedOrder.assignedDispatcher?.name || 'Haris Mehmood' }}</h6>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10">Store Dispatcher</span>
+                </div>
+                <small class="text-muted fs-11 d-block mt-0.5">
+                  Assigned Branch: <strong class="text-dark">{{ selectedOrder.branch }}</strong> ({{ selectedOrder.branchCode }})
+                </small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <div class="fs-11 text-muted mb-1">Queue Routing</div>
+            @if(isOrderPriority(selectedOrder)){
+              <span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-11 fw-bold d-inline-flex align-items-center gap-1">
+                <iconify-icon icon="solar:bolt-bold" class="fs-12"></iconify-icon>Priority Fast-Track
+              </span>
+            } @else {
+              <span class="badge bg-light text-dark border fs-11 fw-medium">
+                Standard Queue
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
       <!-- Dedicated Rider Card -->
       @if(selectedOrder.assignedRider){
         <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none" style="border-left: 3px solid #198754 !important;">
@@ -481,11 +811,10 @@
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                   <h6 class="fw-bold text-dark mb-0 fs-13 font-jost">{{selectedOrder.assignedRider.name}}</h6>
                   <span class="badge bg-success-subtle text-success border border-success-subtle fs-10">Fleet Rider</span>
-                  <span class="badge bg-light text-dark border fs-10">⭐ {{selectedOrder.assignedRider.rating}}</span>
                 </div>
                 <div class="d-flex align-items-center gap-3 mt-1 text-muted fs-11 flex-wrap">
-                  <span><iconify-icon icon="solar:scooter-bold" class="align-middle me-1 text-primary"></iconify-icon>{{selectedOrder.assignedRider.vehicleType}} ({{selectedOrder.assignedRider.vehicleRegNo}})</span>
-                  <span><iconify-icon icon="solar:clock-circle-bold" class="align-middle me-1 text-muted"></iconify-icon>{{selectedOrder.assignedRider.assignedAt}}</span>
+                  <span class="d-inline-flex align-items-center gap-1.5"><iconify-icon icon="solar:scooter-bold" class="text-primary fs-14 flex-shrink-0"></iconify-icon><span>{{selectedOrder.assignedRider.vehicleType}} ({{selectedOrder.assignedRider.vehicleRegNo}})</span></span>
+                  <span class="badge bg-light text-dark border fs-10">Assigned</span>
                   <a [href]="'tel:' + selectedOrder.assignedRider.phone" class="text-primary text-decoration-none fw-medium">
                     {{selectedOrder.assignedRider.phone}}
                   </a>
@@ -494,37 +823,78 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 flex-wrap">
-              <a [href]="getWhatsAppRiderDispatchUrl(selectedOrder)" target="_blank" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 py-1 px-3 fs-11">
-                <iconify-icon icon="solar:chat-round-dots-bold" class="fs-13"></iconify-icon>
-                <span>WhatsApp Notice</span>
-              </a>
-              <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-outline-secondary py-1 px-2 fs-11">
-                Change
+              <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-outline-secondary py-1 px-2.5 fs-11 d-inline-flex align-items-center gap-1.5">
+                <iconify-icon icon="solar:pen-linear" class="fs-13 flex-shrink-0"></iconify-icon>
+                <span>Change</span>
               </button>
-              <button type="button" (click)="unassignRider(selectedOrder)" class="btn btn-sm btn-outline-danger py-1 px-2 fs-11" title="Unassign Rider">
-                Unassign
+              <button type="button" (click)="unassignRider(selectedOrder)" class="btn btn-sm btn-outline-danger py-1 px-2.5 fs-11 d-inline-flex align-items-center gap-1.5" title="Unassign Rider">
+                <iconify-icon icon="solar:close-circle-linear" class="fs-13 flex-shrink-0"></iconify-icon>
+                <span>Unassign</span>
               </button>
             </div>
           </div>
         </div>
       } @else {
         <div class="card border rounded-3 p-3 mb-3 bg-white shadow-none" style="border-left: 3px solid #f59e0b !important;">
-          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <div class="d-flex align-items-center gap-2">
-              <iconify-icon icon="solar:danger-circle-bold" class="fs-18 text-warning"></iconify-icon>
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="rounded-circle bg-warning-subtle text-warning d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
+                <iconify-icon icon="solar:danger-circle-bold" class="fs-20"></iconify-icon>
+              </div>
               <div>
                 <h6 class="fw-bold text-dark mb-0 fs-12">No Rider Assigned Yet</h6>
                 <small class="text-muted fs-11">Assign an online branch rider to dispatch items to the customer.</small>
               </div>
             </div>
-            <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-primary py-1 px-3 fs-11 fw-semibold d-inline-flex align-items-center gap-1"
+            <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)"
+                    class="btn btn-sm btn-primary py-1.5 px-3 fs-11 fw-semibold d-inline-flex align-items-center gap-2 cursor-pointer shadow-sm"
                     style="background: #2e3192; border-color: #2e3192;">
-              <iconify-icon icon="solar:scooter-bold" class="fs-13"></iconify-icon>
+              <iconify-icon icon="solar:scooter-bold" class="fs-15 flex-shrink-0"></iconify-icon>
               <span>Assign Available Rider</span>
             </button>
           </div>
         </div>
       }
+
+      <!-- Customer Out-of-Stock Substitution Preference Banner -->
+      <div class="card border rounded-3 p-3 mb-3 bg-white" [ngClass]="selectedOrder.hasOutOfStockItems ? 'border-warning shadow-sm' : 'border-light-subtle'">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                 [ngClass]="selectedOrder.hasOutOfStockItems ? 'bg-warning-subtle text-warning' : 'bg-primary-subtle text-primary'"
+                 style="width: 40px; height: 40px;">
+              <iconify-icon [icon]="selectedOrder.substitutionPreference === 'Call Me' ? 'solar:phone-calling-bold' : (selectedOrder.substitutionPreference === 'Remove & Refund' ? 'solar:trash-bin-trash-bold' : 'solar:tag-price-bold')" class="fs-20"></iconify-icon>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h6 class="fw-bold text-dark mb-0 fs-12">Customer Out-of-Stock Preference:</h6>
+                @if(selectedOrder.substitutionPreference === 'Call Me'){
+                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1 fs-11 fw-bold">
+                    <iconify-icon icon="solar:phone-calling-bold" class="align-middle me-1"></iconify-icon>Call Me
+                  </span>
+                } @else if(selectedOrder.substitutionPreference === 'Remove & Refund'){
+                  <span class="badge bg-secondary-subtle text-dark border border-secondary-subtle px-2.5 py-1 fs-11 fw-bold">
+                    <iconify-icon icon="solar:trash-bin-trash-bold" class="align-middle me-1"></iconify-icon>Remove &amp; Refund
+                  </span>
+                } @else {
+                  <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2.5 py-1 fs-11 fw-bold">
+                    <iconify-icon icon="solar:tag-price-bold" class="align-middle me-1"></iconify-icon>Best Price
+                  </span>
+                }
+                @if(selectedOrder.hasOutOfStockItems){
+                  <span class="badge bg-danger text-white fs-10 fw-bold">Stock Issue Flagged</span>
+                }
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-primary py-1.5 px-3 fs-11 fw-semibold d-inline-flex align-items-center cursor-pointer shadow-sm"
+                  (click)="openEditOrderModal(selectedOrder, editOrderModal)"
+                  style="background: #2e3192; border-color: #2e3192; gap: 8px;">
+            <iconify-icon icon="solar:pen-new-square-linear" class="fs-15 flex-shrink-0" style="margin-right: 4px;"></iconify-icon>
+            <span>Edit Items &amp; Substitutions</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Ordered Items Table -->
       <div class="card border rounded-3 bg-white shadow-none overflow-hidden">
@@ -547,15 +917,54 @@
             </thead>
             <tbody>
               @for(item of selectedOrder.items; track item.itemId){
-                <tr>
+                <tr [ngClass]="{'bg-danger-subtle bg-opacity-25': item.isOutOfStock, 'opacity-50 text-decoration-line-through': item.substitutionStatus === 'Removed'}">
                   <td class="ps-3">
                     <div class="d-flex align-items-center gap-3">
                       <div class="rounded bg-light border p-1 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; overflow: hidden;">
                         <img [src]="item.image" [alt]="item.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
                       </div>
                       <div>
-                        <p class="text-dark fw-bold mb-0 fs-12">{{item.name}}</p>
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                          <p class="text-dark fw-bold mb-0 fs-12">{{item.name}}</p>
+                          @if(item.isOutOfStock){
+                            <span class="badge bg-danger text-white fs-10">Out of Stock</span>
+                          }
+                          @if(item.substitutionStatus === 'Substituted'){
+                            <span class="badge bg-success text-white fs-10">Substituted</span>
+                          }
+                          @if(item.substitutionStatus === 'Removed'){
+                            <span class="badge bg-secondary text-white fs-10">Removed</span>
+                          }
+                        </div>
                         <small class="text-muted font-monospace fs-10">SKU: {{item.sku}}</small>
+                        <!-- Customer Substitution Choice Display directly with item in cartline -->
+                        @if(item.substitutionOption === 'specific_item' && item.specificReplacements && item.specificReplacements.length > 0){
+                          <div class="mt-1">
+                            <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 fs-10 rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer"
+                                    (click)="showCustomerChoicesAlert(item)"
+                                    title="Click to view customer preferred choices">
+                              <iconify-icon icon="solar:info-circle-bold" class="fs-12"></iconify-icon>
+                              <span>Customer Choice ({{ item.specificReplacements.length }})</span>
+                            </button>
+                          </div>
+                        } @else if(item.substitutionOption === 'best_match'){
+                          <div class="mt-0.5">
+                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fs-10">
+                              <iconify-icon icon="solar:tag-price-bold" class="align-middle me-0.5"></iconify-icon>
+                              Customer Choice: Best Price
+                            </span>
+                          </div>
+                        } @else if(item.substitutionOption === 'notify_me'){
+                          <div class="mt-0.5">
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fs-10">
+                              <iconify-icon icon="solar:phone-calling-bold" class="align-middle me-0.5"></iconify-icon>
+                              Customer Choice: Call Me
+                            </span>
+                          </div>
+                        }
+                        @if(item.originalItemName && item.substitutionStatus === 'Substituted'){
+                          <small class="text-muted d-block fs-10 fst-italic">Originally: {{item.originalItemName}}</small>
+                        }
                       </div>
                     </div>
                   </td>
@@ -564,7 +973,7 @@
                   </td>
                   <td class="text-center">
                     <span class="badge bg-light text-dark border px-2 py-1 fs-11 fw-bold">
-                      {{item.orderedQty}}
+                      {{item.deliveredQty}}
                     </span>
                   </td>
                   <td class="text-end pe-3 font-monospace fw-bold text-dark fs-12">
@@ -610,36 +1019,63 @@
       <div class="d-flex flex-wrap align-items-center gap-2">
         <small class="text-muted fw-semibold fs-11 me-1">Update Status:</small>
 
-        @if(selectedOrder.status === 'Pending'){
-          <button type="button" (click)="updateStatus(selectedOrder, 'Accepted')" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" style="background: #2e3192; border-color: #2e3192;">
-            <iconify-icon icon="solar:check-circle-bold" class="fs-15 align-middle me-1"></iconify-icon>
-            Accept Order
+        @if(selectedOrder.status === 'Placed' || selectedOrder.status === 'Pending'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Confirmed')" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm" style="background: #2e3192; border-color: #2e3192;">
+            <iconify-icon icon="solar:check-circle-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Confirm Order</span>
           </button>
         }
 
-        @if(selectedOrder.status === 'Accepted'){
-          <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3" style="background: #2e3192; border-color: #2e3192;">
-            <iconify-icon icon="solar:scooter-bold" class="fs-15 align-middle me-1"></iconify-icon>
-            Dispatch with Rider
+        @if(selectedOrder.status === 'Confirmed'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Picking')" class="btn btn-sm btn-info text-white fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm">
+            <iconify-icon icon="solar:cart-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Start Picking</span>
           </button>
         }
 
-        @if(selectedOrder.status === 'Dispatch'){
-          <button type="button" (click)="updateStatus(selectedOrder, 'Delivered')" class="btn btn-sm btn-success fs-12 cursor-pointer px-3">
-            <iconify-icon icon="solar:check-circle-bold" class="fs-15 align-middle me-1"></iconify-icon>
-            Mark Delivered
+        @if(selectedOrder.status === 'Picking'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Packed')" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm" style="background: #2e3192; border-color: #2e3192;">
+            <iconify-icon icon="solar:box-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Mark Packed &amp; Ready</span>
           </button>
         }
 
-        @if(selectedOrder.status !== 'Delivered' && selectedOrder.status !== 'Rejected'){
-          <button type="button" (click)="updateStatus(selectedOrder, 'Rejected')" class="btn btn-sm btn-outline-danger fs-12 cursor-pointer px-3">
-            Reject
+        @if(selectedOrder.status === 'Packed' || selectedOrder.status === 'Accepted'){
+          <button type="button" (click)="openAssignRiderModal(selectedOrder, assignRiderModal)" class="btn btn-sm btn-primary fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm" style="background: #2e3192; border-color: #2e3192;">
+            <iconify-icon icon="solar:scooter-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Dispatch with Rider</span>
+          </button>
+        }
+
+        @if(selectedOrder.status === 'Rider assigned'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Out for delivery')" class="btn btn-sm btn-info text-white fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm">
+            <iconify-icon icon="solar:scooter-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Out for Delivery</span>
+          </button>
+        }
+
+        @if(selectedOrder.status === 'Out for delivery' || selectedOrder.status === 'Dispatch'){
+          <button type="button" (click)="updateStatus(selectedOrder, 'Delivered')" class="btn btn-sm btn-success fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm">
+            <iconify-icon icon="solar:check-circle-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Mark Delivered</span>
+          </button>
+        }
+
+        <button type="button" (click)="openEditOrderModal(selectedOrder, editOrderModal)" class="btn btn-sm btn-outline-primary fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2">
+          <iconify-icon icon="solar:pen-new-square-linear" class="fs-15 flex-shrink-0"></iconify-icon>
+          <span>Edit Items &amp; Substitutions</span>
+        </button>
+
+        @if(selectedOrder.status === 'Delivered' && selectedOrder.refundStatus !== 'Approved'){
+          <button type="button" (click)="openRefundDialog(selectedOrder, refundModal)" class="btn btn-sm btn-outline-warning fs-12 cursor-pointer px-3 py-1.5 d-inline-flex align-items-center gap-2">
+            <iconify-icon icon="solar:wallet-money-linear" class="fs-15 flex-shrink-0"></iconify-icon>
+            <span>Issue Refund</span>
           </button>
         }
       </div>
 
-      <div>
-        <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">Close</button>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3 py-1.5" (click)="modal.close()">Close</button>
       </div>
     </div>
   }
@@ -766,6 +1202,645 @@
 
     <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-end">
       <button type="button" class="btn btn-sm btn-outline-secondary fs-12 cursor-pointer px-3" (click)="modal.close()">Cancel</button>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- PRIORITY OVERRIDE MODAL (MODERATOR & ADMIN)                                -->
+<!-- ========================================================================= -->
+<ng-template #priorityModal let-modal>
+  @if(targetOrderForPriority){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <div class="cat-metric-icon bg-warning-subtle text-warning" style="width: 32px; height: 32px; border-radius: 8px; font-size: 16px;">
+          <iconify-icon icon="solar:shield-warning-bold"></iconify-icon>
+        </div>
+        <div>
+          <h5 class="modal-title fw-bold text-dark mb-0 fs-15 font-jost">
+            Adjust Order Urgency &bull; #{{targetOrderForPriority.id}}
+          </h5>
+          <small class="text-muted fs-11">Authorized Moderator &amp; Store Action</small>
+        </div>
+      </div>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-white">
+      @if (overrideError) {
+        <div class="alert alert-danger py-2 px-3 fs-12 mb-3 d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:danger-circle-bold" class="fs-16"></iconify-icon>
+          <span>{{ overrideError }}</span>
+        </div>
+      }
+
+      <!-- Order Summary -->
+      <div class="p-3 bg-light rounded-3 mb-3 border fs-12">
+        <div class="row g-2">
+          <div class="col-6">
+            <span class="text-muted fw-bold">Customer:</span> <strong class="text-dark">{{ targetOrderForPriority.customer.name }}</strong>
+          </div>
+          <div class="col-6">
+            <span class="text-muted fw-bold">Store Branch:</span> <strong class="text-dark">{{ targetOrderForPriority.branch }}</strong>
+          </div>
+          <div class="col-6">
+            <span class="text-muted fw-bold">Promised Slot:</span> <span class="badge bg-white text-dark border">{{ targetOrderForPriority.deliverySlotWindow || targetOrderForPriority.deliveryTimeType }}</span>
+          </div>
+          <div class="col-6">
+            <span class="text-muted fw-bold">Order Total:</span> <strong class="text-primary font-monospace">Rs {{ targetOrderForPriority.totalAmount | number }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgency Selection -->
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark text-uppercase">Select Order Priority:</label>
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-sm flex-grow-1 py-2 px-3 fw-semibold border"
+                  [ngClass]="selectedOverrideUrgency === 'Urgent' ? 'btn-danger text-white shadow-sm' : 'btn-outline-danger'"
+                  (click)="selectedOverrideUrgency = 'Urgent'">
+            <div><iconify-icon icon="solar:bolt-bold" class="align-middle me-1"></iconify-icon>Urgent (ASAP)</div>
+            <small class="fs-10 d-block opacity-75">10 min fast-track picking</small>
+          </button>
+          <button type="button" class="btn btn-sm flex-grow-1 py-2 px-3 fw-semibold border"
+                  [ngClass]="selectedOverrideUrgency === 'Standard' ? 'btn-primary text-white shadow-sm' : 'btn-outline-primary'"
+                  (click)="selectedOverrideUrgency = 'Standard'">
+            <div><iconify-icon icon="solar:box-bold" class="align-middle me-1"></iconify-icon>Standard Order</div>
+            <small class="fs-10 d-block opacity-75">20 min normal picking</small>
+          </button>
+          <button type="button" class="btn btn-sm flex-grow-1 py-2 px-3 fw-semibold border"
+                  [ngClass]="selectedOverrideUrgency === 'Scheduled' ? 'btn-secondary text-white shadow-sm' : 'btn-outline-secondary'"
+                  (click)="selectedOverrideUrgency = 'Scheduled'">
+            <div><iconify-icon icon="solar:calendar-bold" class="align-middle me-1"></iconify-icon>Scheduled Slot</div>
+            <small class="fs-10 d-block opacity-75">Hold until 45m before slot</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reason Selection -->
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark text-uppercase">Reason for Priority Adjustment:</label>
+        <select [(ngModel)]="overrideReason" class="form-select form-select-sm">
+          <option value="Customer requested expedited / priority dispatch">Customer requested expedited / priority dispatch</option>
+          <option value="Contains frozen / fresh meat / ice cream items">Contains frozen / fresh meat / ice cream items</option>
+          <option value="Store supervisor adjusted picking sequence for capacity">Store supervisor adjusted picking sequence for capacity</option>
+          <option value="Customer requested to delay order to a later time">Customer requested to delay order to a later time</option>
+          <option value="VIP shopper expedited handling">VIP shopper expedited handling</option>
+          <option value="Other operational store adjustment">Other operational store adjustment</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label fs-12 fw-bold text-dark text-uppercase">Additional Notes (Optional):</label>
+        <textarea [(ngModel)]="overrideCustomNote" rows="2" class="form-control form-control-sm" placeholder="Provide any details for the audit trail..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-between">
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.close()">Cancel</button>
+      <button type="button" class="btn btn-sm btn-primary" (click)="confirmPriorityOverride()" style="background-color: #2e3192; border-color: #2e3192;">
+        <iconify-icon icon="solar:check-circle-bold" class="align-middle me-1"></iconify-icon>
+        Save Priority Adjustment
+      </button>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- FLAGGED EXCEPTION RESOLUTION MODAL (MODERATOR CONSOLE)                    -->
+<!-- ========================================================================= -->
+<ng-template #exceptionModal let-modal>
+  @if(targetOrderForException && targetOrderForException.exception){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <div class="cat-metric-icon bg-danger-subtle text-danger" style="width: 32px; height: 32px; border-radius: 8px; font-size: 16px;">
+          <iconify-icon icon="solar:danger-triangle-bold"></iconify-icon>
+        </div>
+        <div>
+          <h5 class="modal-title fw-bold text-dark mb-0 fs-15 font-jost">
+            Exception Review &bull; Order #{{targetOrderForException.id}}
+          </h5>
+          <small class="text-danger fs-11 fw-semibold">
+            {{ targetOrderForException.exception.title }} &bull; Flagged at {{ targetOrderForException.exception.flaggedAt }}
+          </small>
+        </div>
+      </div>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-white">
+      <!-- Exception Details Card -->
+      <div class="alert alert-danger bg-danger-subtle border-danger-subtle text-danger py-2.5 px-3 fs-12 mb-3 rounded-3">
+        <div class="fw-bold mb-1">
+          <iconify-icon icon="solar:shield-warning-bold" class="align-middle me-1 fs-14"></iconify-icon>
+          Automated Rule Trigger: {{ targetOrderForException.exception.type }}
+        </div>
+        <p class="mb-0 text-dark">{{ targetOrderForException.exception.details }}</p>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+          <label class="form-label fs-12 fw-bold text-dark">Resolution Action Strategy:</label>
+          <select [(ngModel)]="selectedResolutionAction" class="form-select form-select-sm shadow-none">
+            <option value="reroute_store">Re-route Order to Next Available Branch</option>
+            <option value="widen_rider_radius">Widen Rider Radius &amp; Manual Dispatch</option>
+            <option value="partial_refund">Issue Partial Item Refund</option>
+            <option value="override_hold">Authorize &amp; Release Hold (Fraud Verified)</option>
+            <option value="cancel_order">Cancel Order &amp; Release Reserved Stock</option>
+          </select>
+        </div>
+
+        @if(selectedResolutionAction === 'reroute_store'){
+          <div class="col-sm-6">
+            <label class="form-label fs-12 fw-bold text-dark">Select Target Branch:</label>
+            <select [(ngModel)]="selectedRerouteBranchCode" class="form-select form-select-sm shadow-none">
+              @for(b of branches; track b.id){
+                @if(b.id !== 'all' && b.id !== targetOrderForException.branchCode){
+                  <option [value]="b.id">{{ b.name }}</option>
+                }
+              }
+            </select>
+          </div>
+        }
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fs-12 fw-bold text-dark">Resolution Notes &amp; Actions Taken:</label>
+        <textarea [(ngModel)]="exceptionResolutionNote" rows="3" class="form-control form-control-sleek"
+                  placeholder="e.g. Customer contacted via in-app chat; alternate store stock verified with store manager..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-between align-items-center">
+      <button type="button" class="btn-modal-cancel" (click)="modal.close()">Close</button>
+      <button type="button" class="btn btn-sm btn-success px-3 fw-semibold d-inline-flex align-items-center gap-1"
+              (click)="confirmResolveException()">
+        <iconify-icon icon="solar:check-circle-bold" class="fs-15"></iconify-icon>
+        <span>Execute Resolution</span>
+      </button>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- REFUND & CANCELLATION DIALOG WITH ROLE-LIMITS CHECK                       -->
+<!-- ========================================================================= -->
+<ng-template #refundModal let-modal>
+  @if(targetOrderForRefund){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <h5 class="modal-title fw-bold text-dark mb-0 fs-15 font-jost">
+        {{ refundActionType === 'Cancel' ? 'Confirm Order Cancellation' : 'Approve Customer Refund' }} &bull; #{{targetOrderForRefund.id}}
+      </h5>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-white">
+      @if (refundError) {
+        <div class="alert alert-danger py-2 px-3 fs-12 mb-3 d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:danger-circle-bold" class="fs-16"></iconify-icon>
+          <span>{{ refundError }}</span>
+        </div>
+      }
+
+      <div class="p-3 bg-light rounded-3 mb-3 border fs-12 text-muted">
+        <div class="d-flex justify-content-between mb-1">
+          <span>Customer:</span>
+          <strong class="text-dark">{{ targetOrderForRefund.customer.name }} ({{ targetOrderForRefund.customer.phone }})</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+          <span>Branch:</span>
+          <strong class="text-dark">{{ targetOrderForRefund.branch }}</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Order Total:</span>
+          <strong class="text-primary font-monospace fs-13">Rs {{ targetOrderForRefund.totalAmount | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+
+      <div class="alert alert-info py-2 px-3 fs-11 mb-3">
+        <iconify-icon icon="solar:shield-check-bold" class="align-middle me-1"></iconify-icon>
+        Role Limit: Branch Manager &le; Rs 1,500 &bull; Moderator &le; Rs 5,000 &bull; Admin: Unlimited.
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark">Amount (PKR):</label>
+        <input type="number" [(ngModel)]="refundAmount" class="form-control form-control-sleek" [max]="targetOrderForRefund.totalAmount">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fs-12 fw-bold text-dark">Reason <span class="text-danger">*</span>:</label>
+        <textarea [(ngModel)]="refundReason" rows="3" class="form-control form-control-sleek"
+                  placeholder="e.g. Defective items returned, store out of stock, customer requested refund within SLA..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-between align-items-center">
+      <button type="button" class="btn-modal-cancel" (click)="modal.close()">Cancel</button>
+      <button type="button" class="btn btn-sm px-3 fw-semibold"
+              [ngClass]="refundActionType === 'Cancel' ? 'btn-danger' : 'btn-success'"
+              (click)="confirmRefundOrCancel()">
+        <iconify-icon icon="solar:check-circle-bold" class="align-middle me-1"></iconify-icon>
+        Confirm {{ refundActionType }}
+      </button>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- DEDICATED ORDER CANCELLATION MODAL WITH MANDATORY REASON                  -->
+<!-- ========================================================================= -->
+<ng-template #cancelReasonModal let-modal>
+  @if(targetOrderForCancel){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2.5">
+        <div class="rounded-circle bg-danger-subtle text-danger p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+          <iconify-icon icon="solar:close-circle-bold" class="fs-18"></iconify-icon>
+        </div>
+        <div>
+          <h5 class="modal-title fw-bold text-dark mb-0 fs-15 font-jost">
+            Cancel Order #{{targetOrderForCancel.id}}
+          </h5>
+        </div>
+      </div>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-white">
+      @if (cancelError) {
+        <div class="alert alert-danger py-2 px-3 fs-12 mb-3 d-flex align-items-center gap-2 rounded-2">
+          <iconify-icon icon="solar:danger-circle-bold" class="fs-16"></iconify-icon>
+          <span>{{ cancelError }}</span>
+        </div>
+      }
+
+      <!-- Order Overview Info -->
+      <div class="p-3 bg-light rounded-3 mb-3 border fs-12">
+        <div class="row g-2">
+          <div class="col-sm-6">
+            <span class="text-muted d-block fs-11">Customer:</span>
+            <strong class="text-dark">{{ targetOrderForCancel.customer.name }}</strong>
+            <small class="text-muted d-block">{{ targetOrderForCancel.customer.phone }}</small>
+          </div>
+          <div class="col-sm-6 text-sm-end">
+            <span class="text-muted d-block fs-11">Net Total:</span>
+            <strong class="text-primary font-monospace fs-14 font-jost">Rs {{ targetOrderForCancel.totalAmount | number:'1.2-2' }}</strong>
+            <small class="text-muted d-block">{{ targetOrderForCancel.branch }}</small>
+          </div>
+        </div>
+
+        @if(targetOrderForCancel.hasOutOfStockItems){
+          <div class="alert alert-warning py-1.5 px-2.5 fs-11 mb-0 mt-2 rounded-2 d-flex align-items-center gap-2">
+            <iconify-icon icon="solar:danger-triangle-bold" class="fs-14 text-warning flex-shrink-0"></iconify-icon>
+            <div>This order contains items marked out of stock. Customer preference: <strong>{{ targetOrderForCancel.substitutionPreference || 'Call Me' }}</strong>.</div>
+          </div>
+        }
+      </div>
+
+      <!-- Cancellation Category -->
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark">
+          Cancellation Category <span class="text-danger">*</span>
+        </label>
+        <select [(ngModel)]="cancelReasonCategory" class="form-select form-select-sm shadow-none">
+          @for(cat of cancellationCategories; track cat){
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Operational Notes -->
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark">
+          Operational Notes &amp; Actions Taken:
+        </label>
+        <textarea [(ngModel)]="cancelReasonNotes" rows="3" class="form-control form-control-sleek"
+                  placeholder="e.g. Spoke to customer via phone; customer declined alternate brand. Or delivery location is 8km outside service zone..."></textarea>
+        <small class="text-muted fs-11">These notes will be logged in the permanent audit trail.</small>
+      </div>
+
+      <!-- Notify Customer Checkbox -->
+      <div class="form-check fs-12">
+        <input class="form-check-input cursor-pointer" type="checkbox" id="cancelNotifyCust" [(ngModel)]="cancelNotifyCustomer">
+        <label class="form-check-label cursor-pointer text-dark" for="cancelNotifyCust">
+          Notify customer via In-App notification of order cancellation
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-between align-items-center">
+      <button type="button" class="btn-modal-cancel" (click)="modal.close()">Keep Order</button>
+      <button type="button" class="btn btn-sm btn-danger px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
+              (click)="confirmOrderCancellation()">
+        <iconify-icon icon="solar:close-circle-bold" class="fs-15"></iconify-icon>
+        <span>Confirm Cancellation</span>
+      </button>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODERATOR EDIT ORDER ITEMS & SUBSTITUTION MODAL                           -->
+<!-- ========================================================================= -->
+<ng-template #editOrderModal let-modal>
+  @if(selectedOrderForEdit){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2.5">
+        <div class="rounded-circle bg-primary-subtle text-primary p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+          <iconify-icon icon="solar:pen-new-square-bold" class="fs-18"></iconify-icon>
+        </div>
+        <div>
+          <h5 class="modal-title fw-bold text-dark mb-0 fs-15 font-jost">
+            Edit Order Items &amp; Substitutions &bull; #{{selectedOrderForEdit.id}}
+          </h5>
+        </div>
+      </div>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-white">
+      <!-- Add Products to Order (Clean Search Input) -->
+      <div class="mb-3 position-relative">
+        <div class="input-group">
+          <input type="text" [(ngModel)]="newProductSearchTerm"
+                 placeholder="Search product by name, barcode, or SKU to add to order..."
+                 class="form-control fs-12 shadow-none py-2 px-3">
+          @if(newProductSearchTerm){
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="newProductSearchTerm = ''">Clear</button>
+          }
+        </div>
+
+        <!-- Product Results Dropdown -->
+        @if(newProductSearchTerm && searchCatalogProducts(newProductSearchTerm).length > 0){
+          <div class="position-absolute w-100 bg-white border rounded-2 shadow mt-1 p-1" style="z-index: 1060; max-height: 240px; overflow-y: auto;">
+            @for(prod of searchCatalogProducts(newProductSearchTerm); track prod.id){
+              <div class="d-flex align-items-center justify-content-between p-2 border-bottom rounded-1 gap-2 bg-white hover-bg-light">
+                <div class="d-flex align-items-center gap-2.5 min-w-0">
+                  <img [src]="prod.image" class="rounded border flex-shrink-0" style="width: 32px; height: 32px; object-fit: cover;">
+                  <div class="min-w-0">
+                    <div class="fs-12 fw-bold text-dark text-truncate">{{ prod.name }}</div>
+                    <small class="text-muted fs-10 font-monospace">SKU: {{ prod.sku }} &bull; Rs {{ prod.price | number:'1.2-2' }}</small>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-xs btn-primary py-1 px-3 fs-11 fw-semibold d-inline-flex align-items-center gap-1 flex-shrink-0 cursor-pointer shadow-sm"
+                        style="background: #2e3192; border-color: #2e3192;"
+                        (click)="addNewProductToOrder(prod)">
+                  <span>+ Add</span>
+                </button>
+              </div>
+            }
+          </div>
+        } @else if(newProductSearchTerm && newProductSearchTerm.length >= 2){
+          <div class="position-absolute w-100 bg-white border rounded-2 shadow mt-1 p-2 text-center fs-11 text-muted" style="z-index: 1060;">
+            No products found matching "{{ newProductSearchTerm }}".
+          </div>
+        }
+      </div>
+
+      <!-- Items List -->
+      <div class="border rounded-3 overflow-hidden mb-3">
+        <div class="table-responsive">
+          <table class="table table-clean align-middle mb-0 fs-12">
+            <thead class="bg-light border-bottom">
+              <tr>
+                <th class="ps-3 py-2.5" style="width: 50%;">Product &amp; SKU</th>
+                <th class="text-center py-2.5" style="width: 16%;">Qty</th>
+                <th class="text-end py-2.5" style="width: 15%;">Unit Price</th>
+                <th class="text-end py-2.5" style="width: 15%;">Total</th>
+                <th class="text-end pe-3 py-2.5" style="width: 4%;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(item of editableItems; track $index){
+                <tr [ngClass]="{'opacity-50 text-decoration-line-through': item.substitutionStatus === 'Removed'}">
+                  <!-- Product Info -->
+                  <td class="ps-3 py-2">
+                    <div class="d-flex align-items-center gap-2.5">
+                      <div class="rounded bg-light border p-1 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; overflow: hidden;">
+                        <img [src]="item.image" [alt]="item.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                      </div>
+                      <div class="min-w-0">
+                        <div class="text-dark fw-bold text-truncate" style="max-width: 320px;" [title]="item.name">
+                          {{item.name}}
+                        </div>
+                        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                          <small class="text-muted font-monospace fs-10">SKU: {{item.sku}}</small>
+                          @if(item.substitutionStatus === 'Substituted'){
+                            <span class="badge bg-success text-white fs-10">
+                              Substituted (Was: {{ item.originalItemName }})
+                            </span>
+                          }
+                          @if(item.substitutionStatus === 'Removed'){
+                            <span class="badge bg-secondary text-white fs-10">
+                              Removed &amp; Refunded
+                            </span>
+                          }
+                        </div>
+                        <!-- Customer Substitution Choice Display via SweetAlert / compact badge -->
+                        @if(item.substitutionOption === 'specific_item' && item.specificReplacements && item.specificReplacements.length > 0){
+                          <div class="mt-1">
+                            <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 fs-10 rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer"
+                                    (click)="showCustomerChoicesAlert(item)"
+                                    title="Click to view and select customer preferred alternative">
+                              <iconify-icon icon="solar:info-circle-bold" class="fs-12"></iconify-icon>
+                              <span>Customer Choice ({{ item.specificReplacements.length }})</span>
+                            </button>
+                          </div>
+                        } @else if(item.substitutionOption === 'best_match'){
+                          <div class="mt-0.5">
+                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fs-10">
+                              <iconify-icon icon="solar:tag-price-bold" class="align-middle me-0.5"></iconify-icon>
+                              Customer Choice: Best Price
+                            </span>
+                          </div>
+                        } @else if(item.substitutionOption === 'notify_me'){
+                          <div class="mt-0.5">
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fs-10">
+                              <iconify-icon icon="solar:phone-calling-bold" class="align-middle me-0.5"></iconify-icon>
+                              Customer Choice: Call Me
+                            </span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Quantity Controls -->
+                  <td class="text-center py-2">
+                    @if(item.substitutionStatus !== 'Removed'){
+                      <div class="d-inline-flex align-items-center border rounded-2 bg-white">
+                        <button type="button" class="btn btn-xs btn-link p-1 text-dark" (click)="adjustItemQty(item, -1)">
+                          <iconify-icon icon="solar:minus-linear" class="fs-12"></iconify-icon>
+                        </button>
+                        <span class="px-2 font-monospace fw-bold fs-11">{{item.deliveredQty}}</span>
+                        <button type="button" class="btn btn-xs btn-link p-1 text-dark" (click)="adjustItemQty(item, 1)">
+                          <iconify-icon icon="solar:add-linear" class="fs-12"></iconify-icon>
+                        </button>
+                      </div>
+                    } @else {
+                      <span class="text-muted fs-11">0</span>
+                    }
+                  </td>
+
+                  <!-- Unit Price -->
+                  <td class="text-end py-2 font-monospace fs-12">
+                    Rs {{item.finalPrice | number:'1.2-2'}}
+                  </td>
+
+                  <!-- Total Price -->
+                  <td class="text-end py-2 font-monospace fw-bold text-dark fs-12">
+                    Rs {{item.totalPrice | number:'1.2-2'}}
+                  </td>
+
+                  <!-- Actions Dropdown / Remove / Restore -->
+                  <td class="text-end pe-3 py-2">
+                    @if(item.substitutionStatus === 'Removed'){
+                      <button type="button" class="btn btn-xs btn-outline-success py-0.5 px-2 fs-10 cursor-pointer"
+                              (click)="restoreOriginalItem(item)" title="Restore Item">
+                        Restore
+                      </button>
+                    } @else {
+                      <div class="d-inline-flex align-items-center gap-1">
+                        @if(item.substitutionStatus === 'Substituted'){
+                          <button type="button" class="btn btn-xs btn-link text-muted p-0 fs-11"
+                                  (click)="restoreOriginalItem(item)" title="Revert to Original">
+                            <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+                          </button>
+                        }
+                        <button type="button" class="cat-action-btn text-danger" (click)="removeItemFromOrder(item)" title="Remove Item &amp; Refund">
+                          <iconify-icon icon="solar:trash-bin-trash-linear" class="fs-14"></iconify-icon>
+                        </button>
+                      </div>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Financial Recalculation Summary -->
+      <div class="p-3 bg-light rounded-3 border fs-12 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted fs-11">Items in order: <strong>{{ editableItems.length }}</strong></span>
+          @if(getTotalPriceDifference() !== 0){
+            @if(getTotalPriceDifference() < 0){
+              <span class="badge bg-success-subtle text-success border border-success-subtle fs-10">
+                Refund Due: Rs {{ (-getTotalPriceDifference()) | number:'1.2-2' }}
+              </span>
+            } @else {
+              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fs-10">
+                Extra Due: Rs {{ getTotalPriceDifference() | number:'1.2-2' }}
+              </span>
+            }
+          }
+        </div>
+        <div class="d-flex align-items-center gap-4">
+          <div>
+            <small class="text-muted d-block fs-10">Original Total</small>
+            <span class="text-muted text-decoration-line-through font-monospace fs-12">
+              Rs {{ getOriginalNetTotal() | number:'1.2-2' }}
+            </span>
+          </div>
+          <div>
+            <small class="text-muted d-block fs-10">Recalculated Total</small>
+            <span class="text-primary fw-bold font-monospace fs-15 font-jost">
+              Rs {{ getCalculatedNetTotal() | number:'1.2-2' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-between align-items-center">
+      <button type="button" class="btn-modal-cancel cursor-pointer" (click)="modal.close()">Discard Changes</button>
+      <button type="button" class="btn btn-sm btn-primary px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm cursor-pointer"
+              style="background: #2e3192; border-color: #2e3192;"
+              (click)="saveOrderItemsEdit()">
+        <iconify-icon icon="solar:check-circle-bold" class="fs-15"></iconify-icon>
+        <span>Save &amp; Update Order</span>
+      </button>
+    </div>
+  }
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- REASSIGN DISPATCHER MODAL                                                 -->
+<!-- ========================================================================= -->
+<ng-template #reassignDispatcherModal let-modal>
+  @if(targetOrderForDispatcher){
+    <div class="modal-header border-bottom py-3 px-4 bg-white d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2.5">
+        <div class="rounded-circle bg-primary-subtle text-primary p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+          <iconify-icon icon="solar:user-hand-up-bold" class="fs-18"></iconify-icon>
+        </div>
+        <div>
+          <h5 class="modal-title fw-bold text-dark mb-0 fs-15 font-jost">
+            Reassign Store Dispatcher &bull; #{{targetOrderForDispatcher.id}}
+          </h5>
+          <small class="text-muted fs-11">{{targetOrderForDispatcher.branch}} &bull; Status: {{targetOrderForDispatcher.status}}</small>
+        </div>
+      </div>
+      <button type="button" class="btn-close cursor-pointer" aria-label="Close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-4 bg-white">
+      <!-- Order Queue Status Summary -->
+      <div class="p-3 bg-light rounded-3 mb-3 border fs-12">
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-6">
+            <small class="text-muted d-block fs-11">Current Queue Owner</small>
+            <strong class="text-dark fs-13">{{ targetOrderForDispatcher.assignedDispatcher?.name || 'Haris Mehmood (Default)' }}</strong>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-10 ms-1">
+              Dispatcher
+            </span>
+          </div>
+          <div class="col-sm-6 text-sm-end">
+            <small class="text-muted d-block fs-11">Queue Routing</small>
+            @if (isOrderPriority(targetOrderForDispatcher)) {
+              <span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-11 fw-bold d-inline-flex align-items-center gap-1">
+                <iconify-icon icon="solar:bolt-bold" class="fs-12"></iconify-icon>Priority Queue
+              </span>
+            } @else {
+              <span class="badge bg-light text-dark border fs-11 fw-medium">Standard Store Queue</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Select Dispatcher -->
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark">
+          Select Store Dispatcher <span class="text-danger">*</span>
+        </label>
+        <select [(ngModel)]="selectedDispatcherStaffId" class="form-select form-select-sm shadow-none">
+          @for(disp of getBranchDispatchers(targetOrderForDispatcher); track disp.id){
+            <option [value]="disp.id">
+              {{ disp.name }} &bull; {{ disp.phone }} ({{ disp.status }})
+            </option>
+          }
+        </select>
+        <small class="text-muted fs-11">Dispatchers manage the store order queue and packing workflow via the mobile app.</small>
+      </div>
+
+      <!-- Operational Reason -->
+      <div class="mb-3">
+        <label class="form-label fs-12 fw-bold text-dark">
+          Reason for Reassignment:
+        </label>
+        <input type="text" [(ngModel)]="dispatcherReassignReason" class="form-control form-control-sm fs-12"
+               placeholder="e.g. Workload balancing; reassigning to available dispatcher...">
+      </div>
+    </div>
+
+    <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-between align-items-center">
+      <button type="button" class="btn-modal-cancel cursor-pointer" (click)="modal.close()">Cancel</button>
+      <button type="button" class="btn btn-sm btn-primary px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm cursor-pointer"
+              style="background: #2e3192; border-color: #2e3192;"
+              (click)="confirmReassignDispatcher()">
+        <iconify-icon icon="solar:check-circle-bold" class="fs-15 flex-shrink-0"></iconify-icon>
+        <span>Save &amp; Reassign</span>
+      </button>
     </div>
   }
 </ng-template>

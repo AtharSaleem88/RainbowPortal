@@ -1473,12 +1473,38 @@ a:not(.btn) {
   }
 
   tbody tr td a:not(.btn):not(.badge):hover,
-  tbody tr td .text-dark:hover,
-  tbody tr td .fw-bold:hover,
-  tbody tr td .fw-semibold:hover,
-  tbody tr td .text-body:hover,
+  tbody tr td .text-dark:not(.badge):not(.badge *):hover,
+  tbody tr td .fw-bold:not(.badge):not(.badge *):hover,
+  tbody tr td .fw-semibold:not(.badge):not(.badge *):hover,
+  tbody tr td .text-body:not(.badge):not(.badge *):hover,
   tbody tr td p:hover {
     color: var(--rh-secondary) !important;
+  }
+
+  /* Table Badges - Ensure text colors are never hidden or washed out on hover */
+  .badge {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    &:hover {
+      color: inherit;
+    }
+    &.text-white, &.text-white:hover {
+      color: #ffffff !important;
+    }
+    &.text-primary, &.text-primary:hover {
+      color: var(--bs-primary, #2e3192) !important;
+    }
+    &.text-warning-emphasis, &.text-warning-emphasis:hover {
+      color: #7c4a03 !important;
+    }
+    &.text-info, &.text-info:hover {
+      color: #087990 !important;
+    }
+    &.text-success, &.text-success:hover {
+      color: #198754 !important;
+    }
+    &.text-danger, &.text-danger:hover {
+      color: #dc3545 !important;
+    }
   }
 
   /* Table Action Buttons - Turn secondary sky-blue with crisp white icon/text */
@@ -2690,3 +2716,58 @@ html[data-bs-theme="dark"] {
 @import "./styles/sidebar";
 @import "./styles/components";
 @import "./styles/responsive";
+
+
+/* ========================================================
+   Icon & Button Layout Fixes (Prevents icon sticking to text)
+   ======================================================== */
+iconify-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+.btn,
+button.btn {
+  display: inline-flex;
+  align-items: center;
+
+  iconify-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    line-height: 1 !important;
+  }
+}
+
+.btn.gap-1 {
+  gap: 6px !important;
+}
+.btn.gap-1\.5 {
+  gap: 8px !important;
+}
+.btn.gap-2 {
+  gap: 10px !important;
+}
+
+.order-details-body,
+.order-details-footer,
+.modal-body,
+.modal-footer {
+  .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+
+    iconify-icon {
+      flex-shrink: 0 !important;
+    }
+
+    &:not([class*="gap-"]) iconify-icon:first-child:not(:last-child) {
+      margin-right: 7px !important;
+    }
+  }
+}

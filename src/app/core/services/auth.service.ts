@@ -93,9 +93,24 @@ export class AuthenticationService {
         lastName: 'Tariq',
         email: 'moderator.valencia@rainbow.com',
         role: 'Moderator',
-        title: 'Valencia Store Orders Moderator',
+        title: 'Central Operations & Queue Moderator',
         avatar: 'assets/images/users/avatar-2.jpg',
-        branchCode: 'VAL-01',
+        branchCode: 'all',
+        branchName: 'Cross-Branch Operations (All Outlets)',
+        token,
+      }
+    } else if (role === 'Dispatcher') {
+      newUser = {
+        id: 4,
+        username: 'DispatcherValencia',
+        name: 'Haris Mehmood',
+        firstName: 'Haris',
+        lastName: 'Mehmood',
+        email: 'dispatcher.valencia@rainbow.com',
+        role: 'Dispatcher',
+        title: 'Store Staging Dispatcher (Bay 1)',
+        avatar: 'assets/images/users/avatar-5.jpg',
+        branchCode: branchCode || 'VAL-01',
         branchName: 'Rainbow Cash & Carry - Valencia',
         token,
       }

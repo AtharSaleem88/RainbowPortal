@@ -8,6 +8,8 @@ import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTo
 import { BranchStaff, RAINBOW_STAFF_MEMBERS, StaffRole } from './data';
 import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
 import { AuthenticationService } from '@core/services/auth.service';
+import { TimeLogService } from '@core/services/time-log.service';
+import { TimeLogRecord, TimeLogEventType } from '@core/models/workflow.model';
 
 @Component({
   selector: 'app-role-list',
@@ -318,6 +320,25 @@ export class RoleListComponent implements OnInit {
   }
 
   authService = inject(AuthenticationService);
+  timeLogService = inject(TimeLogService);
+  activeTab: 'directory' | 'timelogs' = 'directory';
+  timeLogs: TimeLogRecord[] = [];
+
+  // Time-Log Filters & Pagination
+  timeLogFilterBranch: string = 'all';
+  timeLogFilterEvent: string = 'all';
+  timeLogSearch: string = '';
+  timeLogCurrentPage: number = 1;
+  timeLogPageSize: number = 10;
+
+  // Time-Log Correction Modal
+  selectedTimeLog: TimeLogRecord | null = null;
+  correctionTimestamp: string = '';
+  correctionEventType: TimeLogEventType = 'pick_completed';
+  correctionReason: string = 'Barcode scanner malfunction / hardware latency';
+  correctionNotes: string = '';
+  timeLogModalRef: any = null;
+
   currentUser = this.authService.user;
 
   // Filters
@@ -345,6 +366,9 @@ export class RoleListComponent implements OnInit {
       this.currentUser = user;
       this.applyBranchScoping(user);
     });
+    this.timeLogService.logs$.subscribe((logs: TimeLogRecord[]) => {
+      this.timeLogs = logs;
+    });
   }
 
   applyBranchScoping(user: any) {
@@ -371,6 +395,7 @@ export class RoleListComponent implements OnInit {
       managers: this.staffMembers.filter(s => s.role === 'Branch Manager').length,
       moderators: this.staffMembers.filter(s => s.role === 'Moderator').length,
       riders: this.staffMembers.filter(s => s.role === 'Rider').length,
+      dispatchers: this.staffMembers.filter(s => s.role === 'Dispatcher').length,
       active: this.staffMembers.filter(s => s.status === 'Active' || s.status === 'On Delivery').length,
     };
   }
@@ -497,6 +522,12 @@ export class RoleListComponent implements OnInit {
         directReporteesCount: 15,
         emergencyContact: '',
       },
+      dispatcherDetails: {
+        stagingBay: 'Staging Bay 1',
+        assignedStoreBranch: defaultBranch.name,
+        readyOrdersCount: 0,
+        appPin: '1234',
+      },
     };
     this.activeModalRef = this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static' });
   }
@@ -530,6 +561,14 @@ export class RoleListComponent implements OnInit {
         maxDiscountAuth: 3000,
         directReporteesCount: 15,
         emergencyContact: '',
+      };
+    }
+    if (!this.formStaff.dispatcherDetails) {
+      this.formStaff.dispatcherDetails = {
+        stagingBay: 'Staging Bay 1',
+        assignedStoreBranch: this.formStaff.branchName || 'Rainbow Superstore',
+        readyOrdersCount: 0,
+        appPin: '1234',
       };
     }
     this.activeModalRef = this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static' });
@@ -571,7 +610,13 @@ export class RoleListComponent implements OnInit {
         void showSaveSuccess(`Staff member "${this.formStaff.name}" updated successfully.`);
       }
     } else {
-      const rolePrefix = this.formStaff.role === 'Branch Manager' ? 'MGR' : this.formStaff.role === 'Moderator' ? 'MOD' : 'RDR';
+      const rolePrefix = this.formStaff.role === 'Branch Manager'
+        ? 'MGR'
+        : this.formStaff.role === 'Moderator'
+        ? 'MOD'
+        : this.formStaff.role === 'Dispatcher'
+        ? 'DSP'
+        : 'RDR';
       const branchCodeShort = this.formStaff.branchCode || 'BR';
       const randomNum = Math.floor(100 + Math.random() * 900);
       const newId = `${rolePrefix}-${branchCodeShort}-${randomNum}`;
@@ -594,6 +639,7 @@ export class RoleListComponent implements OnInit {
         riderDetails: this.formStaff.role === 'Rider' ? this.formStaff.riderDetails : undefined,
         moderatorDetails: this.formStaff.role === 'Moderator' ? this.formStaff.moderatorDetails : undefined,
         managerDetails: this.formStaff.role === 'Branch Manager' ? this.formStaff.managerDetails : undefined,
+        dispatcherDetails: this.formStaff.role === 'Dispatcher' ? this.formStaff.dispatcherDetails : undefined,
       };
 
       this.staffMembers.unshift(newStaff);
@@ -652,6 +698,81 @@ export class RoleListComponent implements OnInit {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  get canCorrectTimeLogs(): boolean {
+    return this.currentUser?.role === 'Admin' || this.currentUser?.role === 'Moderator';
+  }
+
+  get filteredTimeLogs(): TimeLogRecord[] {
+    return this.timeLogs.filter(log => {
+      if (this.isBranchLocked && log.branchCode !== (this.currentUser?.branchCode || 'VAL-01')) {
+        return false;
+      }
+      if (this.timeLogFilterBranch !== 'all' && log.branchCode !== this.timeLogFilterBranch) {
+        return false;
+      }
+      if (this.timeLogFilterEvent !== 'all' && log.eventType !== this.timeLogFilterEvent) {
+        return false;
+      }
+      if (this.timeLogSearch.trim()) {
+        const q = this.timeLogSearch.toLowerCase();
+        const mOrder = log.orderCode ? log.orderCode.toLowerCase().includes(q) : false;
+        const mStaff = log.staffName ? log.staffName.toLowerCase().includes(q) : false;
+        const mRider = log.riderName ? log.riderName.toLowerCase().includes(q) : false;
+        const mBranch = log.branchName.toLowerCase().includes(q);
+        const mNotes = log.notes ? log.notes.toLowerCase().includes(q) : false;
+        if (!mOrder && !mStaff && !mRider && !mBranch && !mNotes) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  get paginatedTimeLogs(): TimeLogRecord[] {
+    const start = (this.timeLogCurrentPage - 1) * this.timeLogPageSize;
+    return this.filteredTimeLogs.slice(start, start + this.timeLogPageSize);
+  }
+
+  get timeLogMetrics() {
+    const list = this.isBranchLocked ? this.timeLogs.filter(l => l.branchCode === (this.currentUser?.branchCode || 'VAL-01')) : this.timeLogs;
+    const total = list.length;
+    const corrected = list.filter(l => l.isCorrected).length;
+    const automatic = list.filter(l => l.source === 'automatic').length;
+    return {
+      total,
+      corrected,
+      automatic,
+      manual: total - automatic,
+      avgWaitMins: 3.2,
+      avgPickMins: 7.4
+    };
+  }
+
+  openTimeLogCorrection(log: TimeLogRecord, content: any): void {
+    if (!this.canCorrectTimeLogs) return;
+    this.selectedTimeLog = log;
+    this.correctionTimestamp = log.timestamp;
+    this.correctionEventType = log.eventType;
+    this.correctionReason = 'Barcode scanner malfunction / hardware latency';
+    this.correctionNotes = '';
+    this.timeLogModalRef = this.modalService.open(content, { centered: true, backdrop: 'static' });
+  }
+
+  confirmTimeLogCorrection(): void {
+    if (!this.selectedTimeLog) return;
+    const reasonFull = `${this.correctionReason}${this.correctionNotes ? ' - ' + this.correctionNotes : ''}`;
+    this.timeLogService.correctLog(
+      this.selectedTimeLog.id,
+      this.correctionTimestamp,
+      reasonFull,
+      this.currentUser
+    );
+    void showSaveSuccess(`Time-log ${this.selectedTimeLog.id} successfully updated with audit authorization.`);
+    if (this.timeLogModalRef) {
+      this.timeLogModalRef.close();
+    }
   }
 }
 

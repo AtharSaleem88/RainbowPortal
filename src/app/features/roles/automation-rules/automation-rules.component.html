@@ -1,0 +1,256 @@
+<!-- ========================================================
+     Executive Page Header & Hub Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-start gap-2 mb-3">
+  @if (isBranchLocked) {
+    <span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1"><iconify-icon icon="solar:lock-keyhole-bold" class="align-middle me-1"></iconify-icon>{{selectedBranch?.name}}</span>
+  }
+
+  <!-- Hub Navigation Segmented Control -->
+  <div class="filter-segmented-control">
+    <a routerLink="/role/list" class="segment-btn text-decoration-none">
+      <iconify-icon icon="solar:user-id-bold" class="fs-14"></iconify-icon>
+      <span>Staff Management</span>
+    </a>
+    <a routerLink="/role/branches" class="segment-btn text-decoration-none">
+      <iconify-icon icon="solar:shop-2-bold" class="fs-14"></iconify-icon>
+      <span>Branches</span>
+    </a>
+    <a routerLink="/role/automation" class="segment-btn active text-decoration-none">
+      <iconify-icon icon="solar:settings-minimalistic-bold" class="fs-14"></iconify-icon>
+      <span>Automation</span>
+    </a>
+    @if (currentUser?.role !== 'Branch Manager') {
+      <a routerLink="/role/audit-logs" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:history-bold" class="fs-14"></iconify-icon>
+        <span>Audit Logs</span>
+      </a>
+    }
+    @if (currentUser?.role === 'Admin') {
+      <a routerLink="/role/permissions" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:shield-keyhole-bold" class="fs-14"></iconify-icon>
+        <span>Permissions</span>
+      </a>
+    }
+  </div>
+
+  <!-- Secondary View Mode Switcher -->
+  <div class="filter-segmented-control ms-2">
+    <button type="button" class="segment-btn active">
+      <iconify-icon icon="solar:tuning-bold" class="fs-14"></iconify-icon>
+      <span>Queue Thresholds</span>
+    </button>
+  </div>
+</div>
+
+<!-- Alert Banner -->
+@if (feedbackMessage) {
+  <div class="alert alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 mb-3 border fs-12 shadow-sm"
+       [ngClass]="feedbackType === 'success' ? 'alert-success border-success-subtle bg-success-subtle text-success' : 'alert-warning border-warning-subtle bg-warning-subtle text-warning-emphasis'">
+    <iconify-icon [icon]="feedbackType === 'success' ? 'solar:check-circle-bold' : 'solar:danger-triangle-bold'" class="fs-16 flex-shrink-0"></iconify-icon>
+    <div class="flex-grow-1 fw-medium">{{ feedbackMessage }}</div>
+    <button type="button" class="btn-close p-2 fs-10" (click)="feedbackMessage = null"></button>
+  </div>
+}
+
+<!-- Branch Selection Strip -->
+<div class="cat-main-card p-3 mb-3">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex align-items-center gap-2.5 flex-wrap">
+      <span class="fs-12 fw-bold text-dark text-uppercase font-jost" style="letter-spacing: 0.5px;">Select Branch Store:</span>
+      @if (isBranchLocked) {
+        <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-12 fw-bold d-inline-flex align-items-center gap-1.5">
+          <iconify-icon icon="solar:lock-keyhole-bold" class="fs-14"></iconify-icon>
+          <span>{{ selectedBranch?.name }} (Assigned Store)</span>
+        </div>
+      } @else {
+        <select [(ngModel)]="selectedBranchCode" (ngModelChange)="onSelectBranch($event)" class="form-select form-select-sm shadow-none" style="min-width: 320px; font-weight: 600;">
+          @for (b of branches; track b.branchCode) {
+            <option [value]="b.branchCode">{{ b.name }} ({{ b.branchCode }} &bull; {{ b.city }})</option>
+          }
+        </select>
+      }
+    </div>
+
+    <!-- Quick Branch Status Pills -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="badge bg-light text-dark border fs-11">
+        City: <strong>{{ selectedBranch?.city }}</strong>
+      </span>
+      <span class="badge bg-light text-dark border fs-11">
+        Active Store Queue: <strong>{{ selectedBranch?.activeOrders || 36 }} orders</strong>
+      </span>
+      <span class="badge px-2.5 py-1 fs-11 fw-semibold"
+            [ngClass]="selectedBranch?.status === 'Active' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'">
+        {{ selectedBranch?.status }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Rules Cards Grid -->
+@if (rule) {
+  <div class="row g-3 mb-4">
+    <!-- Card 1: Store Dispatcher Queue Automation & Thresholds -->
+    <div class="col-lg-6 col-12">
+      <div class="rule-card">
+        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <div class="cat-metric-icon bg-primary-subtle text-primary" style="width: 34px; height: 34px; border-radius: 8px; font-size: 17px;">
+              <iconify-icon icon="solar:user-check-bold"></iconify-icon>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0 font-jost fs-14">1. Store Dispatcher Queue Automation</h6>
+              <small class="text-muted fs-11">Active order threshold &amp; auto-queueing on Moderator acceptance</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Dispatcher Queue Capacity Threshold</label>
+            <div class="input-group input-group-sm">
+              <input type="number" [(ngModel)]="rule.dispatcherMaxOrdersThreshold" min="1" max="50" class="form-control form-control-sleek font-monospace">
+              <span class="input-group-text bg-light text-muted fs-11">orders / dispatcher</span>
+            </div>
+            <small class="text-muted fs-10">Maximum active orders assigned to a store dispatcher before overflow routing to the next store dispatcher.</small>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input cursor-pointer" type="checkbox" id="autoAssignDispatcherSwitch" [(ngModel)]="rule.autoAssignDispatcherOnAccept">
+              <label class="form-check-label fs-12 fw-semibold text-dark" for="autoAssignDispatcherSwitch">
+                Automatically admit order into Dispatcher Queue once accepted by Moderator
+              </label>
+            </div>
+            <small class="text-muted fs-10 d-block ps-4">When a moderator completes review and verification with the customer, the order immediately enters the store dispatcher queue in the dispatcher mobile app.</small>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input class="form-check-input cursor-pointer" type="checkbox" id="priorityDispatcherSwitch" [(ngModel)]="rule.priorityDispatcherRouting">
+              <label class="form-check-label fs-12 fw-semibold text-dark" for="priorityDispatcherSwitch">
+                Fast-track Priority orders to the top of Store Dispatcher Queue
+              </label>
+            </div>
+            <small class="text-muted fs-10 d-block ps-4">Orders flagged as Priority bypass standard queue order and appear at the front of the dispatcher's packing screen.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Fleet Rider Queue Automation & Thresholds -->
+    <div class="col-lg-6 col-12">
+      <div class="rule-card">
+        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <div class="cat-metric-icon bg-success-subtle text-success" style="width: 34px; height: 34px; border-radius: 8px; font-size: 17px;">
+              <iconify-icon icon="solar:scooter-bold"></iconify-icon>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0 font-jost fs-14">2. Fleet Rider Queue Automation</h6>
+              <small class="text-muted fs-11">Delivery threshold &amp; auto-queueing on "Ready for Pickup"</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Rider Active Deliveries Threshold</label>
+            <div class="input-group input-group-sm">
+              <input type="number" [(ngModel)]="rule.riderMaxOrdersThreshold" min="1" max="10" class="form-control form-control-sleek font-monospace">
+              <span class="input-group-text bg-light text-muted fs-11">orders / rider</span>
+            </div>
+            <small class="text-muted fs-10">Maximum concurrent delivery orders a fleet rider can carry simultaneously.</small>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input cursor-pointer" type="checkbox" id="autoAssignRiderSwitch" [(ngModel)]="rule.autoAssignRiderOnReadyToPick">
+              <label class="form-check-label fs-12 fw-semibold text-dark" for="autoAssignRiderSwitch">
+                Automatically admit order into Rider Queue when Dispatcher sets "Ready for Pickup"
+              </label>
+            </div>
+            <small class="text-muted fs-10 d-block ps-4">When dispatcher finishes packing and marks the order "Ready for Pickup" in their mobile app, the order enters the rider queue and offers directly to available branch riders.</small>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input class="form-check-input cursor-pointer" type="checkbox" id="priorityRiderSwitch" [(ngModel)]="rule.priorityRiderRouting">
+              <label class="form-check-label fs-12 fw-semibold text-dark" for="priorityRiderSwitch">
+                Fast-track Priority orders to available fleet riders
+              </label>
+            </div>
+            <small class="text-muted fs-10 d-block ps-4">Priority delivery packages take precedence in assignment offers before standard queued packages.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Store Refund & Cancellation Approval Limits -->
+    <div class="col-12">
+      <div class="rule-card">
+        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <div class="cat-metric-icon bg-secondary-subtle text-secondary" style="width: 34px; height: 34px; border-radius: 8px; font-size: 17px;">
+              <iconify-icon icon="solar:wallet-money-bold"></iconify-icon>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0 font-jost fs-14">3. Store Refund &amp; Cancellation Approval Limits</h6>
+              <small class="text-muted fs-11">Role-based financial thresholds enforced per order</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-sm-6 col-12">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Branch Manager Refund Limit</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted fs-11 font-monospace">PKR</span>
+              <input type="number" [(ngModel)]="rule.bmRefundLimitPkr" step="500" min="500" max="5000" class="form-control form-control-sleek font-monospace">
+            </div>
+            <small class="text-muted fs-10">Local store manager approval ceiling (e.g. damaged goods / perishable items).</small>
+          </div>
+
+          <div class="col-sm-6 col-12">
+            <label class="form-label fs-12 fw-semibold text-dark mb-1">Operations Moderator Refund Limit</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted fs-11 font-monospace">PKR</span>
+              <input type="number" [(ngModel)]="rule.modRefundLimitPkr" step="1000" min="2000" max="25000" class="form-control form-control-sleek font-monospace">
+            </div>
+            <small class="text-muted fs-10">Moderator approval boundary; amounts higher require Admin authorization.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Action Bar (Consolidated Below) -->
+  <div class="cat-main-card p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <button type="button" class="btn btn-sm btn-outline-secondary fs-12 d-inline-flex align-items-center gap-1.5" (click)="reloadRules()" title="Reload Rules">
+        <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+        <span>Reload</span>
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary fs-12 d-inline-flex align-items-center gap-1.5" (click)="resetToDefault()">
+        <iconify-icon icon="solar:refresh-linear" class="fs-14"></iconify-icon>
+        <span>Reset to Baseline</span>
+      </button>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      @if (currentUser?.role === 'Admin') {
+        <button type="button" class="btn btn-sm btn-outline-primary fs-12 d-inline-flex align-items-center gap-1.5" (click)="applyToAll()">
+          <iconify-icon icon="solar:copy-linear" class="fs-14"></iconify-icon>
+          <span>Apply Policy to All Stores</span>
+        </button>
+      }
+
+      <button type="button" class="btn btn-sm btn-primary fs-12 d-inline-flex align-items-center gap-1.5 px-3"
+              (click)="saveRules()" style="background-color: #2e3192; border-color: #2e3192;">
+        <iconify-icon icon="solar:check-circle-bold" class="fs-14"></iconify-icon>
+        <span>Save Automation Rules</span>
+      </button>
+    </div>
+  </div>
+}

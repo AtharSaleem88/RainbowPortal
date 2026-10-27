@@ -1,0 +1,443 @@
+<!-- ========================================================
+     Executive Page Header & Hub Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-start gap-2 mb-3">
+  @if (isBranchLocked) {
+    <span class="badge bg-primary-subtle text-primary border border-primary-subtle"><iconify-icon icon="solar:lock-keyhole-bold" class="align-middle me-1"></iconify-icon>{{currentBranchDisplayName}}</span>
+  }
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <!-- Hub Navigation Segmented Control -->
+    <div class="filter-segmented-control">
+      <a routerLink="/role/list" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:user-id-bold" class="fs-14"></iconify-icon>
+        <span>Staff Management</span>
+      </a>
+      <a routerLink="/role/branches" class="segment-btn active text-decoration-none">
+        <iconify-icon icon="solar:shop-2-bold" class="fs-14"></iconify-icon>
+        <span>Branches</span>
+      </a>
+      @if (canEditBranchConfig) {
+        <a routerLink="/role/automation" class="segment-btn text-decoration-none">
+          <iconify-icon icon="solar:settings-minimalistic-bold" class="fs-14"></iconify-icon>
+          <span>Automation</span>
+        </a>
+      }
+      <a routerLink="/role/audit-logs" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:history-bold" class="fs-14"></iconify-icon>
+        <span>Audit Logs</span>
+      </a>
+      @if (canEditBranchConfig) {
+        <a routerLink="/role/permissions" class="segment-btn text-decoration-none">
+          <iconify-icon icon="solar:shield-keyhole-bold" class="fs-14"></iconify-icon>
+          <span>Permissions</span>
+        </a>
+      }
+    </div>
+
+    <!-- Secondary View Mode Switcher -->
+    <div class="filter-segmented-control ms-2">
+      <button type="button" class="segment-btn" [class.active]="selectedStatus === 'all'" (click)="selectedStatus = 'all'">
+        <iconify-icon icon="solar:shop-2-bold" class="fs-14"></iconify-icon>
+        <span>All Outlets</span>
+      </button>
+      <button type="button" class="segment-btn" [class.active]="selectedStatus === 'active'" (click)="selectedStatus = 'active'">
+        <iconify-icon icon="solar:check-circle-bold" class="fs-14"></iconify-icon>
+        <span>Active Stores</span>
+      </button>
+      <button type="button" class="segment-btn" [class.active]="selectedStatus === 'paused'" (click)="selectedStatus = 'paused'">
+        <iconify-icon icon="solar:pause-circle-bold" class="fs-14"></iconify-icon>
+        <span>Paused / Surge</span>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <button type="button" (click)="resetFilters()" class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Reload / Reset Filters">
+      <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+      <span>Reload</span>
+    </button>
+  </div>
+</div>
+
+<!-- Action Buttons Row (Row 2, Left-Aligned) -->
+<div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+  <button type="button" (click)="exportToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Export CSV">
+    <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
+    <span>Export CSV</span>
+  </button>
+  <button type="button" *ngIf="canEditBranchConfig" (click)="openCreateModal(branchEditModal)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" style="background-color: #2e3192; border-color: #2e3192;">
+    <iconify-icon icon="solar:shop-2-bold" class="fs-14"></iconify-icon>
+    <span>Add Branch</span>
+  </button>
+</div>
+
+<!-- Executive Metric Cards -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Superstores</span>
+        <div class="cat-metric-icon bg-primary-subtle text-primary">
+          <iconify-icon icon="solar:shop-2-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ metrics.total }}</div>
+      <small class="text-muted fs-11">Operating across {{ cities.length }} cities</small>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Active Queue</span>
+        <div class="cat-metric-icon bg-info-subtle text-info">
+          <iconify-icon icon="solar:box-minimalistic-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ metrics.activeOrders }}</div>
+      <small class="text-muted fs-11">Orders currently in fulfillment</small>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Avg Capacity Load</span>
+        <div class="cat-metric-icon bg-success-subtle text-success">
+          <iconify-icon icon="solar:chart-square-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold text-dark font-jost mb-0">{{ metrics.avgUtil }}%</div>
+      <small class="text-muted fs-11">Physical quota consumption</small>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="cat-metric-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fs-12 fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">High Load / Paused</span>
+        <div class="cat-metric-icon bg-warning-subtle text-warning">
+          <iconify-icon icon="solar:danger-triangle-bold-duotone"></iconify-icon>
+        </div>
+      </div>
+      <div class="fs-22 fw-bold font-jost mb-0" [class.text-danger]="metrics.highLoadCount > 0" [class.text-dark]="metrics.highLoadCount === 0">{{ metrics.highLoadCount }}</div>
+      <small class="text-muted fs-11">&ge; 80% capacity or paused</small>
+    </div>
+  </div>
+</div>
+
+<!-- Main Table Card -->
+<div class="cat-main-card mb-4">
+  <!-- Search & Filter Bar -->
+  <div class="p-3 border-bottom bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="search-box-wrapper">
+        <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input shadow-none" placeholder="Search branch, code, city, street...">
+      </div>
+
+      <div class="d-flex align-items-center gap-1.5" *ngIf="!isBranchLocked">
+        <span class="text-muted fs-11 fw-bold text-uppercase">City:</span>
+        <select [(ngModel)]="selectedCity" class="form-select form-select-sm shadow-none" style="width: 140px; height: 34px; font-size: 12.5px;">
+          <option value="all">All Cities</option>
+          @for (c of cities; track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="d-flex align-items-center gap-1.5">
+        <span class="text-muted fs-11 fw-bold text-uppercase">Status:</span>
+        <select [(ngModel)]="selectedStatus" class="form-select form-select-sm shadow-none" style="width: 130px; height: 34px; font-size: 12.5px;">
+          <option value="all">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Paused">Paused</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="text-muted fs-12">
+      Showing <strong>{{ filteredBranches.length }}</strong> of {{ branches.length }} superstore branches
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th class="d-lg-none" style="width: 36px;"></th>
+          <th>BRANCH DETAILS</th>
+          <th class="d-none d-lg-table-cell">LOCATION &amp; RADIUS</th>
+          <th class="d-none d-lg-table-cell">OPERATING HOURS</th>
+          <th style="min-width: 170px;">CAPACITY &amp; LOAD</th>
+          <th class="d-none d-md-table-cell">STAFF ROSTER</th>
+          <th class="text-center">STATUS</th>
+          <th class="text-end">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (b of paginatedBranches; track b.branchCode) {
+          <tr>
+          <!-- Mobile Expand Button -->
+          <td class="d-lg-none text-center">
+            <button type="button" class="border-0 bg-transparent p-0" (click)="toggleRowExpand(b.branchCode)">
+              <iconify-icon [icon]="isRowExpanded(b.branchCode) ? 'solar:minus-circle-bold' : 'solar:add-circle-bold'"
+                            [class.text-danger]="isRowExpanded(b.branchCode)"
+                            [class.text-primary]="!isRowExpanded(b.branchCode)"
+                            class="fs-18"></iconify-icon>
+            </button>
+          </td>
+
+          <!-- Branch Details -->
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace fs-11">{{ b.branchCode }}</span>
+              <div>
+                <span class="fw-bold text-dark fs-13 d-block">{{ b.name }}</span>
+                <small class="text-muted fs-11">{{ b.city }} &bull; {{ b.phone }}</small>
+              </div>
+            </div>
+          </td>
+
+          <!-- Location & Radius -->
+          <td class="d-none d-lg-table-cell">
+            <div class="text-truncate" style="max-width: 220px;" [title]="b.address">{{ b.address }}</div>
+            <small class="text-primary fs-11 fw-medium">
+              <iconify-icon icon="solar:point-on-map-bold" class="align-middle me-0.5"></iconify-icon>
+              {{ b.deliveryRadiusKm }} km radius &bull; [{{ b.latitude | number:'1.2-2' }}, {{ b.longitude | number:'1.2-2' }}]
+            </small>
+          </td>
+
+          <!-- Operating Hours -->
+          <td class="d-none d-lg-table-cell">
+            <span class="text-dark fs-12 fw-medium d-block">{{ b.operatingHours }}</span>
+          </td>
+
+          <!-- Active Load -->
+          <td>
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="fs-11 fw-bold text-dark font-monospace">{{ b.activeOrders }} active orders</span>
+              <span class="badge fs-10 px-1.5 py-0.5"
+                    [ngClass]="b.status === 'Paused' ? 'bg-secondary-subtle text-secondary' : 'bg-success-subtle text-success'">
+                {{ b.status }}
+              </span>
+            </div>
+          </td>
+
+          <!-- Staff Roster -->
+          <td class="d-none d-md-table-cell">
+            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11" title="Store Dispatchers">
+                <iconify-icon icon="solar:user-check-bold" class="me-1 align-middle"></iconify-icon>
+                Dispatchers
+              </span>
+              <span class="badge bg-light text-dark border fs-11" title="Riders Available">
+                <iconify-icon icon="solar:scooter-bold" class="text-info me-1 align-middle"></iconify-icon>
+                {{ b.ridersAvailable }} Riders
+              </span>
+            </div>
+          </td>
+
+          <!-- Status -->
+          <td class="text-center">
+            <span class="badge px-2 py-1 fs-11 fw-semibold"
+                  [ngClass]="b.status === 'Active' ? 'bg-success-subtle text-success border border-success-subtle' : (b.status === 'Paused' ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle')">
+              {{ b.status }}
+            </span>
+          </td>
+
+          <!-- Actions -->
+          <td class="text-end">
+            <div class="d-flex align-items-center justify-content-end gap-1">
+              <button type="button" class="cat-action-btn" (click)="openEditModal(b, branchEditModal)" ngbTooltip="Edit Branch Configuration">
+                <iconify-icon icon="solar:pen-linear" class="fs-15"></iconify-icon>
+              </button>
+
+              <button type="button" *ngIf="canToggleBranchPause" class="cat-action-btn" (click)="openPauseModal(b, pauseModal)" [ngbTooltip]="b.status === 'Paused' ? 'Resume Influx' : 'Pause Influx'">
+                <iconify-icon [icon]="b.status === 'Paused' ? 'solar:play-circle-bold' : 'solar:pause-circle-bold'"
+                              [class.text-success]="b.status === 'Paused'"
+                              [class.text-warning]="b.status !== 'Paused'"
+                              class="fs-15"></iconify-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Responsive Child Row for Mobile -->
+        @if (isRowExpanded(b.branchCode)) {
+          <tr class="bg-light d-lg-none">
+            <td colspan="5" class="p-3">
+              <div class="row g-2 fs-12">
+                <div class="col-12">
+                  <span class="text-muted fw-bold">Address:</span> {{ b.address }}
+                </div>
+                <div class="col-6">
+                  <span class="text-muted fw-bold">Hours:</span> {{ b.operatingHours }}
+                </div>
+                <div class="col-6">
+                  <span class="text-muted fw-bold">Radius:</span> {{ b.deliveryRadiusKm }} km
+                </div>
+                <div class="col-6">
+                  <span class="text-muted fw-bold">COD Max:</span> Rs. {{ b.codMaxLimit | number }}
+                </div>
+                <div class="col-6">
+                  <span class="text-muted fw-bold">Staff:</span> {{ b.pickersOnDuty }} pickers / {{ b.ridersAvailable }} riders
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+        }
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="p-3 border-top bg-white d-flex align-items-center justify-content-between" *ngIf="filteredBranches.length > pageSize">
+    <div class="text-muted fs-12">Page {{ currentPage }}</div>
+    <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="filteredBranches.length" [maxSize]="3" class="mb-0 pagination-sm"></ngb-pagination>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: Create / Edit Branch Configuration   -->
+<!-- ========================================== -->
+<ng-template #branchEditModal let-modal>
+  <div class="modal-header border-bottom py-2.5 px-3">
+    <h5 class="modal-title fw-bold font-jost fs-16 mb-0 text-dark">
+      <iconify-icon icon="solar:shop-2-bold" class="text-primary align-middle me-1.5"></iconify-icon>
+      {{ isCreating ? 'Add Superstore Branch' : 'Configure Branch: ' + activeModalBranch.name }}
+    </h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-3">
+    <div class="row g-3">
+      <div class="col-md-8">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Branch Name</label>
+        <input type="text" [(ngModel)]="activeModalBranch.name" class="form-control form-control-sm" placeholder="e.g. Rainbow Superstore - DHA Phase 6">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Branch Code</label>
+        <input type="text" [(ngModel)]="activeModalBranch.branchCode" [disabled]="!isCreating" class="form-control form-control-sm font-monospace" placeholder="e.g. DHA-06">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">City</label>
+        <select [(ngModel)]="activeModalBranch.city" class="form-select form-select-sm">
+          <option value="Lahore">Lahore</option>
+          <option value="Karachi">Karachi</option>
+          <option value="Sheikhupura">Sheikhupura</option>
+          <option value="Islamabad">Islamabad</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Contact Phone</label>
+        <input type="text" [(ngModel)]="activeModalBranch.phone" class="form-control form-control-sm" placeholder="+92...">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Contact Email</label>
+        <input type="email" [(ngModel)]="activeModalBranch.email" class="form-control form-control-sm" placeholder="branch@rainbowcc.com.pk">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Physical Address</label>
+        <input type="text" [(ngModel)]="activeModalBranch.address" class="form-control form-control-sm" placeholder="Full street address and landmark">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Latitude</label>
+        <input type="number" [(ngModel)]="activeModalBranch.latitude" step="0.0001" class="form-control form-control-sm font-monospace">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Longitude</label>
+        <input type="number" [(ngModel)]="activeModalBranch.longitude" step="0.0001" class="form-control form-control-sm font-monospace">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Delivery Radius (km)</label>
+        <input type="number" [(ngModel)]="activeModalBranch.deliveryRadiusKm" min="1" max="50" class="form-control form-control-sm">
+      </div>
+
+      <div class="col-md-8">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Operating Hours</label>
+        <input type="text" [(ngModel)]="activeModalBranch.operatingHours" class="form-control form-control-sm" placeholder="08:00 AM - 11:30 PM">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Status</label>
+        <select [(ngModel)]="activeModalBranch.status" class="form-select form-select-sm">
+          <option value="Active">Active</option>
+          <option value="Paused">Paused</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch mt-2">
+          <input class="form-check-input" type="checkbox" id="instantCheck" [(ngModel)]="activeModalBranch.instantDeliveryEnabled">
+          <label class="form-check-label fs-13 fw-medium text-dark" for="instantCheck">
+            Enable 30-Minute Instant ASAP Delivery Fulfillment for this Store
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer border-top py-2.5 px-3 d-flex justify-content-between">
+    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-sm btn-primary" (click)="saveBranchDetails()" style="background-color: #2e3192; border-color: #2e3192;">
+      <iconify-icon icon="solar:diskette-bold" class="align-middle me-1"></iconify-icon>
+      Save Branch Configuration
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================== -->
+<!-- MODAL: Operational Pause / Resume Influx    -->
+<!-- ========================================== -->
+<ng-template #pauseModal let-modal>
+  <div class="modal-header border-bottom py-2.5 px-3">
+    <h5 class="modal-title fw-bold font-jost fs-16 mb-0 text-dark">
+      <iconify-icon [icon]="pauseActionType === 'Pause' ? 'solar:pause-circle-bold' : 'solar:play-circle-bold'"
+                    [class.text-warning]="pauseActionType === 'Pause'"
+                    [class.text-success]="pauseActionType !== 'Pause'"
+                    class="align-middle me-1.5"></iconify-icon>
+      {{ pauseActionType }} Branch Influx: {{ targetBranchToPause?.name }}
+    </h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-3">
+    <p class="fs-13 text-muted mb-3">
+      {{ pauseActionType === 'Pause'
+         ? 'Pausing this branch halts new incoming order assignments. Active orders will still be picked and dispatched.'
+         : 'Resuming will restore regular order influx and algorithm allocation to this store.' }}
+    </p>
+
+    <div class="mb-3">
+      <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Reason for {{ pauseActionType }} (Mandatory Audit Requirement)</label>
+      <select [(ngModel)]="pauseReason" class="form-select form-select-sm">
+        <option value="Store Capacity Overload (>80%)">Store Capacity Overload (&gt; 80% quota reached)</option>
+        <option value="Heavy Rain / Severe Weather Surge">Heavy Rain / Severe Weather Surge</option>
+        <option value="Shelf Stock Audit / Synchronization">Shelf Stock Audit / POS Inventory Sync</option>
+        <option value="Emergency Power / Hardware Outage">Emergency Power / Hardware Outage</option>
+        <option value="Picker / Packer Staff Shortage">Picker / Packer Staff Shortage</option>
+        <option value="Operational Maintenance">Routine Maintenance</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Additional Operational Notes (Optional)</label>
+      <textarea [(ngModel)]="pauseCustomNote" rows="2" class="form-control form-control-sm" placeholder="Provide operational context for audit records..."></textarea>
+    </div>
+  </div>
+
+  <div class="modal-footer border-top py-2.5 px-3 d-flex justify-content-between">
+    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-sm"
+            [ngClass]="pauseActionType === 'Pause' ? 'btn-warning' : 'btn-success'"
+            (click)="confirmPauseToggle()">
+      Confirm {{ pauseActionType }}
+    </button>
+  </div>
+</ng-template>

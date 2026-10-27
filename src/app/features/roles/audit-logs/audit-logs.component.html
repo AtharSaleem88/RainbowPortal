@@ -1,0 +1,163 @@
+<!-- ========================================================
+     Executive Page Header & Hub Navigation
+     ======================================================== -->
+<div class="d-flex flex-wrap align-items-center justify-content-start gap-2 mb-3">
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <!-- Hub Navigation Segmented Control -->
+    <div class="filter-segmented-control">
+      <a routerLink="/role/list" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:user-id-bold" class="fs-14"></iconify-icon>
+        <span>Staff Management</span>
+      </a>
+      <a routerLink="/role/branches" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:shop-2-bold" class="fs-14"></iconify-icon>
+        <span>Branches</span>
+      </a>
+      @if (currentUser?.role === 'Admin') {
+        <a routerLink="/role/automation" class="segment-btn text-decoration-none">
+          <iconify-icon icon="solar:settings-minimalistic-bold" class="fs-14"></iconify-icon>
+          <span>Automation</span>
+        </a>
+      }
+      <a routerLink="/role/audit-logs" class="segment-btn active text-decoration-none">
+        <iconify-icon icon="solar:history-bold" class="fs-14"></iconify-icon>
+        <span>Audit Logs</span>
+      </a>
+      @if (currentUser?.role === 'Admin') {
+        <a routerLink="/role/permissions" class="segment-btn text-decoration-none">
+          <iconify-icon icon="solar:shield-keyhole-bold" class="fs-14"></iconify-icon>
+          <span>Permissions</span>
+        </a>
+      }
+    </div>
+
+    <!-- Secondary View Mode Switcher -->
+    <div class="filter-segmented-control ms-2">
+      <button type="button" class="segment-btn" [class.active]="selectedEntityType === 'all'" (click)="selectedEntityType = 'all'">
+        <iconify-icon icon="solar:history-bold" class="fs-14"></iconify-icon>
+        <span>All Events</span>
+      </button>
+      <button type="button" class="segment-btn" [class.active]="selectedEntityType === 'Priority'" (click)="selectedEntityType = 'Priority'">
+        <iconify-icon icon="solar:bolt-bold" class="fs-14"></iconify-icon>
+        <span>Overrides</span>
+      </button>
+      <button type="button" class="segment-btn" [class.active]="selectedEntityType === 'Refund'" (click)="selectedEntityType = 'Refund'">
+        <iconify-icon icon="solar:wallet-money-bold" class="fs-14"></iconify-icon>
+        <span>Refunds</span>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <button type="button" (click)="reloadLogs()" class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Reload Audit Logs">
+      <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
+      <span>Reload</span>
+    </button>
+  </div>
+</div>
+
+<!-- Action Buttons Row (Row 2, Left-Aligned) -->
+<div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+  <button type="button" (click)="exportAuditCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Export CSV">
+    <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
+    <span>Export CSV</span>
+  </button>
+</div>
+
+<div class="cat-main-card overflow-hidden mb-4">
+  <!-- Search & Filter Toolbar -->
+  <div class="p-3 border-bottom bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="fs-12 fw-semibold text-muted text-uppercase">Filter Entity:</span>
+      <select [(ngModel)]="selectedEntityType" class="form-select form-select-sm shadow-none" style="width: 170px;">
+        <option value="all">All Audit Events</option>
+        <option value="Priority">Priority Overrides</option>
+        <option value="Rider">Rider Assignments</option>
+        <option value="Branch">Store Routing</option>
+        <option value="Refund">Refunds &amp; Cancels</option>
+        <option value="Threshold">Threshold Tuning</option>
+        <option value="TimeLog">TimeLog Corrections</option>
+      </select>
+    </div>
+
+    <div class="search-box-wrapper">
+      <iconify-icon icon="solar:magnifer-linear" class="search-icon"></iconify-icon>
+      <input type="text" [(ngModel)]="searchTerm" class="form-control search-input shadow-none" placeholder="Search actor, action, order#...">
+    </div>
+  </div>
+
+  <!-- Audit Table -->
+  <div class="table-responsive">
+    <table class="table table-clean align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Log ID</th>
+          <th>Timestamp</th>
+          <th>Actor &amp; Role</th>
+          <th>Outlet</th>
+          <th>Action Type</th>
+          <th>Entity / Target</th>
+          <th>Before &rarr; After</th>
+          <th>Mandatory Justification</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of paginatedLogs; track entry.id) {
+          <tr>
+            <td><span class="fw-bold text-dark font-monospace fs-12">{{ entry.id }}</span></td>
+            <td><small class="text-muted font-monospace fs-11">{{ entry.timestamp }}</small></td>
+            <td>
+              <strong class="text-dark fs-12 d-block">{{ entry.actorName }}</strong>
+              <span class="badge py-0.5 px-1.5 fs-10"
+                    [ngClass]="entry.actorRole === 'Admin' ? 'bg-danger-subtle text-danger' : (entry.actorRole === 'Moderator' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-primary-subtle text-primary')">
+                {{ entry.actorRole }}
+              </span>
+            </td>
+            <td><span class="badge bg-light text-muted border font-monospace fs-11">{{ entry.branchCode }}</span></td>
+            <td>
+              <span class="badge py-1 px-2 fs-11 fw-semibold"
+                    [ngClass]="entry.entityType === 'Priority' ? 'bg-danger text-white' : (entry.entityType === 'Refund' ? 'bg-warning text-dark' : 'bg-primary-subtle text-primary')">
+                {{ entry.action }}
+              </span>
+            </td>
+            <td>
+              <span class="fw-semibold text-dark">{{ entry.entityType }}:</span>
+              <span class="font-monospace text-primary ms-1">#{{ entry.entityId }}</span>
+            </td>
+            <td>
+              <div class="fs-11">
+                @if (entry.oldValue) {
+                  <span class="text-muted text-decoration-line-through">{{ entry.oldValue }}</span>
+                  <iconify-icon icon="solar:arrow-right-linear" class="align-middle mx-1 text-muted"></iconify-icon>
+                }
+                <strong class="text-success">{{ entry.newValue }}</strong>
+              </div>
+            </td>
+            <td>
+              <p class="mb-0 text-dark fs-12" style="max-width: 280px;">{{ entry.reason || 'Standard system action' }}</p>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="text-center py-4 text-muted">
+              No audit log entries found matching criteria.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="p-3 bg-white border-top d-flex justify-content-between align-items-center">
+    <small class="text-muted fs-12">Total Logs: {{ filteredLogs.length }}</small>
+    @if (filteredLogs.length > pageSize) {
+      <ngb-pagination
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="filteredLogs.length"
+        [maxSize]="3"
+        class="pagination-sm mb-0">
+      </ngb-pagination>
+    }
+  </div>
+</div>

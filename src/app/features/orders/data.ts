@@ -1,4 +1,20 @@
 import type { StateType } from '@component/state-card/state-card';
+import type {
+  OrderLifecycleStatus,
+  PriorityTier,
+  OrderPriorityDetails,
+  OrderException,
+  OrderUrgency
+} from '@core/models/workflow.model';
+
+export type { OrderLifecycleStatus, PriorityTier, OrderPriorityDetails, OrderException, OrderUrgency };
+
+export interface SpecificReplacementChoice {
+  name: string;
+  price: number;
+  image?: string;
+  sku?: string;
+}
 
 export interface RainbowOrderItem {
   itemId: string;
@@ -13,6 +29,26 @@ export interface RainbowOrderItem {
   finalPrice: number;
   totalPrice: number;
   isOverridden?: boolean;
+  // Out of stock & customer substitution options (matching customer app)
+  isOutOfStock?: boolean;
+  substitutionOption?: 'specific_item' | 'best_match' | 'notify_me';
+  specificReplacements?: SpecificReplacementChoice[];
+  substitutionStatus?: 'None' | 'Substituted' | 'Removed' | 'Pending Choice';
+  originalItemName?: string;
+  originalItemPrice?: number;
+  substituteItemName?: string;
+  substituteItemPrice?: number;
+  substituteSku?: string;
+}
+
+export interface AssignedDispatcher {
+  id: string; // e.g. 'DSP-VAL-01'
+  name: string; // 'Haris Mehmood'
+  bayNumber: string; // 'Staging Bay 1'
+  assignedAt: string;
+  phone?: string;
+  avatar?: string;
+  status?: 'Queued' | 'Picking' | 'Ready to Pick';
 }
 
 export interface AssignedRider {
@@ -42,7 +78,32 @@ export interface RainbowOrder {
   branchCode: string; // 'VAL-01'
   deviceType: 'Android' | 'iOS' | 'Web Browser';
   appVersion?: string; // '1.1.8 + 18'
-  status: 'Pending' | 'Accepted' | 'Dispatch' | 'Delivered' | 'Rejected';
+  status: OrderLifecycleStatus;
+  
+  // Operational Priority & Urgency
+  urgency?: OrderUrgency;
+  priorityScore?: number;
+  priorityTier?: PriorityTier;
+  priorityDetails?: OrderPriorityDetails;
+
+  // Operational Exceptions & Flagged Status
+  hasException?: boolean;
+  exception?: OrderException;
+
+  // Out-of-Stock & Customer Substitution Preferences
+  substitutionPreference?: 'Call Me' | 'Best Alternative' | 'Remove & Refund' | 'Cancel Order';
+  substitutionNotes?: string;
+  hasOutOfStockItems?: boolean;
+
+  // Delivery slot and queue age
+  queueAgeMins?: number;
+  deliverySlotWindow?: string;
+
+  // Cancellation & Refund Records
+  cancellationReason?: string;
+  refundAmount?: number;
+  refundStatus?: 'Pending' | 'Approved' | 'Processed' | 'Rejected';
+  refundApprovedBy?: string;
   
   // Customer details
   customer: {
@@ -61,6 +122,14 @@ export interface RainbowOrder {
   deliveryTimeType: 'ASAP' | 'Scheduled';
   deliveryEta: string; // '150' mins
   trackingId: string; // 'BLNK-32440315-PK'
+
+  // Store Dispatcher Queue & Verification Flow
+  dispatcherQueueStatus?: 'Pending Verification' | 'In Dispatcher Queue' | 'Ready to Pick' | 'Dispatched';
+  assignedDispatcher?: AssignedDispatcher;
+  verifiedAt?: string;
+  queueEntryTime?: string;
+  timeInQueueMinutes?: number;
+  capacityThresholdPercent?: number;
 
   // Assigned Branch Rider
   assignedRider?: AssignedRider;
@@ -147,6 +216,18 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
     deviceType: 'Android',
     appVersion: '1.1.8 + 18',
     status: 'Dispatch',
+    dispatcherQueueStatus: 'Dispatched',
+    assignedDispatcher: {
+      id: 'DSP-VAL-01',
+      name: 'Haris Mehmood',
+      bayNumber: 'Staging Bay 1',
+      assignedAt: '07:10 PM',
+      status: 'Ready to Pick'
+    },
+    verifiedAt: '07:08 PM',
+    queueEntryTime: '07:08 PM',
+    timeInQueueMinutes: 7,
+    substitutionPreference: 'Best Alternative',
     customer: {
       name: 'Arooj Hammad',
       phone: '+923217271204',
@@ -279,6 +360,10 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
     branchCode: 'VAL-01',
     deviceType: 'Web Browser',
     status: 'Pending',
+    dispatcherQueueStatus: 'Pending Verification',
+    substitutionPreference: 'Call Me',
+    substitutionNotes: 'Customer requested phone call (+92 310 4442625) before confirming substitution.',
+    hasOutOfStockItems: true,
     customer: {
       name: 'Amal Noor Nizami',
       phone: '+923104442625',
@@ -325,7 +410,69 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
         discountPercent: 0,
         finalPrice: 2850.00,
         totalPrice: 2850.00,
-        isOverridden: false
+        isOverridden: false,
+        isOutOfStock: true,
+        substitutionOption: 'specific_item',
+        specificReplacements: [
+          {
+            name: 'Sufi Banaspati & Cooking Oil (5 Litre Tin)',
+            price: 2750.00,
+            image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=120&auto=format&fit=crop&q=80',
+            sku: 'SUF-OIL-5L'
+          },
+          {
+            name: 'Mezan Canola Cooking Oil (5 Litre Tin)',
+            price: 2820.00,
+            image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80',
+            sku: 'MZN-OIL-5L'
+          },
+          {
+            name: 'Habib Cooking Oil (5 Litre Tin)',
+            price: 2890.00,
+            image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&auto=format&fit=crop&q=80',
+            sku: 'HBB-OIL-5L'
+          }
+        ],
+        substitutionStatus: 'Pending Choice',
+        originalItemName: 'Dalda Fortified Cooking Oil (5 Litre Tin)'
+      },
+      {
+        itemId: '4019284',
+        name: 'Fresh Organic Guava (1 Kg Pack)',
+        barcode: '8964000991201',
+        sku: 'GVA-FRSH-1KG',
+        image: 'https://images.unsplash.com/photo-1536511135899-7389476eaefc?w=120&auto=format&fit=crop&q=80',
+        orderedQty: 1,
+        deliveredQty: 1,
+        originalPrice: 180.00,
+        discountPercent: 0,
+        finalPrice: 180.00,
+        totalPrice: 180.00,
+        isOverridden: false,
+        isOutOfStock: true,
+        substitutionOption: 'specific_item',
+        specificReplacements: [
+          {
+            name: 'Fresh Farm Spinach (Palak)',
+            price: 60.00,
+            image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=120&auto=format&fit=crop&q=80',
+            sku: 'SPN-FRSH-01'
+          },
+          {
+            name: 'Button Mushrooms Fresh Pack (250g)',
+            price: 210.00,
+            image: 'https://images.unsplash.com/photo-1504544750208-dc0358e63f7f?w=120&auto=format&fit=crop&q=80',
+            sku: 'MSH-BTN-250G'
+          },
+          {
+            name: 'Pure Farm Milk Yogurt (500g)',
+            price: 150.00,
+            image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=120&auto=format&fit=crop&q=80',
+            sku: 'YGT-FRM-500G'
+          }
+        ],
+        substitutionStatus: 'Pending Choice',
+        originalItemName: 'Fresh Organic Guava (1 Kg Pack)'
       },
       {
         itemId: '5029182',
@@ -358,7 +505,21 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
     branchCode: 'SKP-01',
     deviceType: 'Android',
     appVersion: '1.1.8 + 18',
-    status: 'Pending',
+    status: 'Confirmed',
+    dispatcherQueueStatus: 'In Dispatcher Queue',
+    assignedDispatcher: {
+      id: 'DSP-SKP-01',
+      name: 'Zubair Khan',
+      bayNumber: 'Staging Bay 1',
+      assignedAt: '07:05 PM',
+      status: 'Picking'
+    },
+    verifiedAt: '07:04 PM',
+    queueEntryTime: '07:04 PM',
+    timeInQueueMinutes: 6,
+    substitutionPreference: 'Best Alternative',
+    substitutionNotes: 'Auto-substitute with closest brand/flavor if K&Ns is unavailable.',
+    hasOutOfStockItems: true,
     customer: {
       name: 'Kalim Ullah',
       phone: '+923424627939',
@@ -391,7 +552,11 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
         discountPercent: 0,
         finalPrice: 1080.00,
         totalPrice: 2160.00,
-        isOverridden: false
+        isOverridden: false,
+        isOutOfStock: true,
+        substitutionOption: 'best_match',
+        substitutionStatus: 'Pending Choice',
+        originalItemName: "K&N's Chicken Shashlik Skewers (515g)"
       },
       {
         itemId: '6019285',
@@ -437,7 +602,21 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
     branch: 'Rainbow Cash and Carry - Canal Road',
     branchCode: 'CNR-01',
     deviceType: 'Web Browser',
-    status: 'Accepted',
+    status: 'Packed',
+    dispatcherQueueStatus: 'Ready to Pick',
+    assignedDispatcher: {
+      id: 'DSP-CNR-01',
+      name: 'Hamza Rafiq',
+      bayNumber: 'Staging Bay 1',
+      assignedAt: '07:01 PM',
+      status: 'Ready to Pick'
+    },
+    verifiedAt: '07:01 PM',
+    queueEntryTime: '07:01 PM',
+    timeInQueueMinutes: 10,
+    hasOutOfStockItems: true,
+    substitutionPreference: 'Call Me',
+    substitutionNotes: 'Customer requested: Please notify me if item is out of stock.',
     customer: {
       name: 'Emaan Tariq',
       phone: '+9232324670811',
@@ -470,7 +649,11 @@ export const RAINBOW_ORDERS: RainbowOrder[] = [
         discountPercent: 0,
         finalPrice: 380.00,
         totalPrice: 760.00,
-        isOverridden: false
+        isOverridden: false,
+        isOutOfStock: true,
+        substitutionOption: 'notify_me',
+        substitutionStatus: 'Pending Choice',
+        originalItemName: 'Dawn Frozen Aloo Paratha (400g 4pcs)'
       },
       {
         itemId: '7019282',
