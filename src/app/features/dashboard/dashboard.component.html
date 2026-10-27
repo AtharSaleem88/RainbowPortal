@@ -73,34 +73,30 @@
                 (click)="setDatePreset('this_month')">This Month</button>
       </div>
 
-      <!-- Custom 2-Dates Range Bar with Spacious Layout & Calendar Pickers -->
+      <!-- Custom 2-Dates Range Bar (Native Calendar with Months & Years Navigation) -->
       <div class="date-range-capsule d-flex align-items-center bg-white border rounded-2 px-3 py-1"
            style="height: 38px;">
-        <!-- Calendar Lead Icon (cleanly padded, not touching any border) -->
-        <iconify-icon icon="solar:calendar-date-bold" class="fs-17 text-primary me-2.5 flex-shrink-0" (click)="openStartPicker()" style="cursor: pointer;"></iconify-icon>
+        <!-- Calendar Lead Icon (cleanly padded, never touching any border) -->
+        <iconify-icon icon="solar:calendar-date-bold" class="fs-17 text-primary me-2.5 flex-shrink-0"></iconify-icon>
 
-        <!-- Start Date Input -->
-        <input #startDateInput type="text"
-               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent cursor-pointer text-center date-field"
-               style="width: 96px;"
-               placeholder="Start Date"
-               readonly
-               (click)="openStartPicker()"
-               title="Click to select Start Date">
+        <!-- Start Date Native Picker -->
+        <input type="date"
+               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent custom-date-input"
+               style="width: 115px; min-width: 115px; cursor: pointer;"
+               [(ngModel)]="startDate"
+               (change)="onCustomDateChange()"
+               title="Select Start Date">
 
         <!-- Arrow Divider with comfortable breathing room -->
-        <div class="date-divider d-flex align-items-center px-2 flex-shrink-0">
-          <iconify-icon icon="solar:arrow-right-linear" class="fs-13 text-muted"></iconify-icon>
-        </div>
+        <span class="text-muted fs-12 fw-bold px-2 flex-shrink-0">&rarr;</span>
 
-        <!-- End Date Input -->
-        <input #endDateInput type="text"
-               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent cursor-pointer text-center date-field"
-               style="width: 96px;"
-               placeholder="End Date"
-               readonly
-               (click)="openEndPicker()"
-               title="Click to select End Date">
+        <!-- End Date Native Picker -->
+        <input type="date"
+               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent custom-date-input"
+               style="width: 115px; min-width: 115px; cursor: pointer;"
+               [(ngModel)]="endDate"
+               (change)="onCustomDateChange()"
+               title="Select End Date">
       </div>
 
       <!-- Refresh Action Button -->

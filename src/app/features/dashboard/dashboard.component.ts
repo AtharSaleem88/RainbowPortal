@@ -1,7 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, AfterViewInit, OnDestroy, ElementRef, ViewChild, inject } from '@angular/core';
-import flatpickr from 'flatpickr';
-import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import type { ChartOptions } from '@common/apexchart.model';
@@ -41,6 +39,8 @@ import { AuthenticationService } from '@core/services/auth.service';
       height: 38px;
       transition: all 0.15s ease;
       background: #ffffff;
+      padding-left: 14px;
+      padding-right: 14px;
 
       &:hover {
         border-color: #25aae1;
@@ -50,12 +50,26 @@ import { AuthenticationService } from '@core/services/auth.service';
       &:focus-within {
         border-color: #2e3192;
         box-shadow: 0 0 0 3px rgba(46, 49, 146, 0.1);
+        background: #ffffff;
       }
 
-      .date-field {
-        transition: color 0.15s ease;
-        &:hover {
-          color: #2e3192 !important;
+      .custom-date-input {
+        color: #1e293b;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &::-webkit-calendar-picker-indicator {
+          cursor: pointer;
+          opacity: 0.65;
+          padding-left: 4px;
+          padding-right: 2px;
+          transition: opacity 0.15s ease, transform 0.15s ease;
+
+          &:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
         }
       }
     }
@@ -269,7 +283,7 @@ import { AuthenticationService } from '@core/services/auth.service';
     }
   `]
 })
-export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   title = 'OPERATIONS DASHBOARD';
 
   authService = inject(AuthenticationService);
@@ -367,11 +381,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   // Recent Live Store Orders
   recentOrders: RainbowOrder[] = RAINBOW_ORDERS.slice(0, 6);
 
-  // 2-Dates Calendar Pickers
-  @ViewChild('startDateInput') startDateInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('endDateInput') endDateInput!: ElementRef<HTMLInputElement>;
-  private startFp: FlatpickrInstance | null = null;
-  private endFp: FlatpickrInstance | null = null;
   isRefreshing = false;
 
   // Mobile / Small Screen Row Expansion
@@ -395,88 +404,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   deviceChart!: Partial<ChartOptions>;
   paymentChart!: Partial<ChartOptions>;
 
-  ngAfterViewInit(): void {
-    this.initDatePickers();
-  }
 
-  ngOnDestroy(): void {
-    if (this.startFp) {
-      this.startFp.destroy();
-      this.startFp = null;
-    }
-    if (this.endFp) {
-      this.endFp.destroy();
-      this.endFp = null;
-    }
-  }
-
-  private initDatePickers(): void {
-    if (this.startDateInput?.nativeElement) {
-      this.startFp = flatpickr(this.startDateInput.nativeElement, {
-        dateFormat: 'd M, Y',
-        defaultDate: this.startDate,
-        maxDate: this.endDate,
-        allowInput: false,
-        onChange: (selectedDates: Date[]) => {
-          if (selectedDates && selectedDates.length > 0) {
-            this.startDate = this.formatDateToYMD(selectedDates[0]);
-            if (this.endFp) {
-              this.endFp.set('minDate', this.startDate);
-            }
-            this.selectedDatePreset = 'custom';
-            this.displayDateLabel = `${this.formatDisplayDate(selectedDates[0])} - ${this.formatDisplayDate(new Date(this.endDate))}`;
-            this.updateStats();
-            this.initAllCharts();
-          }
-        }
-      }) as FlatpickrInstance;
-    }
-
-    if (this.endDateInput?.nativeElement) {
-      this.endFp = flatpickr(this.endDateInput.nativeElement, {
-        dateFormat: 'd M, Y',
-        defaultDate: this.endDate,
-        minDate: this.startDate,
-        allowInput: false,
-        onChange: (selectedDates: Date[]) => {
-          if (selectedDates && selectedDates.length > 0) {
-            this.endDate = this.formatDateToYMD(selectedDates[0]);
-            if (this.startFp) {
-              this.startFp.set('maxDate', this.endDate);
-            }
-            this.selectedDatePreset = 'custom';
-            this.displayDateLabel = `${this.formatDisplayDate(new Date(this.startDate))} - ${this.formatDisplayDate(selectedDates[0])}`;
-            this.updateStats();
-            this.initAllCharts();
-          }
-        }
-      }) as FlatpickrInstance;
-    }
-  }
-
-  openStartPicker(): void {
-    if (this.startFp) {
-      this.startFp.open();
-    }
-  }
-
-  openEndPicker(): void {
-    if (this.endFp) {
-      this.endFp.open();
-    }
-  }
-
-  private formatDateToYMD(d: Date): string {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  private formatDisplayDate(d: Date): string {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-  }
 
   ngOnInit(): void {
     this.applyBranchScoping(this.authService.user);
@@ -558,12 +486,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.displayDateLabel = 'This Month (October 2026)';
     }
 
-    if (this.startFp && this.endFp && preset !== 'custom') {
-      this.startFp.setDate(this.startDate, false);
-      this.endFp.setDate(this.endDate, false);
-      this.startFp.set('maxDate', this.endDate);
-      this.endFp.set('minDate', this.startDate);
-    }
+
     this.updateStats();
     this.initAllCharts();
   }

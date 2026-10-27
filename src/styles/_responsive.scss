@@ -99,8 +99,9 @@
       max-width: none !important;
       justify-content: space-between;
 
-      .date-field {
-        width: auto !important;
+      .custom-date-input {
+        width: 105px !important;
+        min-width: 0 !important;
         flex: 1 1 auto;
       }
     }
