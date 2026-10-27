@@ -77,13 +77,13 @@
           <a ngbDropdownToggle type="button" class="topbar-button arrow-none d-flex align-items-center gap-2" id="page-header-user-dropdown">
             <span class="d-flex align-items-center">
               <img class="rounded-circle border border-2" 
-                   [ngClass]="currentUser?.role === 'Branch Manager' ? 'border-success' : (currentUser?.role === 'Moderator' ? 'border-warning' : 'border-primary')"
+                   [ngClass]="currentUser?.role === 'Branch Manager' ? 'border-success' : (currentUser?.role === 'Moderator' ? 'border-warning' : (currentUser?.role === 'Dispatcher' ? 'border-info' : 'border-primary'))"
                    width="34" height="34" [src]="currentUser?.avatar || 'assets/images/users/avatar-1.jpg'" alt="avatar">
             </span>
             <div class="d-none d-lg-flex flex-column text-start" style="line-height: 1.2;">
               <span class="fs-13 fw-bold text-dark">{{ currentUser?.name || currentUser?.username || 'Rainbow Admin' }}</span>
               <span class="badge py-1 px-2 text-uppercase align-self-start" style="font-size: 10px;"
-                    [ngClass]="currentUser?.role === 'Branch Manager' ? 'bg-success text-white' : (currentUser?.role === 'Moderator' ? 'bg-warning text-dark' : 'bg-primary text-white')">
+                    [ngClass]="currentUser?.role === 'Branch Manager' ? 'bg-success text-white' : (currentUser?.role === 'Moderator' ? 'bg-warning text-dark' : (currentUser?.role === 'Dispatcher' ? 'bg-info text-white' : 'bg-primary text-white'))">
                 {{ currentUser?.role || 'Admin' }}
               </span>
             </div>
@@ -92,7 +92,7 @@
             <div class="p-3 border-bottom bg-light bg-opacity-50">
               <div class="d-flex align-items-center justify-content-between mb-1">
                 <h6 class="m-0 fw-bold text-dark">{{ currentUser?.name || 'Rainbow Admin' }}</h6>
-                <span class="badge" [ngClass]="currentUser?.role === 'Branch Manager' ? 'bg-success text-white' : (currentUser?.role === 'Moderator' ? 'bg-warning text-dark' : 'bg-primary text-white')">
+                <span class="badge" [ngClass]="currentUser?.role === 'Branch Manager' ? 'bg-success text-white' : (currentUser?.role === 'Moderator' ? 'bg-warning text-dark' : (currentUser?.role === 'Dispatcher' ? 'bg-info text-white' : 'bg-primary text-white'))">
                   {{ currentUser?.role || 'Admin' }}
                 </span>
               </div>
@@ -104,11 +104,28 @@
               </span>
             </div>
             
-            @if(currentUser?.role === 'Admin' || currentUser?.role === 'Branch Manager'){
+            <!-- Role Persona Switcher for Quick Simulation -->
+            <div class="px-3 py-2 bg-light bg-opacity-75 border-bottom">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">Switch Persona</small>
+                <small class="text-muted" style="font-size: 9.5px;">Role Demo</small>
+              </div>
+              <div class="btn-group btn-group-sm w-100" role="group">
+                <button type="button" class="btn btn-xs py-0.5 px-1 fs-10" [ngClass]="currentUser?.role === 'Admin' ? 'btn-primary' : 'btn-outline-secondary'" (click)="switchRole('Admin')">Admin</button>
+                <button type="button" class="btn btn-xs py-0.5 px-1 fs-10" [ngClass]="currentUser?.role === 'Moderator' ? 'btn-warning text-dark fw-bold' : 'btn-outline-secondary'" (click)="switchRole('Moderator')">Mod</button>
+                <button type="button" class="btn btn-xs py-0.5 px-1 fs-10" [ngClass]="currentUser?.role === 'Branch Manager' ? 'btn-success text-white fw-bold' : 'btn-outline-secondary'" (click)="switchRole('Branch Manager')">Manager</button>
+                <button type="button" class="btn btn-xs py-0.5 px-1 fs-10" [ngClass]="currentUser?.role === 'Dispatcher' ? 'btn-info text-white fw-bold' : 'btn-outline-secondary'" (click)="switchRole('Dispatcher')">Dispatcher</button>
+              </div>
+            </div>
+
+            @if(currentUser?.role === 'Admin' || currentUser?.role === 'Branch Manager' || currentUser?.role === 'Moderator'){
             <a class="dropdown-item py-2" routerLink="/index">
-              <i class="bx bx-tachometer text-muted fs-18 align-middle me-2"></i><span class="align-middle">Dashboard</span>
+              <i class="bx bx-tachometer text-muted fs-18 align-middle me-2"></i><span class="align-middle">Dashboard & Operations</span>
             </a>
             }
+            <a class="dropdown-item py-2" routerLink="/role/branches">
+              <i class="bx bx-store text-muted fs-18 align-middle me-2"></i><span class="align-middle">Branch Management</span>
+            </a>
             <a class="dropdown-item py-2" routerLink="/orders/list">
               <i class="bx bx-cart text-muted fs-18 align-middle me-2"></i><span class="align-middle">Orders Control</span>
             </a>
@@ -116,8 +133,16 @@
             <a class="dropdown-item py-2" routerLink="/product/list">
               <i class="bx bx-package text-muted fs-18 align-middle me-2"></i><span class="align-middle">Manage Products</span>
             </a>
+            <a class="dropdown-item py-2" routerLink="/role/automation">
+              <i class="bx bx-cog text-muted fs-18 align-middle me-2"></i><span class="align-middle">Automation Rules</span>
+            </a>
             <a class="dropdown-item py-2" routerLink="/role/permissions">
               <i class="bx bx-shield-quarter text-muted fs-18 align-middle me-2"></i><span class="align-middle">Roles & Permissions</span>
+            </a>
+            }
+            @if(currentUser?.role === 'Admin' || currentUser?.role === 'Moderator'){
+            <a class="dropdown-item py-2" routerLink="/role/audit-logs">
+              <i class="bx bx-history text-muted fs-18 align-middle me-2"></i><span class="align-middle">Operational Audit Trail</span>
             </a>
             }
             @if(currentUser?.role === 'Admin' || currentUser?.role === 'Branch Manager'){

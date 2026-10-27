@@ -1,7 +1,7 @@
 <!-- ========================================================
      Executive Page Header & Hub Navigation
      ======================================================== -->
-<div class="d-flex flex-wrap align-items-center justify-content-end gap-3 mb-3">
+<div class="d-flex flex-wrap align-items-center justify-content-start gap-2 mb-3">
   <div class="d-flex align-items-center gap-2 flex-wrap">
     <!-- Hub Navigation Segmented Control -->
     <div class="filter-segmented-control">
@@ -9,23 +9,58 @@
         <iconify-icon icon="solar:user-id-bold" class="fs-14"></iconify-icon>
         <span>Staff Management</span>
       </a>
+      <a routerLink="/role/branches" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:shop-2-bold" class="fs-14"></iconify-icon>
+        <span>Branches</span>
+      </a>
+      <a routerLink="/role/automation" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:settings-minimalistic-bold" class="fs-14"></iconify-icon>
+        <span>Automation</span>
+      </a>
+      <a routerLink="/role/audit-logs" class="segment-btn text-decoration-none">
+        <iconify-icon icon="solar:history-bold" class="fs-14"></iconify-icon>
+        <span>Audit Logs</span>
+      </a>
       <a routerLink="/role/permissions" class="segment-btn active text-decoration-none">
         <iconify-icon icon="solar:shield-keyhole-bold" class="fs-14"></iconify-icon>
-        <span>Roles &amp; Permissions</span>
+        <span>Permissions</span>
       </a>
-      
+    </div>
+
+    <!-- Secondary View Mode Switcher -->
+    <div class="filter-segmented-control ms-2">
+      <button type="button" class="segment-btn" [class.active]="activeTab === 'role-matrix'" (click)="activeTab = 'role-matrix'">
+        <iconify-icon icon="solar:shield-star-bold" class="fs-14"></iconify-icon>
+        <span>Role Matrix</span>
+      </button>
+      <button type="button" class="segment-btn" [class.active]="activeTab === 'user-overrides'" (click)="activeTab = 'user-overrides'">
+        <iconify-icon icon="solar:user-bold" class="fs-14"></iconify-icon>
+        <span>User Overrides</span>
+      </button>
+      <button type="button" class="segment-btn" [class.active]="activeTab === 'simulator'" (click)="activeTab = 'simulator'">
+        <iconify-icon icon="solar:test-tube-bold" class="fs-14"></iconify-icon>
+        <span>Simulator</span>
+      </button>
     </div>
 
     <!-- Actions -->
-    <button type="button" (click)="resetRoleToDefaults()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Reset Role Matrix to Defaults">
+    <button type="button" (click)="resetRoleToDefaults()" class="btn btn-sm btn-outline-info d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Reset Role Matrix to Defaults">
       <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
-      <span>Reset Defaults</span>
-    </button>
-    <button type="button" (click)="exportPermissionsToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Export CSV">
-      <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
-      <span>Export CSV</span>
+      <span>Reload</span>
     </button>
   </div>
+</div>
+
+<!-- Action Buttons Row (Row 2, Left-Aligned) -->
+<div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+  <button type="button" (click)="exportPermissionsToCsv()" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" title="Export CSV">
+    <iconify-icon icon="solar:file-download-bold" class="fs-14"></iconify-icon>
+    <span>Export CSV</span>
+  </button>
+  <button type="button" (click)="saveRolePermissions()" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 py-1.5 px-3 fs-12" style="background-color: #2e3192; border-color: #2e3192;">
+    <iconify-icon icon="solar:check-circle-bold" class="fs-14"></iconify-icon>
+    <span>Save Permissions</span>
+  </button>
 </div>
 
 <!-- ========================================================

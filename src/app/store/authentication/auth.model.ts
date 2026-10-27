@@ -8,7 +8,7 @@ export class User {
   lastName?: string
   avatar?: string
   title?: string
-  role?: 'Admin' | 'Branch Manager' | 'Moderator' | 'admin' | 'user'
+  role?: 'Admin' | 'Branch Manager' | 'Moderator' | 'Dispatcher' | 'admin' | 'user'
   branchCode?: string
   branchName?: string
   token?: string

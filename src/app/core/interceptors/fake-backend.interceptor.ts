@@ -10,7 +10,7 @@ import {
 import { Observable, of, throwError } from 'rxjs'
 import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators'
 
-export type UserRole = 'Admin' | 'Branch Manager' | 'Moderator'
+export type UserRole = 'Admin' | 'Branch Manager' | 'Moderator' | 'Dispatcher'
 
 export type User = {
   id?: string | number
@@ -85,11 +85,11 @@ function getUsers(): User[] {
       lastName: 'Tariq',
       name: 'Imran Tariq',
       avatar: 'assets/images/users/avatar-2.jpg',
-      location: 'Valencia Town, Lahore',
-      title: 'Valencia Store Orders Moderator',
+      location: 'Central Operations Hub',
+      title: 'Central Operations & Queue Moderator',
       role: 'Moderator',
-      branchCode: 'VAL-01',
-      branchName: 'Rainbow Cash & Carry - Valencia',
+      branchCode: 'all',
+      branchName: 'Cross-Branch Operations (All Outlets)',
       token: Token,
     },
     {
@@ -101,9 +101,25 @@ function getUsers(): User[] {
       lastName: 'Tariq',
       name: 'Imran Tariq',
       avatar: 'assets/images/users/avatar-2.jpg',
-      location: 'Valencia Town, Lahore',
-      title: 'Valencia Store Orders Moderator',
+      location: 'Central Operations Hub',
+      title: 'Central Operations & Queue Moderator',
       role: 'Moderator',
+      branchCode: 'all',
+      branchName: 'Cross-Branch Operations (All Outlets)',
+      token: Token,
+    },
+    {
+      id: 4,
+      username: 'DispatcherValencia',
+      email: 'dispatcher.valencia@rainbow.com',
+      password: '123456',
+      firstName: 'Haris',
+      lastName: 'Mehmood',
+      name: 'Haris Mehmood',
+      avatar: 'assets/images/users/avatar-5.jpg',
+      location: 'Valencia Town, Lahore',
+      title: 'Store Staging & Dispatcher (Bay 1)',
+      role: 'Dispatcher',
       branchCode: 'VAL-01',
       branchName: 'Rainbow Cash & Carry - Valencia',
       token: Token,

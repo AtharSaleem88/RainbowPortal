@@ -9,6 +9,9 @@ import { Branch, RAINBOW_BRANCHES } from './data';
 import { MASTER_CATEGORIES } from '../category/data';
 import { RAINBOW_ORDERS, RainbowOrder } from '../orders/data';
 import { AuthenticationService } from '@core/services/auth.service';
+import { WorkflowConfigService } from '@core/services/workflow-config.service';
+import { OrdersWorkflowService } from '@core/services/orders-workflow.service';
+import { StoreCapacity } from '@core/models/workflow.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -313,6 +316,22 @@ export class DashboardComponent implements OnInit {
 
   authService = inject(AuthenticationService);
   currentUser = this.authService.user;
+  workflowConfigService = inject(WorkflowConfigService);
+  ordersWorkflowService = inject(OrdersWorkflowService);
+
+  priorityStats = {
+    urgentOrders: 18,
+    standardOrders: 124,
+    scheduledOrders: 64,
+    flaggedExceptions: 4,
+    p1Critical: 18,
+    p2High: 42,
+    p3Standard: 124,
+    p4Scheduled: 64,
+    pickComplianceRate: 94.2
+  };
+
+  capacityInfo: StoreCapacity | null = null;
 
   branches: Branch[] = RAINBOW_BRANCHES;
   selectedBranchId: string = 'all';
@@ -458,20 +477,30 @@ export class DashboardComponent implements OnInit {
       this.applyBranchScoping(user);
     });
 
+    this.ordersWorkflowService.orders$.subscribe(() => {
+      this.updateStats();
+    });
+
     this.updateStats();
     this.initAllCharts();
   }
 
   applyBranchScoping(user: any) {
-    if (user?.role === 'Branch Manager' || user?.role === 'Moderator') {
+    if (user?.role === 'Branch Manager') {
       this.selectedBranchId = user.branchCode || 'VAL-01';
       this.updateStats();
       this.initAllCharts();
+    } else {
+      if (!this.selectedBranchId || this.isBranchLocked) {
+        this.selectedBranchId = 'all';
+        this.updateStats();
+        this.initAllCharts();
+      }
     }
   }
 
   get isBranchLocked(): boolean {
-    return this.currentUser?.role === 'Branch Manager' || this.currentUser?.role === 'Moderator';
+    return this.currentUser?.role === 'Branch Manager';
   }
 
   get currentBranchDisplayName(): string {
@@ -587,13 +616,28 @@ export class DashboardComponent implements OnInit {
     this.catalogStats.branchAvailableProducts = isSingleBranch ? Math.round(3445 * 0.88) : 3445;
 
     // Filter recent orders
+    const activeOrdersList = this.ordersWorkflowService.getScopedOrders(this.currentUser);
+    const scopedBranchOrders = (isSingleBranch)
+      ? activeOrdersList.filter(o => o.branchCode === this.selectedBranchId || o.branch.includes(this.selectedBranchId))
+      : activeOrdersList;
+
+    this.priorityStats.urgentOrders = scopedBranchOrders.filter(o => o.urgency === 'Urgent' || o.priorityTier === 'P1' || o.priorityTier === 'P2').length;
+    this.priorityStats.standardOrders = scopedBranchOrders.filter(o => o.urgency === 'Standard' || (!o.urgency && o.priorityTier === 'P3')).length;
+    this.priorityStats.scheduledOrders = scopedBranchOrders.filter(o => o.urgency === 'Scheduled' || o.priorityTier === 'P4').length;
+    this.priorityStats.flaggedExceptions = scopedBranchOrders.filter(o => o.hasException).length;
+    this.priorityStats.p1Critical = this.priorityStats.urgentOrders;
+    this.priorityStats.p3Standard = this.priorityStats.standardOrders;
+    this.priorityStats.p4Scheduled = this.priorityStats.scheduledOrders;
+
     if (isSingleBranch) {
+      this.capacityInfo = this.workflowConfigService.getBranchCapacity(this.selectedBranchId) || null;
       const branchObj = this.branches.find(b => b.id === this.selectedBranchId);
       const nameMatch = branchObj ? branchObj.name : '';
-      const matched = RAINBOW_ORDERS.filter(o => o.branch.toLowerCase().includes(nameMatch.toLowerCase()) || o.branchCode === this.selectedBranchId);
-      this.recentOrders = matched.length >= 3 ? matched.slice(0, 6) : RAINBOW_ORDERS.slice(0, 6);
+      const matched = activeOrdersList.filter(o => o.branch.toLowerCase().includes(nameMatch.toLowerCase()) || o.branchCode === this.selectedBranchId);
+      this.recentOrders = matched.length >= 3 ? matched.slice(0, 6) : activeOrdersList.slice(0, 6);
     } else {
-      this.recentOrders = RAINBOW_ORDERS.slice(0, 6);
+      this.capacityInfo = null;
+      this.recentOrders = activeOrdersList.slice(0, 6);
     }
   }
 

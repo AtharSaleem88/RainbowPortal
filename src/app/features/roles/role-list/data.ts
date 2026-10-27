@@ -1,4 +1,4 @@
-export type StaffRole = 'Branch Manager' | 'Moderator' | 'Rider';
+export type StaffRole = 'Branch Manager' | 'Moderator' | 'Rider' | 'Dispatcher';
 
 export interface BranchStaff {
   id: string; // e.g. 'MGR-VAL-01', 'MOD-VAL-02', 'RDR-VAL-101'
@@ -43,6 +43,14 @@ export interface BranchStaff {
     maxDiscountAuth: number; // in PKR
     directReporteesCount: number;
     emergencyContact: string;
+  };
+
+  // Role-Specific: Dispatcher Attributes
+  dispatcherDetails?: {
+    stagingBay: string; // e.g. 'Staging Bay 1', 'Bay 2'
+    assignedStoreBranch: string;
+    readyOrdersCount?: number;
+    appPin?: string;
   };
 }
 
@@ -194,6 +202,50 @@ export const RAINBOW_STAFF_MEMBERS: BranchStaff[] = [
       maxCashLimit: 30000,
     },
   },
+  {
+    id: 'DSP-VAL-01',
+    name: 'Haris Mehmood',
+    avatar: 'assets/images/users/avatar-5.jpg',
+    role: 'Dispatcher',
+    branchId: 'VAL-01',
+    branchName: 'Rainbow Cash & Carry - Valencia',
+    branchCode: 'VAL-01',
+    city: 'Lahore',
+    email: 'haris.dispatcher@rainbowcc.com.pk',
+    phone: '+923015559812',
+    cnic: '35202-4412984-1',
+    shift: 'Morning (08:00 AM - 04:00 PM)',
+    status: 'Active',
+    joiningDate: '15/Jan/2024',
+    dispatcherDetails: {
+      stagingBay: 'Staging Bay 1',
+      assignedStoreBranch: 'Rainbow Cash & Carry - Valencia',
+      readyOrdersCount: 14,
+      appPin: '4192'
+    }
+  },
+  {
+    id: 'DSP-VAL-02',
+    name: 'Waqas Ahmed',
+    avatar: 'assets/images/users/avatar-6.jpg',
+    role: 'Dispatcher',
+    branchId: 'VAL-01',
+    branchName: 'Rainbow Cash & Carry - Valencia',
+    branchCode: 'VAL-01',
+    city: 'Lahore',
+    email: 'waqas.dispatcher@rainbowcc.com.pk',
+    phone: '+923027771234',
+    cnic: '35202-1198345-3',
+    shift: 'Evening (04:00 PM - 12:00 AM)',
+    status: 'Active',
+    joiningDate: '01/Mar/2024',
+    dispatcherDetails: {
+      stagingBay: 'Staging Bay 2',
+      assignedStoreBranch: 'Rainbow Cash & Carry - Valencia',
+      readyOrdersCount: 9,
+      appPin: '5810'
+    }
+  },
 
   // --- WAPDA TOWN BRANCH ---
   {
@@ -338,6 +390,50 @@ export const RAINBOW_STAFF_MEMBERS: BranchStaff[] = [
       currentOrderId: '32440150',
       maxCashLimit: 60000,
     },
+  },
+  {
+    id: 'DSP-CLF-01',
+    name: 'Sohail Abbasi',
+    avatar: 'assets/images/users/avatar-7.jpg',
+    role: 'Dispatcher',
+    branchId: 'CLF-01',
+    branchName: 'Rainbow Superstore - Clifton',
+    branchCode: 'CLF-01',
+    city: 'Karachi',
+    email: 'sohail.dispatcher@rainbowcc.com.pk',
+    phone: '+923331122334',
+    cnic: '42201-9988771-3',
+    shift: 'Morning (08:00 AM - 04:00 PM)',
+    status: 'Active',
+    joiningDate: '10/Feb/2024',
+    dispatcherDetails: {
+      stagingBay: 'Staging Bay 1',
+      assignedStoreBranch: 'Rainbow Superstore - Clifton',
+      readyOrdersCount: 16,
+      appPin: '6619'
+    }
+  },
+  {
+    id: 'DSP-SKP-01',
+    name: 'Zubair Khan',
+    avatar: 'assets/images/users/avatar-8.jpg',
+    role: 'Dispatcher',
+    branchId: 'SKP-01',
+    branchName: 'Rainbow Cash & Carry - Sheikhupura',
+    branchCode: 'SKP-01',
+    city: 'Sheikhupura',
+    email: 'zubair.dispatcher@rainbowcc.com.pk',
+    phone: '+923008887711',
+    cnic: '35404-9871234-7',
+    shift: 'Morning (08:00 AM - 04:00 PM)',
+    status: 'Active',
+    joiningDate: '10/Feb/2024',
+    dispatcherDetails: {
+      stagingBay: 'Staging Bay 1',
+      assignedStoreBranch: 'Rainbow Cash & Carry - Sheikhupura',
+      readyOrdersCount: 8,
+      appPin: '3391'
+    }
   },
 
   // --- GULSHAN BRANCH ---

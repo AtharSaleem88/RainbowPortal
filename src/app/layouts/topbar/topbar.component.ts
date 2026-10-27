@@ -71,6 +71,11 @@ export class TopbarComponent {
     this.mobileMenuButtonClicked.emit();
   }
 
+  switchRole(role: any) {
+    this.authService.switchUserRole(role, 'VAL-01');
+    this.currentUser = this.authService.user;
+  }
+
   logout() {
     this.store.dispatch(logout())
   }

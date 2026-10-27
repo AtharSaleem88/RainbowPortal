@@ -306,15 +306,22 @@
 
       <!-- Branch Filter -->
       <div class="col-lg-3 col-md-4">
-        <select class="form-select form-select-sm bg-light" [(ngModel)]="selectedBranch" (ngModelChange)="currentPage = 1">
-          <option value="all">All Branches</option>
-          <option value="Clifton">Rainbow Clifton</option>
-          <option value="Valencia">Rainbow Valencia</option>
-          <option value="Wapda Town">Rainbow Wapda Town</option>
-          <option value="Gulshan">Rainbow Gulshan</option>
-          <option value="DHA Phase 6">Rainbow DHA Phase 6</option>
-          <option value="Canal Road">Rainbow Canal Road</option>
-        </select>
+        @if (isBranchLocked) {
+          <div class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 bg-light border rounded text-dark fs-12 fw-semibold w-100">
+            <iconify-icon icon="solar:lock-keyhole-bold" class="text-primary fs-14"></iconify-icon>
+            <span>Rainbow Valencia (Assigned)</span>
+          </div>
+        } @else {
+          <select class="form-select form-select-sm bg-light" [(ngModel)]="selectedBranch" (ngModelChange)="currentPage = 1">
+            <option value="all">All Branches</option>
+            <option value="Clifton">Rainbow Clifton</option>
+            <option value="Valencia">Rainbow Valencia</option>
+            <option value="Wapda Town">Rainbow Wapda Town</option>
+            <option value="Gulshan">Rainbow Gulshan</option>
+            <option value="DHA Phase 6">Rainbow DHA Phase 6</option>
+            <option value="Canal Road">Rainbow Canal Road</option>
+          </select>
+        }
       </div>
 
       <!-- Action Buttons -->

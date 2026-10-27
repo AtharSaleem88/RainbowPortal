@@ -84,13 +84,17 @@ export class OrderFeedbackComponent implements OnInit {
   }
 
   applyBranchScoping(user: any) {
-    if (user?.role === 'Branch Manager' || user?.role === 'Moderator') {
+    if (user?.role === 'Branch Manager') {
       this.selectedBranch = user.branchCode || 'VAL-01';
+    } else {
+      if (this.isBranchLocked || !this.selectedBranch) {
+        this.selectedBranch = 'all';
+      }
     }
   }
 
   get isBranchLocked(): boolean {
-    return this.currentUser?.role === 'Branch Manager' || this.currentUser?.role === 'Moderator';
+    return this.currentUser?.role === 'Branch Manager';
   }
 
   get currentBranchDisplayName(): string {

@@ -142,6 +142,17 @@
         </select>
       </div>
 
+      <!-- Storage Classification Filter -->
+      <div class="filter-control-wrap">
+        <span class="filter-title">Storage:</span>
+        <select [(ngModel)]="selectedStorage" (change)="currentPage = 1" class="form-select filter-dropdown shadow-none" style="min-width: 140px;">
+          <option value="all">All Storage</option>
+          <option value="Freezed">Freezed (-18°C)</option>
+          <option value="Chilled">Chilled (0-4°C)</option>
+          <option value="Ambient">Ambient</option>
+        </select>
+      </div>
+
       <!-- Sort By Dropdown -->
       <div class="filter-control-wrap">
         <span class="filter-title">Sort:</span>
@@ -204,6 +215,7 @@
           <th class="d-none d-lg-table-cell" style="min-width: 120px;">Sub Category</th>
           <th class="d-none d-lg-table-cell" style="min-width: 110px;">Brand</th>
           <th class="d-none d-md-table-cell" style="min-width: 90px;">Price</th>
+          <th class="d-none d-lg-table-cell" style="min-width: 100px;">Storage</th>
           <th class="d-none d-lg-table-cell" style="min-width: 140px;">Branch Stock</th>
           <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
         </tr>
@@ -277,6 +289,23 @@
             <!-- 6. Price (Desktop / Tablet) -->
             <td class="d-none d-md-table-cell">
               <span class="text-dark fw-bold fs-14 font-jost">Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}</span>
+            </td>
+
+            <!-- 6.5 Storage Classification (Desktop) -->
+            <td class="d-none d-lg-table-cell">
+              @if (item.storageType === 'Freezed') {
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-semibold">
+                  <iconify-icon icon="solar:snowflake-bold" class="align-middle me-1"></iconify-icon>Freezed
+                </span>
+              } @else if (item.storageType === 'Chilled') {
+                <span class="badge bg-info-subtle text-info border border-info-subtle fs-11 fw-semibold">
+                  <iconify-icon icon="solar:temperature-bold" class="align-middle me-1"></iconify-icon>Chilled
+                </span>
+              } @else {
+                <span class="badge bg-light text-muted border fs-11">
+                  Ambient
+                </span>
+              }
             </td>
 
             <!-- 7. Branch Stock (Geo Fulfillment) (Desktop) -->

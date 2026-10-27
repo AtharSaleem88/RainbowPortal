@@ -1,6 +1,7 @@
 import { confirmAction } from '@shared/utils/confirmation';
 import { showSaveSuccess } from '@shared/utils/save-alert';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
+import { AuthenticationService } from '@core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductList, ProductType, RAINBOW_SUPERSTORE_BRANCHES, BranchStock } from '../data';
@@ -28,6 +29,8 @@ import { ProductMetricsComponent } from './components/product-metrics/product-me
 export class ProductListComponent implements OnInit {
   title = 'Product Catalog & Inventory';
   private modalService = inject(NgbModal);
+  private authService = inject(AuthenticationService);
+  currentUser = this.authService.user;
 
   products: ProductType[] = ProductList;
   branches = RAINBOW_SUPERSTORE_BRANCHES;
@@ -73,7 +76,18 @@ export class ProductListComponent implements OnInit {
   customerLng: number = 67.0011;
   nearestDetectedBranch: string = 'Branch 02 - Clifton Superstore (Ocean Mall)';
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(u => {
+      this.currentUser = u;
+      if (u?.role === 'Branch Manager') {
+        this.selectedBranchId = 'b1';
+      }
+    });
+  }
+
+  get isBranchLocked(): boolean {
+    return this.currentUser?.role === 'Branch Manager';
+  }
 
   // Metrics getters
   get totalProductsCount(): number {
@@ -128,6 +142,7 @@ export class ProductListComponent implements OnInit {
       const matchesCategory = this.selectedCategory === 'all' || item.category === this.selectedCategory;
       const matchesSubCategory = this.selectedSubCategory === 'all' || item.subCategory === this.selectedSubCategory;
       const matchesBrand = this.selectedBrand === 'all' || item.brand === this.selectedBrand;
+      const matchesStorage = this.selectedStorage === 'all' || item.storageType === this.selectedStorage;
 
       let matchesStock = true;
       if (this.stockFilter === 'in_stock') {
@@ -142,7 +157,7 @@ export class ProductListComponent implements OnInit {
         matchesBranch = !!branchStock && branchStock.inStock;
       }
 
-      return matchesSearch && matchesCategory && matchesSubCategory && matchesBrand && matchesStock && matchesBranch;
+      return matchesSearch && matchesCategory && matchesSubCategory && matchesBrand && matchesStock && matchesBranch && matchesStorage;
     });
 
     result = [...result].sort((a, b) => {

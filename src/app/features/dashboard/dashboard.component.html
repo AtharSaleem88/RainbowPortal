@@ -116,6 +116,78 @@
   </div>
 
   <!-- ========================================================
+       Operational Priority & Branch Capacity Status Strip
+       ======================================================== -->
+  <div class="row g-3 mb-3">
+    <!-- Urgent (ASAP) Orders -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #dc3545 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fs-11 fw-bold text-danger text-uppercase">Urgent (ASAP)</span>
+          <span class="badge bg-danger-subtle text-danger fs-10 fw-bold">10m SLA</span>
+        </div>
+        <div class="fs-22 fw-bold text-dark font-jost">{{ priorityStats.urgentOrders }}</div>
+        <small class="text-muted fs-11">Immediate pick &amp; dispatch</small>
+      </a>
+    </div>
+
+    <!-- Standard Orders -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #2e3192 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fs-11 fw-bold text-primary text-uppercase">Standard</span>
+          <span class="badge bg-primary-subtle text-primary fs-10 fw-bold">20m SLA</span>
+        </div>
+        <div class="fs-22 fw-bold text-dark font-jost">{{ priorityStats.standardOrders }}</div>
+        <small class="text-muted fs-11">Regular order queue</small>
+      </a>
+    </div>
+
+    <!-- Scheduled Orders -->
+    <div class="col-6 col-md-4 col-xl-2">
+      <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #64748b !important;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fs-11 fw-bold text-secondary text-uppercase">Scheduled</span>
+          <span class="badge bg-secondary-subtle text-secondary fs-10 fw-bold">Slot Hold</span>
+        </div>
+        <div class="fs-22 fw-bold text-dark font-jost">{{ priorityStats.scheduledOrders }}</div>
+        <small class="text-muted fs-11">Release -45m before slot</small>
+      </a>
+    </div>
+
+    <!-- Flagged Issues Queue -->
+    <div class="col-6 col-md-6 col-xl-3">
+      <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #ef4444 !important; background: #fffbfb;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fs-11 fw-bold text-danger text-uppercase">Needs Attention</span>
+          <span class="badge bg-danger text-white fs-10 fw-bold">{{ priorityStats.flaggedExceptions }} Issues</span>
+        </div>
+        <div class="fs-22 fw-bold text-danger font-jost">{{ priorityStats.flaggedExceptions }}</div>
+        <small class="text-muted fs-11">OOS, timeout &amp; rider exceptions</small>
+      </a>
+    </div>
+
+    <!-- Store Capacity Utilization -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <a routerLink="/role/branches" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #10b981 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fs-11 fw-bold text-dark text-uppercase">Store Capacity Load</span>
+          <span class="badge fs-10 fw-bold"
+                [ngClass]="(capacityInfo?.utilizationRate || 68) >= 80 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'">
+            {{ capacityInfo ? capacityInfo.status : 'Normal (Optimal)' }}
+          </span>
+        </div>
+        <div class="fs-22 fw-bold text-dark font-jost">
+          {{ capacityInfo ? capacityInfo.utilizationRate + '%' : '68%' }}
+        </div>
+        <small class="text-muted fs-11">
+          {{ capacityInfo ? (capacityInfo.activeOrders + '/' + capacityInfo.maxCapacityOrders + ' active orders') : 'Network capacity load across stores' }}
+        </small>
+      </a>
+    </div>
+  </div>
+
+  <!-- ========================================================
        Row 1: Catalog Scale & Core Volume (4 KPI Cards)
        ======================================================== -->
   <div class="kpi-heading d-flex align-items-center justify-content-between px-1">

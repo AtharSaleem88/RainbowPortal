@@ -3,9 +3,21 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { RAINBOW_ORDERS, RainbowOrder, RainbowOrderItem } from '../data';
+import { RAINBOW_ORDERS, RainbowOrder, RainbowOrderItem, SpecificReplacementChoice } from '../data';
 import { RAINBOW_STAFF_MEMBERS, BranchStaff } from '../../roles/role-list/data';
+import { ProductList, ProductType } from '../../products/data';
+import Swal from 'sweetalert2';
 import { AuthenticationService } from '@core/services/auth.service';
+import { OrdersWorkflowService } from '@core/services/orders-workflow.service';
+import { WorkflowConfigService } from '@core/services/workflow-config.service';
+import { TimeLogService, DerivedProductivityMetrics } from '@core/services/time-log.service';
+import { AuditService } from '@core/services/audit.service';
+import {
+  OrderLifecycleStatus,
+  PriorityTier,
+  OrderException,
+  TimeLogRecord
+} from '@core/models/workflow.model';
 
 @Component({
   selector: 'app-orders-list',
@@ -221,6 +233,80 @@ import { AuthenticationService } from '@core/services/auth.service';
       }
     }
 
+    /* Status Badge & Hover Color Protection */
+    .status-badge {
+      font-weight: 600;
+      transition: all 0.15s ease-in-out;
+      cursor: default;
+      display: inline-block;
+      user-select: none;
+
+      /* Never hide or wash out status badge text on hover */
+      &:hover {
+        opacity: 0.96;
+      }
+
+      &.bg-warning-subtle,
+      &.bg-warning-subtle:hover {
+        background-color: #fef9c3 !important;
+        color: #854d0e !important;
+        border-color: #fde047 !important;
+      }
+
+      &.bg-primary-subtle,
+      &.bg-primary-subtle:hover {
+        background-color: #e0e7ff !important;
+        color: #2e3192 !important;
+        border-color: #c7d2fe !important;
+      }
+
+      &.bg-info-subtle,
+      &.bg-info-subtle:hover {
+        background-color: #e0f2fe !important;
+        color: #0369a1 !important;
+        border-color: #bae6fd !important;
+      }
+
+      &.bg-indigo-subtle,
+      &.bg-indigo-subtle:hover {
+        background-color: #ede9fe !important;
+        color: #5b21b6 !important;
+        border-color: #ddd6fe !important;
+      }
+
+      &.bg-teal-subtle,
+      &.bg-teal-subtle:hover {
+        background-color: #ccfbf1 !important;
+        color: #0f766e !important;
+        border-color: #99f6e4 !important;
+      }
+
+      &.bg-info,
+      &.bg-info:hover {
+        background-color: #0284c7 !important;
+        color: #ffffff !important;
+      }
+
+      &.bg-success,
+      &.bg-success:hover {
+        background-color: #16a34a !important;
+        color: #ffffff !important;
+      }
+
+      &.bg-danger,
+      &.bg-danger:hover {
+        background-color: #dc2626 !important;
+        color: #ffffff !important;
+      }
+
+      &.bg-secondary-subtle,
+      &.bg-secondary-subtle:hover {
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
+        border-color: #e2e8f0 !important;
+      }
+    }
+
     /* Action Buttons */
     .cat-action-btn {
       width: 30px;
@@ -269,12 +355,21 @@ import { AuthenticationService } from '@core/services/auth.service';
       .badge {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         padding: 4px 7px;
         line-height: 1.3;
       }
 
-      .btn { white-space: nowrap; }
+      .btn {
+        white-space: nowrap;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+
+        iconify-icon {
+          flex-shrink: 0 !important;
+        }
+      }
     }
 
     .order-items-table {
@@ -292,7 +387,16 @@ import { AuthenticationService } from '@core/services/auth.service';
 
     .order-details-footer {
       justify-content: space-between !important;
-      .btn { white-space: nowrap; }
+      .btn {
+        white-space: nowrap;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+
+        iconify-icon {
+          flex-shrink: 0 !important;
+        }
+      }
     }
 
     @media (max-width: 991.98px) {
@@ -561,10 +665,15 @@ export class OrdersListComponent implements OnInit {
 
   authService = inject(AuthenticationService);
   currentUser = this.authService.user;
+  workflowService = inject(OrdersWorkflowService);
+  configService = inject(WorkflowConfigService);
+  timeLogService = inject(TimeLogService);
+  auditService = inject(AuditService);
 
   // Filter Dropdown States
   selectedBranch: string = 'all';
   selectedStatus: string = 'all';
+  selectedPriority: string = 'all'; // 'all' | 'P1' | 'P2' | 'P3' | 'P4' | 'exceptions'
   selectedPaymentType: string = 'all';
   selectedDeviceType: string = 'all';
   selectedDatePreset: string = 'today';
@@ -584,6 +693,75 @@ export class OrdersListComponent implements OnInit {
   riderFilterTab: 'available' | 'all' = 'available';
   assignmentToast: string | null = null;
   activeAssignModalRef: any = null;
+
+  // Priority Override State
+  targetOrderForPriority: RainbowOrder | null = null;
+  selectedOverrideUrgency: 'Urgent' | 'Standard' | 'Scheduled' = 'Urgent';
+  overrideCustomNote: string = '';
+  overrideReason: string = '';
+  overrideError: string | null = null;
+  activePriorityModalRef: any = null;
+
+  // Flagged Exception Review State
+  targetOrderForException: RainbowOrder | null = null;
+  selectedResolutionAction: string = 'reroute_store';
+  exceptionResolutionNote: string = '';
+  selectedRerouteBranchCode: string = 'SKP-01';
+  activeExceptionModalRef: any = null;
+
+  // Refund & Cancellation Dialog State
+  targetOrderForRefund: RainbowOrder | null = null;
+  refundAmount: number = 0;
+  refundReason: string = '';
+  refundActionType: 'Refund' | 'Cancel' = 'Refund';
+  refundError: string | null = null;
+  activeRefundModalRef: any = null;
+
+  // Dedicated Cancellation with Mandatory Reason
+  targetOrderForCancel: RainbowOrder | null = null;
+  cancelReasonCategory: string = 'Item out of stock / Customer rejected substitution';
+  cancelReasonNotes: string = '';
+  cancelNotifyCustomer: boolean = true;
+  cancelError: string | null = null;
+  activeCancelModalRef: any = null;
+
+  cancellationCategories: string[] = [
+    'Item out of stock / Customer rejected substitution',
+    'Customer requested cancellation via phone/app',
+    'Customer unreachable (Call attempt failed)',
+    'Delivery address outside store service radius',
+    'Payment authorization / Fraud security hold',
+    'Store branch capacity overload (All pickers busy)',
+    'Operational delay / No delivery rider available',
+    'Other operational reason'
+  ];
+
+  // Moderator Order Items & Substitutions Edit State
+  selectedOrderForEdit: RainbowOrder | null = null;
+  editableItems: RainbowOrderItem[] = [];
+  editOrderNotes: string = '';
+  activeEditModalRef: any = null;
+  customSubName: { [key: number]: string } = {};
+  customSubPrice: { [key: number]: number } = {};
+
+  // Suggested substitutes dictionary for retail items
+  suggestedSubstitutes: { [key: string]: SpecificReplacementChoice[] } = {
+    'oil': [
+      { name: 'Sufi Banaspati & Cooking Oil (5 Litre Tin)', price: 2750, sku: 'SUF-OIL-5L', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=120&auto=format&fit=crop&q=80' },
+      { name: 'Mezan Canola Cooking Oil (5 Litre Tin)', price: 2820, sku: 'MZN-OIL-5L', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80' },
+      { name: 'Habib Cooking Oil (5 Litre Tin)', price: 2890, sku: 'HBB-OIL-5L', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&auto=format&fit=crop&q=80' }
+    ],
+    'chicken': [
+      { name: 'Dawn Chicken Shashlik Skewers (500g)', price: 1020, sku: 'DWN-SHASH-500', image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=120&auto=format&fit=crop&q=80' },
+      { name: 'Menu Chicken Shashlik Skewers (515g)', price: 1050, sku: 'MNU-SHASH-515', image: 'https://images.unsplash.com/photo-1527477321005-4d45d724b8c4?w=120&auto=format&fit=crop&q=80' },
+      { name: 'Mon Salwa Seekh Kabab (500g)', price: 980, sku: 'MS-SKB-500', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=120&auto=format&fit=crop&q=80' }
+    ],
+    'milk': [
+      { name: 'Nestle MilkPak Full Cream (1 Litre x 6)', price: 1720, sku: 'NES-MLK-1LX6', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&auto=format&fit=crop&q=80' },
+      { name: 'Tarang Tea Whitening Liquid (1 Litre x 6)', price: 1590, sku: 'TRG-TEA-1LX6', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=120&auto=format&fit=crop&q=80' },
+      { name: 'Nurpur Pure Milk (1 Litre x 6)', price: 1680, sku: 'NRP-MLK-1LX6', image: 'https://images.unsplash.com/photo-1528750997573-59b89d56f4f7?w=120&auto=format&fit=crop&q=80' }
+    ]
+  };
 
   branches: { id: string; name: string }[] = [
     { id: 'all', name: 'Consolidated (All Branches)' },
@@ -608,16 +786,31 @@ export class OrdersListComponent implements OnInit {
       this.currentUser = user;
       this.applyRoleBranchScoping(user);
     });
+
+    this.workflowService.orders$.subscribe((updatedOrders) => {
+      this.orders = updatedOrders;
+      if (this.selectedOrder) {
+        const refreshed = updatedOrders.find(o => o.id === this.selectedOrder!.id);
+        if (refreshed) {
+          this.selectedOrder = refreshed;
+        }
+      }
+    });
   }
 
   applyRoleBranchScoping(user: any) {
-    if (user?.role === 'Branch Manager' || user?.role === 'Moderator') {
+    if (user?.role === 'Branch Manager') {
       this.selectedBranch = user.branchCode || 'VAL-01';
+    } else {
+      // Admin and Moderator have cross-branch operational access
+      if (!this.selectedBranch || this.isBranchLocked) {
+        this.selectedBranch = 'all';
+      }
     }
   }
 
   get isBranchLocked(): boolean {
-    return this.currentUser?.role === 'Branch Manager' || this.currentUser?.role === 'Moderator';
+    return this.currentUser?.role === 'Branch Manager';
   }
 
   get currentBranchDisplayName(): string {
@@ -631,15 +824,20 @@ export class OrdersListComponent implements OnInit {
   get statusCounts() {
     const baseOrders = this.isBranchLocked
       ? this.orders.filter(o => o.branchCode === this.selectedBranch || o.branch.includes(this.selectedBranch))
-      : this.orders;
+      : (this.selectedBranch === 'all' ? this.orders : this.orders.filter(o => o.branchCode === this.selectedBranch || o.branch.includes(this.selectedBranch)));
 
     return {
       all: baseOrders.length,
-      pending: baseOrders.filter(o => o.status === 'Pending').length,
-      accepted: baseOrders.filter(o => o.status === 'Accepted').length,
-      dispatch: baseOrders.filter(o => o.status === 'Dispatch').length,
+      pending: baseOrders.filter(o => o.status === 'Pending' || o.status === 'Placed' || o.status === 'Confirmed').length,
+      accepted: baseOrders.filter(o => o.status === 'Accepted' || o.status === 'Picking' || o.status === 'Packed').length,
+      dispatch: baseOrders.filter(o => o.status === 'Dispatch' || o.status === 'Rider assigned' || o.status === 'Out for delivery').length,
       delivered: baseOrders.filter(o => o.status === 'Delivered').length,
-      rejected: baseOrders.filter(o => o.status === 'Rejected').length,
+      rejected: baseOrders.filter(o => o.status === 'Rejected' || o.status === 'Cancelled' || o.status === 'Refunded').length,
+      // Urgency & Issue Counts
+      urgent: baseOrders.filter(o => o.urgency === 'Urgent' || o.priorityTier === 'P1' || o.priorityTier === 'P2').length,
+      standard: baseOrders.filter(o => o.urgency === 'Standard' || (!o.urgency && o.priorityTier === 'P3')).length,
+      scheduled: baseOrders.filter(o => o.urgency === 'Scheduled' || o.priorityTier === 'P4').length,
+      exceptions: baseOrders.filter(o => o.hasException).length,
     };
   }
 
@@ -672,8 +870,25 @@ export class OrdersListComponent implements OnInit {
         return false;
       }
       // Status filter
-      if (this.selectedStatus !== 'all' && o.status !== this.selectedStatus) {
-        return false;
+      if (this.selectedStatus !== 'all') {
+        if (this.selectedStatus === 'Pending' && !(o.status === 'Pending' || o.status === 'Placed' || o.status === 'Confirmed')) return false;
+        else if (this.selectedStatus === 'Accepted' && !(o.status === 'Accepted' || o.status === 'Picking' || o.status === 'Packed')) return false;
+        else if (this.selectedStatus === 'Dispatch' && !(o.status === 'Dispatch' || o.status === 'Rider assigned' || o.status === 'Out for delivery')) return false;
+        else if (this.selectedStatus === 'Delivered' && o.status !== 'Delivered') return false;
+        else if (this.selectedStatus === 'Rejected' && !(o.status === 'Rejected' || o.status === 'Cancelled' || o.status === 'Refunded')) return false;
+        else if (this.selectedStatus !== 'Pending' && this.selectedStatus !== 'Accepted' && this.selectedStatus !== 'Dispatch' && this.selectedStatus !== 'Delivered' && this.selectedStatus !== 'Rejected' && o.status !== this.selectedStatus) return false;
+      }
+      // Priority filter
+      if (this.selectedPriority !== 'all') {
+        if (this.selectedPriority === 'exceptions') {
+          if (!o.hasException) return false;
+        } else if (this.selectedPriority === 'urgent') {
+          if (o.urgency !== 'Urgent' && o.priorityTier !== 'P1' && o.priorityTier !== 'P2') return false;
+        } else if (this.selectedPriority === 'standard') {
+          if (o.urgency !== 'Standard' && o.priorityTier !== 'P3' && o.urgency) return false;
+        } else if (this.selectedPriority === 'scheduled') {
+          if (o.urgency !== 'Scheduled' && o.priorityTier !== 'P4') return false;
+        }
       }
       // Payment Type filter
       if (this.selectedPaymentType !== 'all' && o.paymentType !== this.selectedPaymentType) {
@@ -693,7 +908,8 @@ export class OrdersListComponent implements OnInit {
         const matchesAddress = o.customer.deliveryAddress.toLowerCase().includes(query);
         const matchesBranch = o.branch.toLowerCase().includes(query);
         const matchesRider = o.assignedRider?.name.toLowerCase().includes(query) || o.assignedRider?.vehicleRegNo.toLowerCase().includes(query);
-        if (!matchesId && !matchesCode && !matchesName && !matchesPhone && !matchesAddress && !matchesBranch && !matchesRider) {
+        const matchesTier = (o.priorityTier || '').toLowerCase().includes(query);
+        if (!matchesId && !matchesCode && !matchesName && !matchesPhone && !matchesAddress && !matchesBranch && !matchesRider && !matchesTier) {
           return false;
         }
       }
@@ -711,11 +927,17 @@ export class OrdersListComponent implements OnInit {
     this.currentPage = 1;
   }
 
+  setPriorityTab(priority: string) {
+    this.selectedPriority = priority;
+    this.currentPage = 1;
+  }
+
   resetFilters() {
     if (!this.isBranchLocked) {
       this.selectedBranch = 'all';
     }
     this.selectedStatus = 'all';
+    this.selectedPriority = 'all';
     this.selectedPaymentType = 'all';
     this.selectedDeviceType = 'all';
     this.selectedDatePreset = 'today';
@@ -730,12 +952,497 @@ export class OrdersListComponent implements OnInit {
   }
 
   updateStatus(order: RainbowOrder, newStatus: any) {
-    order.status = newStatus;
+    this.workflowService.updateOrderStatus(order.id, newStatus, this.currentUser);
   }
 
   togglePaymentType(order: RainbowOrder) {
     order.paymentType = order.paymentType === 'COD' ? 'CAOD' : 'COD';
     order.paymentChannel = order.paymentType === 'COD' ? 'Cash on Delivery' : 'Card on Delivery';
+  }
+
+  // =========================================================================
+  // PRIORITY OVERRIDE METHODS
+  // =========================================================================
+  openPriorityModal(order: RainbowOrder, content: any) {
+    this.targetOrderForPriority = order;
+    this.selectedOverrideUrgency = order.urgency || (order.priorityTier === 'P1' || order.priorityTier === 'P2' ? 'Urgent' : (order.priorityTier === 'P4' ? 'Scheduled' : 'Standard'));
+    this.overrideReason = 'Customer requested expedited / priority dispatch';
+    this.overrideCustomNote = '';
+    this.overrideError = null;
+    this.activePriorityModalRef = this.modalService.open(content, { centered: true, size: 'md' });
+  }
+
+  confirmPriorityOverride() {
+    if (!this.overrideReason || this.overrideReason.trim().length < 5) {
+      this.overrideError = 'Please provide a mandatory operational reason (at least 5 characters).';
+      return;
+    }
+    if (this.targetOrderForPriority) {
+      const reasonFinal = `${this.overrideReason}${this.overrideCustomNote ? ': ' + this.overrideCustomNote : ''}`;
+      this.workflowService.overridePriority(
+        this.targetOrderForPriority.id,
+        this.selectedOverrideUrgency,
+        reasonFinal.trim(),
+        this.currentUser
+      );
+      this.assignmentToast = `Order #${this.targetOrderForPriority.id} urgency updated to ${this.selectedOverrideUrgency}!`;
+      setTimeout(() => this.assignmentToast = null, 4000);
+      if (this.activePriorityModalRef) {
+        this.activePriorityModalRef.close();
+      }
+    }
+  }
+
+  isOrderPriority(order: RainbowOrder | null | undefined): boolean {
+    if (!order) return false;
+    return order.urgency === 'Urgent' || order.priorityTier === 'P1' || order.priorityTier === 'P2';
+  }
+
+  togglePriority(order: RainbowOrder | null | undefined): void {
+    if (!order) return;
+    const isCurrentlyPriority = this.isOrderPriority(order);
+    const newUrgency: 'Urgent' | 'Standard' = isCurrentlyPriority ? 'Standard' : 'Urgent';
+    const reason = isCurrentlyPriority
+      ? 'Order queue priority reverted to Standard'
+      : 'Moderator expedited order: Fast-track Priority set for Dispatcher and Rider queues';
+
+    this.workflowService.overridePriority(order.id, newUrgency, reason, this.currentUser);
+    order.urgency = newUrgency;
+    order.priorityTier = isCurrentlyPriority ? 'P3' : 'P1';
+
+    this.assignmentToast = isCurrentlyPriority
+      ? `Order #${order.id} set to Standard Queue.`
+      : `Order #${order.id} set to Priority (Fast-track for Dispatcher & Rider)!`;
+    setTimeout(() => this.assignmentToast = null, 3500);
+  }
+
+  // =========================================================================
+  // FLAGGED EXCEPTION RESOLUTION METHODS
+  // =========================================================================
+  openExceptionModal(order: RainbowOrder, content: any) {
+    this.targetOrderForException = order;
+    this.selectedResolutionAction = 'reroute_store';
+    this.exceptionResolutionNote = '';
+    this.selectedRerouteBranchCode = 'SKP-01';
+    this.activeExceptionModalRef = this.modalService.open(content, { centered: true, size: 'lg' });
+  }
+
+  confirmResolveException() {
+    if (!this.targetOrderForException) return;
+
+    if (this.selectedResolutionAction === 'reroute_store') {
+      const targetBranch = this.branches.find(b => b.id === this.selectedRerouteBranchCode) || this.branches[1];
+      this.workflowService.reassignBranch(
+        this.targetOrderForException.id,
+        targetBranch.id,
+        targetBranch.name,
+        this.exceptionResolutionNote || 'Rerouted due to store unacceptance timeout or load capacity',
+        this.currentUser
+      );
+    }
+
+    this.workflowService.resolveException(
+      this.targetOrderForException.id,
+      this.selectedResolutionAction,
+      this.exceptionResolutionNote || 'Resolved by Moderator Console',
+      this.currentUser
+    );
+
+    this.assignmentToast = `Exception on Order #${this.targetOrderForException.id} marked Resolved!`;
+    setTimeout(() => this.assignmentToast = null, 4000);
+
+    if (this.activeExceptionModalRef) {
+      this.activeExceptionModalRef.close();
+    }
+  }
+
+  // =========================================================================
+  // DEDICATED ORDER CANCELLATION MODAL METHODS
+  // =========================================================================
+  openCancelOrderModal(order: RainbowOrder, content: any) {
+    this.targetOrderForCancel = order;
+    this.cancelReasonNotes = '';
+    this.cancelError = null;
+    this.cancelNotifyCustomer = true;
+    if (order.hasOutOfStockItems || (order.hasException && order.exception?.type === 'item_out_of_stock')) {
+      this.cancelReasonCategory = 'Item out of stock / Customer rejected substitution';
+    } else {
+      this.cancelReasonCategory = 'Customer requested cancellation via phone/app';
+    }
+    this.activeCancelModalRef = this.modalService.open(content, { centered: true, size: 'md' });
+  }
+
+  confirmOrderCancellation() {
+    if (!this.targetOrderForCancel) return;
+    if (!this.cancelReasonCategory) {
+      this.cancelError = 'Please select a cancellation category.';
+      return;
+    }
+
+    const res = this.workflowService.cancelOrderWithReason(
+      this.targetOrderForCancel.id,
+      this.cancelReasonCategory,
+      this.cancelReasonNotes,
+      this.cancelNotifyCustomer,
+      this.currentUser
+    );
+
+    if (!res.success) {
+      this.cancelError = res.message;
+      return;
+    }
+
+    this.assignmentToast = res.message;
+    setTimeout(() => this.assignmentToast = null, 4000);
+    if (this.activeCancelModalRef) {
+      this.activeCancelModalRef.close();
+    }
+  }
+
+  // =========================================================================
+  // MODERATOR EDIT ORDER ITEMS & SUBSTITUTION METHODS
+  // =========================================================================
+  openEditOrderModal(order: RainbowOrder, content: any) {
+    this.selectedOrderForEdit = order;
+    this.editOrderNotes = order.substitutionNotes || '';
+    // Deep clone items so closing without saving discards changes
+    this.editableItems = (order.items || []).map(item => ({
+      ...item,
+      substitutionOption: item.substitutionOption,
+      specificReplacements: item.specificReplacements ? [...item.specificReplacements] : undefined,
+      originalItemName: item.originalItemName || item.name,
+      originalItemPrice: item.originalItemPrice || item.finalPrice
+    }));
+    this.customSubName = {};
+    this.customSubPrice = {};
+    this.activeEditModalRef = this.modalService.open(content, { centered: true, size: 'lg', scrollable: true });
+  }
+
+  applySpecificReplacement(item: RainbowOrderItem, choice: SpecificReplacementChoice) {
+    this.applyItemSubstitution(item, choice.name, choice.price, choice.sku);
+    if (choice.image) {
+      item.image = choice.image;
+    }
+  }
+
+  showCustomerChoicesAlert(item: RainbowOrderItem) {
+    const choices = item.specificReplacements || this.getItemSubstitutes(item.name);
+    if (!choices || choices.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Customer Choices',
+        text: 'No pre-selected specific alternative was specified by the customer for this item.',
+        confirmButtonColor: '#2e3192'
+      });
+      return;
+    }
+
+    let itemsHtml = `
+      <div style="text-align: left; font-size: 13px;">
+        <p class="text-muted mb-3" style="font-size: 12px;">Customer specified the following preferred alternatives for <strong>${item.originalItemName || item.name}</strong>:</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+    `;
+
+    choices.forEach((c, idx) => {
+      itemsHtml += `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <img src="${c.image || 'assets/images/products/img-01.png'}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; flex-shrink: 0;" />
+            <div style="min-width: 0;">
+              <div style="font-weight: 600; color: #0f172a; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">${c.name}</div>
+              <small style="color: #64748b; font-family: monospace; font-size: 11px;">Choice #${idx + 1} &bull; <strong style="color: #2e3192;">Rs ${c.price.toFixed(2)}</strong></small>
+            </div>
+          </div>
+          <button id="swal-select-choice-${idx}" class="btn btn-sm btn-primary" style="background: #2e3192; border-color: #2e3192; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 6px; cursor: pointer; flex-shrink: 0;">
+            Select
+          </button>
+        </div>
+      `;
+    });
+
+    itemsHtml += `</div></div>`;
+
+    Swal.fire({
+      title: 'Customer Replacement Choices',
+      html: itemsHtml,
+      showConfirmButton: false,
+      showCloseButton: true,
+      width: '520px',
+      didOpen: () => {
+        choices.forEach((c, idx) => {
+          const btn = document.getElementById(`swal-select-choice-${idx}`);
+          if (btn) {
+            btn.onclick = () => {
+              this.applySpecificReplacement(item, c);
+              Swal.close();
+            };
+          }
+        });
+      }
+    });
+  }
+
+  applyAutoBestMatch(item: RainbowOrderItem) {
+    const subs = this.getItemSubstitutes(item.originalItemName || item.name);
+    if (subs && subs.length > 0) {
+      this.applyItemSubstitution(item, subs[0].name, subs[0].price, subs[0].sku);
+    } else {
+      this.applyItemSubstitution(item, 'Store Selected Best Match', item.originalItemPrice || item.finalPrice);
+    }
+  }
+
+  confirmCustomerPhoneResolution(item: RainbowOrderItem, action: 'approved_sub' | 'remove') {
+    if (action === 'approved_sub') {
+      this.applyAutoBestMatch(item);
+    } else {
+      this.removeItemFromOrder(item);
+    }
+  }
+
+  toggleItemStockStatus(item: RainbowOrderItem) {
+    item.isOutOfStock = !item.isOutOfStock;
+    if (item.isOutOfStock) {
+      if (item.substitutionStatus === 'None' || !item.substitutionStatus) {
+        item.substitutionStatus = 'Pending Choice';
+      }
+    } else {
+      item.substitutionStatus = 'None';
+    }
+  }
+
+  applyItemSubstitution(item: RainbowOrderItem, substituteName: string, substitutePrice: number, substituteSku?: string) {
+    if (!item.originalItemName) {
+      item.originalItemName = item.name;
+    }
+    if (!item.originalItemPrice) {
+      item.originalItemPrice = item.finalPrice;
+    }
+    item.substituteItemName = substituteName;
+    item.substituteItemPrice = substitutePrice;
+    item.substituteSku = substituteSku || 'SUB-' + Math.floor(100000 + Math.random() * 900000);
+    item.name = substituteName;
+    item.finalPrice = substitutePrice;
+    item.totalPrice = item.deliveredQty * substitutePrice;
+    item.substitutionStatus = 'Substituted';
+    item.isOutOfStock = false;
+    item.isOverridden = true;
+  }
+
+  searchSubQuery: { [key: number]: string } = {};
+  newProductSearchTerm: string = '';
+
+  searchCatalogProducts(query: string): ProductType[] {
+    if (!query || query.trim().length < 2) return [];
+    const q = query.trim().toLowerCase();
+    return ProductList.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+      (p.sku && p.sku.toLowerCase().includes(q))
+    ).slice(0, 5);
+  }
+
+  applyProductSubstitution(item: RainbowOrderItem, product: ProductType, itemIndex: number) {
+    this.applyItemSubstitution(item, product.name, product.price, product.sku);
+    item.image = product.image;
+    this.searchSubQuery[itemIndex] = '';
+  }
+
+  addNewProductToOrder(prod: ProductType) {
+    if (!this.selectedOrderForEdit) return;
+    const newItem: RainbowOrderItem = {
+      itemId: 'ITM-' + Math.floor(1000 + Math.random() * 9000),
+      name: prod.name,
+      image: prod.image,
+      barcode: prod.barcode || prod.sku,
+      sku: prod.sku,
+      orderedQty: 1,
+      deliveredQty: 1,
+      originalPrice: prod.price,
+      discountPercent: 0,
+      finalPrice: prod.price,
+      totalPrice: prod.price,
+      isOutOfStock: false,
+      substitutionStatus: 'None',
+      isOverridden: true
+    };
+    this.editableItems.push(newItem);
+    this.newProductSearchTerm = '';
+  }
+
+  applyCustomSubstitution(index: number, item: RainbowOrderItem) {
+    const name = this.customSubName[index];
+    const price = this.customSubPrice[index] || item.finalPrice;
+    if (!name || name.trim().length === 0) return;
+    this.applyItemSubstitution(item, name.trim(), price);
+    this.customSubName[index] = '';
+  }
+
+  removeItemFromOrder(item: RainbowOrderItem) {
+    item.substitutionStatus = 'Removed';
+    item.deliveredQty = 0;
+    item.totalPrice = 0;
+    item.isOverridden = true;
+  }
+
+  restoreOriginalItem(item: RainbowOrderItem) {
+    if (item.originalItemName) {
+      item.name = item.originalItemName;
+    }
+    if (item.originalItemPrice) {
+      item.finalPrice = item.originalItemPrice;
+    }
+    item.deliveredQty = item.orderedQty || 1;
+    item.totalPrice = item.deliveredQty * item.finalPrice;
+    item.substitutionStatus = 'None';
+    item.isOutOfStock = false;
+    item.substituteItemName = undefined;
+    item.substituteItemPrice = undefined;
+  }
+
+  adjustItemQty(item: RainbowOrderItem, delta: number) {
+    const nextQty = Math.max(0, item.deliveredQty + delta);
+    item.deliveredQty = nextQty;
+    item.totalPrice = nextQty * item.finalPrice;
+    if (nextQty === 0) {
+      item.substitutionStatus = 'Removed';
+    } else if (item.substitutionStatus === 'Removed') {
+      item.substitutionStatus = 'None';
+    }
+    item.isOverridden = true;
+  }
+
+  getCalculatedSubtotal(): number {
+    return this.editableItems.reduce((acc, it) => {
+      if (it.substitutionStatus === 'Removed' || it.deliveredQty === 0) return acc;
+      return acc + (it.deliveredQty * it.finalPrice);
+    }, 0);
+  }
+
+  getCalculatedNetTotal(): number {
+    if (!this.selectedOrderForEdit) return 0;
+    const subtotal = this.getCalculatedSubtotal();
+    return Math.max(0, subtotal + (this.selectedOrderForEdit.deliveryFee || 0) + (this.selectedOrderForEdit.packagingFee || 0) - (this.selectedOrderForEdit.discount || 0));
+  }
+
+  getOriginalNetTotal(): number {
+    return this.selectedOrderForEdit ? this.selectedOrderForEdit.totalAmount : 0;
+  }
+
+  getTotalPriceDifference(): number {
+    return this.getCalculatedNetTotal() - this.getOriginalNetTotal();
+  }
+
+  saveOrderItemsEdit() {
+    if (!this.selectedOrderForEdit) return;
+
+    const success = this.workflowService.updateOrderItems(
+      this.selectedOrderForEdit.id,
+      this.editableItems,
+      this.currentUser,
+      this.editOrderNotes
+    );
+
+    if (success) {
+      // Sync selectedOrder if it is currently open in details modal
+      if (this.selectedOrder && this.selectedOrder.id === this.selectedOrderForEdit.id) {
+        const refreshed = this.workflowService.orders.find(o => o.id === this.selectedOrderForEdit?.id);
+        if (refreshed) {
+          this.selectedOrder = refreshed;
+        }
+      }
+
+      this.assignmentToast = `Order #${this.selectedOrderForEdit.id} items and substitutions updated successfully. New total: Rs. ${this.getCalculatedNetTotal().toFixed(2)}`;
+      setTimeout(() => this.assignmentToast = null, 4000);
+
+      if (this.activeEditModalRef) {
+        this.activeEditModalRef.close();
+      }
+    }
+  }
+
+  getItemSubstitutes(itemName: string): SpecificReplacementChoice[] {
+    const lower = (itemName || '').toLowerCase();
+    if (lower.includes('oil') || lower.includes('dalda') || lower.includes('ghee')) {
+      return this.suggestedSubstitutes['oil'] || [];
+    }
+    if (lower.includes('chicken') || lower.includes('shashlik') || lower.includes('k&n') || lower.includes('wing') || lower.includes('meat')) {
+      return this.suggestedSubstitutes['chicken'] || [];
+    }
+    if (lower.includes('milk') || lower.includes('olper') || lower.includes('dairy')) {
+      return this.suggestedSubstitutes['milk'] || [];
+    }
+    return [
+      { name: 'Rainbow Choice Premium Alternative', price: 950, sku: 'RBN-ALT-950', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80' }
+    ];
+  }
+
+  // =========================================================================
+  // REFUND & CANCELLATION APPROVAL METHODS
+  // =========================================================================
+  openRefundDialog(order: RainbowOrder, content: any) {
+    this.targetOrderForRefund = order;
+    this.refundAmount = order.totalAmount;
+    this.refundReason = '';
+    this.refundActionType = 'Refund';
+    this.refundError = null;
+    this.activeRefundModalRef = this.modalService.open(content, { centered: true, size: 'md' });
+  }
+
+  openCancelDialog(order: RainbowOrder, content: any) {
+    this.targetOrderForRefund = order;
+    this.refundAmount = order.totalAmount;
+    this.refundReason = '';
+    this.refundActionType = 'Cancel';
+    this.refundError = null;
+    this.activeRefundModalRef = this.modalService.open(content, { centered: true, size: 'md' });
+  }
+
+  confirmRefundOrCancel() {
+    if (!this.targetOrderForRefund) return;
+    if (!this.refundReason || this.refundReason.trim().length < 5) {
+      this.refundError = 'Please specify a valid operational reason (min 5 chars).';
+      return;
+    }
+
+    const result = this.workflowService.approveRefundOrCancel(
+      this.targetOrderForRefund.id,
+      this.refundAmount,
+      this.refundActionType,
+      this.refundReason,
+      this.currentUser
+    );
+
+    if (!result.success) {
+      this.refundError = result.message;
+      return;
+    }
+
+    this.assignmentToast = result.message;
+    setTimeout(() => this.assignmentToast = null, 4000);
+    if (this.activeRefundModalRef) {
+      this.activeRefundModalRef.close();
+    }
+  }
+
+  // =========================================================================
+  // TIME LOG & PRODUCTIVITY HELPERS
+  // =========================================================================
+  getOrderProductivity(orderId: string): DerivedProductivityMetrics {
+    return this.timeLogService.getOrderMetrics(orderId);
+  }
+
+  getOrderTimelineLogs(orderId: string): TimeLogRecord[] {
+    return this.timeLogService.logs.filter(l => l.orderId === orderId);
+  }
+
+  getPriorityBadgeClass(tier?: PriorityTier): string {
+    switch (tier) {
+      case 'P1': return 'bg-danger text-white border-0 shadow-sm';
+      case 'P2': return 'bg-warning-subtle text-warning-emphasis border border-warning';
+      case 'P3': return 'bg-primary-subtle text-primary border border-primary-subtle';
+      case 'P4': return 'bg-secondary-subtle text-secondary border';
+      default: return 'bg-light text-muted border';
+    }
   }
 
   copyOrderData(order: RainbowOrder) {
@@ -785,12 +1492,31 @@ export class OrdersListComponent implements OnInit {
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
-      case 'Pending': return 'bg-warning-subtle text-warning-emphasis';
-      case 'Accepted': return 'bg-primary-subtle text-primary';
-      case 'Dispatch': return 'bg-info-subtle text-info';
-      case 'Delivered': return 'bg-success-subtle text-success';
-      case 'Rejected': return 'bg-danger-subtle text-danger';
-      default: return 'bg-secondary-subtle text-secondary';
+      case 'Placed':
+      case 'Pending':
+        return 'bg-warning-subtle text-warning-emphasis border border-warning';
+      case 'Confirmed':
+        return 'bg-primary-subtle text-primary border border-primary-subtle';
+      case 'Picking':
+        return 'bg-info-subtle text-info border border-info-subtle';
+      case 'Packed':
+        return 'bg-indigo-subtle text-indigo border border-indigo-subtle';
+      case 'Accepted':
+        return 'bg-primary-subtle text-primary';
+      case 'Rider assigned':
+        return 'bg-teal-subtle text-teal border border-teal-subtle';
+      case 'Out for delivery':
+      case 'Dispatch':
+        return 'bg-info text-white shadow-sm';
+      case 'Delivered':
+        return 'bg-success text-white shadow-sm';
+      case 'Cancelled':
+      case 'Rejected':
+        return 'bg-danger text-white shadow-sm';
+      case 'Refunded':
+        return 'bg-secondary-subtle text-dark border';
+      default:
+        return 'bg-secondary-subtle text-secondary';
     }
   }
 
@@ -909,6 +1635,63 @@ export class OrdersListComponent implements OnInit {
     const cleanPhone = phone.startsWith('0') ? '92' + phone.substring(1) : phone;
     const msg = `Salam ${order.assignedRider.name},\nNew Order #${order.id} (${order.uniqueCode}) assigned for dispatch from ${order.branch}.\nCustomer: ${order.customer.name} (${order.customer.phone})\nAddress: ${order.customer.deliveryAddress}\nPayment: ${order.paymentType} - Total: Rs ${order.totalAmount}\nPlease deliver ASAP. Safe driving!`;
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+  }
+
+  // =========================================================================
+  // DISPATCHER QUEUE & QUICK VERIFICATION ACTIONS
+  // =========================================================================
+  targetOrderForDispatcher: RainbowOrder | null = null;
+  selectedDispatcherStaffId: string = '';
+  selectedStagingBay: string = '';
+  dispatcherReassignReason: string = 'Store queue workload balancing';
+  activeDispatcherModalRef: any = null;
+  stagingBays: string[] = [];
+
+  openReassignDispatcherModal(order: RainbowOrder, content: any) {
+    this.targetOrderForDispatcher = order;
+    const branchDispatchers = this.getBranchDispatchers(order);
+    this.selectedDispatcherStaffId = order.assignedDispatcher?.id || (branchDispatchers[0]?.id || '');
+    this.selectedStagingBay = '';
+    this.dispatcherReassignReason = 'Store queue workload balancing';
+    this.activeDispatcherModalRef = this.modalService.open(content, { centered: true, size: 'md' });
+  }
+
+  getBranchDispatchers(order: RainbowOrder | null): BranchStaff[] {
+    if (!order) return [];
+    return this.workflowService.getStoreDispatchers(order.branchCode);
+  }
+
+  confirmReassignDispatcher() {
+    if (!this.targetOrderForDispatcher) return;
+    const dispatchers = this.getBranchDispatchers(this.targetOrderForDispatcher);
+    const chosen = dispatchers.find(d => d.id === this.selectedDispatcherStaffId) || dispatchers[0];
+    if (!chosen) return;
+
+    const result = this.workflowService.reassignDispatcher(
+      this.targetOrderForDispatcher.id,
+      chosen,
+      '',
+      this.dispatcherReassignReason,
+      this.currentUser
+    );
+
+    this.assignmentToast = result.message;
+    setTimeout(() => this.assignmentToast = null, 4000);
+    if (this.activeDispatcherModalRef) {
+      this.activeDispatcherModalRef.close();
+    }
+  }
+
+  verifyAndQueueOrder(order: RainbowOrder) {
+    const result = this.workflowService.confirmAndQueueOrder(order.id, this.currentUser);
+    this.assignmentToast = result.message;
+    setTimeout(() => this.assignmentToast = null, 4000);
+  }
+
+  markOrderReadyToPick(order: RainbowOrder) {
+    const result = this.workflowService.markReadyToPick(order.id, this.currentUser);
+    this.assignmentToast = result.message;
+    setTimeout(() => this.assignmentToast = null, 4000);
   }
 }
 

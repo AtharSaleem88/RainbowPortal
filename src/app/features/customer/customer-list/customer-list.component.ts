@@ -1,4 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
+import { AuthenticationService } from '@core/services/auth.service';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
@@ -16,6 +17,8 @@ export class CustomerListComponent implements OnInit {
   title = 'Customer Directory & Wallet Management';
   customers: RainbowCustomer[] = RAINBOW_CUSTOMERS_LIST;
   branches: BranchOption[] = RAINBOW_BRANCH_OPTIONS;
+  authService = inject(AuthenticationService);
+  currentUser = this.authService.user;
 
   // Overview Stats (from Screenshot 1)
   stats = {
@@ -66,7 +69,18 @@ export class CustomerListComponent implements OnInit {
     this.updateVipCount();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(u => {
+      this.currentUser = u;
+      if (u?.role === 'Branch Manager') {
+        this.selectedBranch = 'Valencia';
+      }
+    });
+  }
+
+  get isBranchLocked(): boolean {
+    return this.currentUser?.role === 'Branch Manager';
+  }
 
   updateVipCount() {
     this.segmentCounts.vipCustomers = this.customers.filter(c => c.isVip).length;
