@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import type { ChartOptions } from '@common/apexchart.model';
@@ -39,8 +39,8 @@ import { AuthenticationService } from '@core/services/auth.service';
       height: 38px;
       transition: all 0.15s ease;
       background: #ffffff;
-      padding-left: 14px;
-      padding-right: 14px;
+      padding: 0 14px;
+      cursor: pointer;
 
       &:hover {
         border-color: #25aae1;
@@ -53,23 +53,48 @@ import { AuthenticationService } from '@core/services/auth.service';
         background: #ffffff;
       }
 
+      .date-capsule-icon {
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+      .date-field-wrap {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .date-arrow-sep {
+        padding: 0 10px;
+        user-select: none;
+      }
+
       .custom-date-input {
         color: #1e293b;
         font-size: 12px;
         font-weight: 600;
-        cursor: pointer;
+        cursor: pointer !important;
+        width: 88px;
+        text-align: center;
+        letter-spacing: 0.2px;
 
+        &::-webkit-datetime-edit,
+        &::-webkit-datetime-edit-fields-wrapper,
+        &::-webkit-datetime-edit-text,
+        &::-webkit-datetime-edit-month-field,
+        &::-webkit-datetime-edit-day-field,
+        &::-webkit-datetime-edit-year-field {
+          cursor: pointer !important;
+        }
+
+        /* Overlay the native indicator invisibly across input so any click opens calendar without duplicate icons */
         &::-webkit-calendar-picker-indicator {
-          cursor: pointer;
-          opacity: 0.65;
-          padding-left: 4px;
-          padding-right: 2px;
-          transition: opacity 0.15s ease, transform 0.15s ease;
-
-          &:hover {
-            opacity: 1;
-            transform: scale(1.1);
-          }
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          cursor: pointer !important;
         }
       }
     }
@@ -382,6 +407,25 @@ export class DashboardComponent implements OnInit {
   recentOrders: RainbowOrder[] = RAINBOW_ORDERS.slice(0, 6);
 
   isRefreshing = false;
+
+  @ViewChild('startDateInput') startDateInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('endDateInput') endDateInputRef?: ElementRef<HTMLInputElement>;
+
+  openStartDatePicker(): void {
+    try {
+      this.startDateInputRef?.nativeElement?.showPicker();
+    } catch {
+      this.startDateInputRef?.nativeElement?.focus();
+    }
+  }
+
+  openEndDatePicker(): void {
+    try {
+      this.endDateInputRef?.nativeElement?.showPicker();
+    } catch {
+      this.endDateInputRef?.nativeElement?.focus();
+    }
+  }
 
   // Mobile / Small Screen Row Expansion
   expandedRowIds = new Set<string | number>();
