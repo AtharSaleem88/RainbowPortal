@@ -35,12 +35,12 @@ import { AuthenticationService } from '@core/services/auth.service';
       transition: all 0.2s ease-in-out;
     }
 
-    .calendar-picker-box {
+    .date-range-capsule {
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       height: 38px;
-      cursor: pointer;
       transition: all 0.15s ease;
+      background: #ffffff;
 
       &:hover {
         border-color: #25aae1;
@@ -50,6 +50,13 @@ import { AuthenticationService } from '@core/services/auth.service';
       &:focus-within {
         border-color: #2e3192;
         box-shadow: 0 0 0 3px rgba(46, 49, 146, 0.1);
+      }
+
+      .date-field {
+        transition: color 0.15s ease;
+        &:hover {
+          color: #2e3192 !important;
+        }
       }
     }
 
@@ -360,9 +367,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   // Recent Live Store Orders
   recentOrders: RainbowOrder[] = RAINBOW_ORDERS.slice(0, 6);
 
-  // Calendar Date Range Picker
-  @ViewChild('dateRangeInput') dateRangeInput!: ElementRef<HTMLInputElement>;
-  private fpInstance: FlatpickrInstance | null = null;
+  // 2-Dates Calendar Pickers
+  @ViewChild('startDateInput') startDateInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('endDateInput') endDateInput!: ElementRef<HTMLInputElement>;
+  private startFp: FlatpickrInstance | null = null;
+  private endFp: FlatpickrInstance | null = null;
   isRefreshing = false;
 
   // Mobile / Small Screen Row Expansion
@@ -387,43 +396,73 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   paymentChart!: Partial<ChartOptions>;
 
   ngAfterViewInit(): void {
-    this.initDateRangePicker();
+    this.initDatePickers();
   }
 
   ngOnDestroy(): void {
-    if (this.fpInstance) {
-      this.fpInstance.destroy();
-      this.fpInstance = null;
+    if (this.startFp) {
+      this.startFp.destroy();
+      this.startFp = null;
+    }
+    if (this.endFp) {
+      this.endFp.destroy();
+      this.endFp = null;
     }
   }
 
-  private initDateRangePicker(): void {
-    if (!this.dateRangeInput?.nativeElement) return;
-
-    this.fpInstance = flatpickr(this.dateRangeInput.nativeElement, {
-      mode: 'range',
-      dateFormat: 'd M, Y',
-      defaultDate: [this.startDate, this.endDate],
-      allowInput: false,
-      showMonths: 1,
-      onChange: (selectedDates: Date[]) => {
-        if (selectedDates && selectedDates.length === 2) {
-          const start = this.formatDateToYMD(selectedDates[0]);
-          const end = this.formatDateToYMD(selectedDates[1]);
-          this.startDate = start;
-          this.endDate = end;
-          this.selectedDatePreset = 'custom';
-          this.displayDateLabel = `${this.formatDisplayDate(selectedDates[0])} - ${this.formatDisplayDate(selectedDates[1])}`;
-          this.updateStats();
-          this.initAllCharts();
+  private initDatePickers(): void {
+    if (this.startDateInput?.nativeElement) {
+      this.startFp = flatpickr(this.startDateInput.nativeElement, {
+        dateFormat: 'd M, Y',
+        defaultDate: this.startDate,
+        maxDate: this.endDate,
+        allowInput: false,
+        onChange: (selectedDates: Date[]) => {
+          if (selectedDates && selectedDates.length > 0) {
+            this.startDate = this.formatDateToYMD(selectedDates[0]);
+            if (this.endFp) {
+              this.endFp.set('minDate', this.startDate);
+            }
+            this.selectedDatePreset = 'custom';
+            this.displayDateLabel = `${this.formatDisplayDate(selectedDates[0])} - ${this.formatDisplayDate(new Date(this.endDate))}`;
+            this.updateStats();
+            this.initAllCharts();
+          }
         }
-      }
-    }) as FlatpickrInstance;
+      }) as FlatpickrInstance;
+    }
+
+    if (this.endDateInput?.nativeElement) {
+      this.endFp = flatpickr(this.endDateInput.nativeElement, {
+        dateFormat: 'd M, Y',
+        defaultDate: this.endDate,
+        minDate: this.startDate,
+        allowInput: false,
+        onChange: (selectedDates: Date[]) => {
+          if (selectedDates && selectedDates.length > 0) {
+            this.endDate = this.formatDateToYMD(selectedDates[0]);
+            if (this.startFp) {
+              this.startFp.set('maxDate', this.endDate);
+            }
+            this.selectedDatePreset = 'custom';
+            this.displayDateLabel = `${this.formatDisplayDate(new Date(this.startDate))} - ${this.formatDisplayDate(selectedDates[0])}`;
+            this.updateStats();
+            this.initAllCharts();
+          }
+        }
+      }) as FlatpickrInstance;
+    }
   }
 
-  openCalendar(): void {
-    if (this.fpInstance) {
-      this.fpInstance.open();
+  openStartPicker(): void {
+    if (this.startFp) {
+      this.startFp.open();
+    }
+  }
+
+  openEndPicker(): void {
+    if (this.endFp) {
+      this.endFp.open();
     }
   }
 
@@ -519,8 +558,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.displayDateLabel = 'This Month (October 2026)';
     }
 
-    if (this.fpInstance && preset !== 'custom') {
-      this.fpInstance.setDate([this.startDate, this.endDate], false);
+    if (this.startFp && this.endFp && preset !== 'custom') {
+      this.startFp.setDate(this.startDate, false);
+      this.endFp.setDate(this.endDate, false);
+      this.startFp.set('maxDate', this.endDate);
+      this.endFp.set('minDate', this.startDate);
     }
     this.updateStats();
     this.initAllCharts();

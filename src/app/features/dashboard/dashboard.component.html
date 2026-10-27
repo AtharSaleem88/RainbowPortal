@@ -14,9 +14,9 @@
         </div>
       } @else {
         <div class="dropdown" ngbDropdown>
-          <button type="button" class="btn btn-branch-pill d-flex align-items-center justify-content-between" 
+          <button type="button" class="btn btn-branch-pill d-flex align-items-center justify-content-between px-3.5" 
                   ngbDropdownToggle id="branchSelectDropdown">
-            <div class="d-flex align-items-center gap-2 overflow-hidden text-truncate me-2">
+            <div class="d-flex align-items-center gap-2.5 overflow-hidden text-truncate me-2">
               <iconify-icon [icon]="selectedBranchId === 'all' ? 'solar:buildings-2-bold' : 'solar:shop-2-bold'" class="fs-18 text-primary flex-shrink-0"></iconify-icon>
               <span class="text-truncate">{{ currentSelectedBranch.name }}</span>
             </div>
@@ -73,17 +73,34 @@
                 (click)="setDatePreset('this_month')">This Month</button>
       </div>
 
-      <!-- Interactive Calendar Date Range Picker -->
-      <div class="calendar-picker-box d-flex align-items-center bg-white px-2.5 py-1"
-           (click)="openCalendar()"
-           title="Click to open calendar and choose dates">
-        <iconify-icon icon="solar:calendar-date-bold" class="text-primary fs-18 me-2 flex-shrink-0"></iconify-icon>
-        <input #dateRangeInput type="text"
-               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent cursor-pointer"
-               style="width: 200px;"
-               placeholder="Select date range..."
-               readonly>
-        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-muted fs-13 ms-1 flex-shrink-0"></iconify-icon>
+      <!-- Custom 2-Dates Range Bar with Spacious Layout & Calendar Pickers -->
+      <div class="date-range-capsule d-flex align-items-center bg-white border rounded-2 px-3 py-1"
+           style="height: 38px;">
+        <!-- Calendar Lead Icon (cleanly padded, not touching any border) -->
+        <iconify-icon icon="solar:calendar-date-bold" class="fs-17 text-primary me-2.5 flex-shrink-0" (click)="openStartPicker()" style="cursor: pointer;"></iconify-icon>
+
+        <!-- Start Date Input -->
+        <input #startDateInput type="text"
+               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent cursor-pointer text-center date-field"
+               style="width: 96px;"
+               placeholder="Start Date"
+               readonly
+               (click)="openStartPicker()"
+               title="Click to select Start Date">
+
+        <!-- Arrow Divider with comfortable breathing room -->
+        <div class="date-divider d-flex align-items-center px-2 flex-shrink-0">
+          <iconify-icon icon="solar:arrow-right-linear" class="fs-13 text-muted"></iconify-icon>
+        </div>
+
+        <!-- End Date Input -->
+        <input #endDateInput type="text"
+               class="form-control form-control-sm border-0 p-0 fs-12 text-dark fw-semibold shadow-none bg-transparent cursor-pointer text-center date-field"
+               style="width: 96px;"
+               placeholder="End Date"
+               readonly
+               (click)="openEndPicker()"
+               title="Click to select End Date">
       </div>
 
       <!-- Refresh Action Button -->
