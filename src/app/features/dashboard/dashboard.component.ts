@@ -1,5 +1,7 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, AfterViewInit, OnDestroy, ElementRef, ViewChild, inject } from '@angular/core';
+import flatpickr from 'flatpickr';
+import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import type { ChartOptions } from '@common/apexchart.model';
@@ -31,6 +33,47 @@ import { AuthenticationService } from '@core/services/auth.service';
       border-radius: 14px;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.02);
       transition: all 0.2s ease-in-out;
+    }
+
+    .calendar-picker-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      height: 38px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        border-color: #25aae1;
+        background: #f8fafc;
+      }
+
+      &:focus-within {
+        border-color: #2e3192;
+        box-shadow: 0 0 0 3px rgba(46, 49, 146, 0.1);
+      }
+    }
+
+    .refresh-btn {
+      border: 1px solid #cbd5e1;
+      color: #2e3192;
+      background: #ffffff;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #eef2ff;
+        border-color: #2e3192;
+        color: #2e3192;
+      }
+    }
+
+    .spin-refresh {
+      animation: spin 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .btn-branch-pill {
@@ -219,7 +262,7 @@ import { AuthenticationService } from '@core/services/auth.service';
     }
   `]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'OPERATIONS DASHBOARD';
 
   authService = inject(AuthenticationService);
@@ -317,6 +360,11 @@ export class DashboardComponent implements OnInit {
   // Recent Live Store Orders
   recentOrders: RainbowOrder[] = RAINBOW_ORDERS.slice(0, 6);
 
+  // Calendar Date Range Picker
+  @ViewChild('dateRangeInput') dateRangeInput!: ElementRef<HTMLInputElement>;
+  private fpInstance: FlatpickrInstance | null = null;
+  isRefreshing = false;
+
   // Mobile / Small Screen Row Expansion
   expandedRowIds = new Set<string | number>();
 
@@ -337,6 +385,59 @@ export class DashboardComponent implements OnInit {
   heatMapChart!: Partial<ChartOptions>;
   deviceChart!: Partial<ChartOptions>;
   paymentChart!: Partial<ChartOptions>;
+
+  ngAfterViewInit(): void {
+    this.initDateRangePicker();
+  }
+
+  ngOnDestroy(): void {
+    if (this.fpInstance) {
+      this.fpInstance.destroy();
+      this.fpInstance = null;
+    }
+  }
+
+  private initDateRangePicker(): void {
+    if (!this.dateRangeInput?.nativeElement) return;
+
+    this.fpInstance = flatpickr(this.dateRangeInput.nativeElement, {
+      mode: 'range',
+      dateFormat: 'd M, Y',
+      defaultDate: [this.startDate, this.endDate],
+      allowInput: false,
+      showMonths: 1,
+      onChange: (selectedDates: Date[]) => {
+        if (selectedDates && selectedDates.length === 2) {
+          const start = this.formatDateToYMD(selectedDates[0]);
+          const end = this.formatDateToYMD(selectedDates[1]);
+          this.startDate = start;
+          this.endDate = end;
+          this.selectedDatePreset = 'custom';
+          this.displayDateLabel = `${this.formatDisplayDate(selectedDates[0])} - ${this.formatDisplayDate(selectedDates[1])}`;
+          this.updateStats();
+          this.initAllCharts();
+        }
+      }
+    }) as FlatpickrInstance;
+  }
+
+  openCalendar(): void {
+    if (this.fpInstance) {
+      this.fpInstance.open();
+    }
+  }
+
+  private formatDateToYMD(d: Date): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private formatDisplayDate(d: Date): string {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
 
   ngOnInit(): void {
     this.applyBranchScoping(this.authService.user);
@@ -416,6 +517,10 @@ export class DashboardComponent implements OnInit {
       this.startDate = '2026-10-01';
       this.endDate = '2026-10-16';
       this.displayDateLabel = 'This Month (October 2026)';
+    }
+
+    if (this.fpInstance && preset !== 'custom') {
+      this.fpInstance.setDate([this.startDate, this.endDate], false);
     }
     this.updateStats();
     this.initAllCharts();
@@ -734,8 +839,12 @@ export class DashboardComponent implements OnInit {
   }
 
   refreshStats(): void {
+    this.isRefreshing = true;
     this.updateStats();
     this.initAllCharts();
+    setTimeout(() => {
+      this.isRefreshing = false;
+    }, 600);
   }
 
   getSelectedBranchShortName(): string {

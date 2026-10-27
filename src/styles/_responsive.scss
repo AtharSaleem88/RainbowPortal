@@ -94,6 +94,16 @@
       margin-bottom: 12px !important;
     }
     .performance-chart-description { display: block; font-size: 10px; line-height: 1.4; }
+    .calendar-picker-box {
+      width: 100% !important;
+      max-width: none !important;
+      justify-content: space-between;
+
+      input {
+        width: 100% !important;
+        flex: 1 1 auto;
+      }
+    }
     .op-card .d-flex:has(> input[type="date"]) {
       flex-wrap: wrap;
       height: auto !important;
