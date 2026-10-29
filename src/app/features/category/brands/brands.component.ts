@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import { NgbModal, NgbModalModule, NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { BRANDS, Brand, MASTER_CATEGORIES, SUB_CATEGORIES, MasterCategory, SubCategory, BrandCategoryMapping } from '../data';
 import { BrandMetricsComponent } from './components/brand-metrics/brand-metrics.component';
+import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed-select/themed-select.component';
 
 @Component({
   selector: 'app-brand-list',
@@ -19,6 +20,7 @@ import { BrandMetricsComponent } from './components/brand-metrics/brand-metrics.
     NgbModalModule,
     NgbPaginationModule,
     NgbTooltipModule,
+    ThemedSelectComponent,
     BrandMetricsComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -26,6 +28,21 @@ import { BrandMetricsComponent } from './components/brand-metrics/brand-metrics.
   styleUrl: './brands.component.scss',
 })
 export class BrandsComponent implements OnInit {
+  pageSizeOptions: ThemedSelectOption[] = [10, 20, 50].map(size => ({ value: size, label: `${size} / pg` }));
+  sortOptions: ThemedSelectOption[] = [
+    { value: 'skus_desc', label: 'Products: High to Low' },
+    { value: 'skus_asc', label: 'Products: Low to High' },
+    { value: 'name_asc', label: 'Name: A to Z' },
+  ];
+  statusOptions: ThemedSelectOption[] = [
+    { value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },
+  ];
+  get categoryOptions(): ThemedSelectOption[] {
+    return this.masterCategories.map(category => ({ value: category.id, label: category.name }));
+  }
+  get categoryFilterOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'All Categories' }, ...this.categoryOptions];
+  }
   title = 'Supermarket Brands & Labels';
   private modalService = inject(NgbModal);
 

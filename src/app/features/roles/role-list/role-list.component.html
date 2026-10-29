@@ -201,7 +201,7 @@
             <span>{{ currentBranchDisplayName }}</span>
           </div>
         } @else {
-          <select [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
+          <select appThemedDropdown [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
             <option value="all">All Branches</option>
             @for (b of branches; track b.id) {
               <option [value]="b.id">{{ b.name }}</option>
@@ -213,7 +213,7 @@
       <!-- Duty Status Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Duty Status:</span>
-        <select [(ngModel)]="selectedStatus" class="filter-dropdown" (change)="currentPage = 1">
+        <select appThemedDropdown [(ngModel)]="selectedStatus" class="filter-dropdown" (change)="currentPage = 1">
           <option value="all">All Statuses</option>
           <option value="Active">Active / On Duty</option>
           <option value="On Delivery">On Delivery</option>
@@ -474,7 +474,7 @@
       <!-- Staff Role -->
       <div class="col-md-6">
         <label class="form-label fs-12 fw-semibold text-dark mb-1">Staff Role <span class="text-danger">*</span></label>
-        <select [(ngModel)]="formStaff.role" class="form-select form-select-sm shadow-none">
+        <select appThemedDropdown [(ngModel)]="formStaff.role" class="form-select form-select-sm shadow-none">
           <option value="Dispatcher">Store Dispatcher (Packing &amp; Queue App)</option>
           <option value="Rider">Delivery Rider (Fleet)</option>
           <option value="Moderator">Store Moderator (Customer Service)</option>
@@ -485,7 +485,7 @@
       <!-- Store Branch -->
       <div class="col-md-6">
         <label class="form-label fs-12 fw-semibold text-dark mb-1">Assigned Branch <span class="text-danger">*</span></label>
-        <select [(ngModel)]="formStaff.branchId" (change)="onBranchChange()" class="form-select form-select-sm shadow-none">
+        <select appThemedDropdown [(ngModel)]="formStaff.branchId" (change)="onBranchChange()" class="form-select form-select-sm shadow-none">
           @for (b of branches; track b.id) {
             <option [value]="b.id">{{ b.name }} ({{ b.city }})</option>
           }
@@ -513,7 +513,7 @@
       <!-- Shift Timing -->
       <div class="col-md-6">
         <label class="form-label fs-12 fw-semibold text-dark mb-1">Operating Shift</label>
-        <select [(ngModel)]="formStaff.shift" class="form-select form-select-sm shadow-none">
+        <select appThemedDropdown [(ngModel)]="formStaff.shift" class="form-select form-select-sm shadow-none">
           <option value="Morning (08:00 AM - 04:00 PM)">Morning (08:00 AM - 04:00 PM)</option>
           <option value="Evening (04:00 PM - 12:00 AM)">Evening (04:00 PM - 12:00 AM)</option>
           <option value="Night (12:00 AM - 08:00 AM)">Night (12:00 AM - 08:00 AM)</option>
@@ -524,7 +524,7 @@
       <!-- Duty Status -->
       <div class="col-md-6">
         <label class="form-label fs-12 fw-semibold text-dark mb-1">Duty Status</label>
-        <select [(ngModel)]="formStaff.status" class="form-select form-select-sm shadow-none">
+        <select appThemedDropdown [(ngModel)]="formStaff.status" class="form-select form-select-sm shadow-none">
           <option value="Active">Active / On Duty</option>
           <option value="On Delivery">On Delivery</option>
           <option value="Off Duty">Off Duty</option>
@@ -540,7 +540,7 @@
             <div class="row g-2">
               <div class="col-md-4">
                 <label class="form-label fs-11 text-muted mb-0.5">Vehicle Type</label>
-                <select [(ngModel)]="formStaff.riderDetails.vehicleType" class="form-select form-select-sm shadow-none">
+                <select appThemedDropdown [(ngModel)]="formStaff.riderDetails.vehicleType" class="form-select form-select-sm shadow-none">
                   <option value="Motorbike">Motorbike</option>
                   <option value="Cargo Van">Cargo Van</option>
                   <option value="Electric Scooter">Electric Scooter</option>
@@ -790,7 +790,7 @@
 
     <div class="mb-3">
       <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Event Type Checkpoint</label>
-      <select [(ngModel)]="correctionEventType" class="form-select form-select-sm">
+      <select appThemedDropdown [(ngModel)]="correctionEventType" class="form-select form-select-sm">
         <option value="pick_started">pick_started</option>
         <option value="pick_completed">pick_completed</option>
         <option value="ready_marked">ready_marked</option>
@@ -806,7 +806,7 @@
 
     <div class="mb-3">
       <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Mandatory Authorization Reason</label>
-      <select [(ngModel)]="correctionReason" class="form-select form-select-sm">
+      <select appThemedDropdown [(ngModel)]="correctionReason" class="form-select form-select-sm">
         <option value="Barcode scanner malfunction / hardware latency">Barcode scanner malfunction / hardware latency</option>
         <option value="Store Wi-Fi / handheld terminal offline delay">Store Wi-Fi / handheld terminal offline delay</option>
         <option value="Manual handover verification at dispatch counter">Manual handover verification at dispatch counter</option>

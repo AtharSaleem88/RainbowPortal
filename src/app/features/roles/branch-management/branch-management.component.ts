@@ -7,6 +7,7 @@ import { RainbowBranch } from '@core/models/workflow.model';
 import { WorkflowConfigService } from '@core/services/workflow-config.service';
 import { AuthenticationService } from '@core/services/auth.service';
 import { showSaveSuccess, showSaveValidation } from '@shared/utils/save-alert';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-branch-management',
@@ -17,7 +18,8 @@ import { showSaveSuccess, showSaveValidation } from '@shared/utils/save-alert';
     RouterLink,
     NgbModalModule,
     NgbPaginationModule,
-    NgbTooltipModule
+    NgbTooltipModule,
+    ThemedNativeSelectDirective
   ],
   templateUrl: './branch-management.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

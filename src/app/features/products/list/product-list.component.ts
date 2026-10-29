@@ -8,6 +8,7 @@ import { ProductList, ProductType, RAINBOW_SUPERSTORE_BRANCHES, BranchStock } fr
 import { NgbDropdownModule, NgbPaginationModule, NgbModal, NgbModalModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterLink } from '@angular/router';
 import { ProductMetricsComponent } from './components/product-metrics/product-metrics.component';
+import { ThemedSelectComponent, ThemedSelectOption } from '../themed-select/themed-select.component';
 
 @Component({
   selector: 'app-list',
@@ -20,7 +21,8 @@ import { ProductMetricsComponent } from './components/product-metrics/product-me
     NgbModalModule,
     NgbTooltipModule,
     RouterLink,
-    ProductMetricsComponent
+    ProductMetricsComponent,
+    ThemedSelectComponent
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
@@ -39,7 +41,6 @@ export class ProductListComponent implements OnInit {
   selectedCategory: string = 'all';
   selectedSubCategory: string = 'all';
   selectedBrand: string = 'all';
-  selectedStorage: string = 'all';
   stockFilter: 'all' | 'in_stock' | 'out_of_stock' = 'all';
   searchTerm: string = '';
   sortBy: 'stock_desc' | 'stock_asc' | 'price_desc' | 'price_asc' | 'name_asc' = 'stock_desc';
@@ -125,6 +126,26 @@ export class ProductListComponent implements OnInit {
     return [...new Set(this.products.map(p => p.brand).filter(Boolean))].sort();
   }
 
+  get branchOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'Consolidated (All 10 Superstores)' }, ...this.branches.map(branch => ({ value: branch.id, label: branch.name }))];
+  }
+  get categoryOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'All Categories' }, ...this.categories.map(name => ({ value: name, label: name }))];
+  }
+  get subCategoryOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'All Sub Categories' }, ...this.availableSubCategories.map(name => ({ value: name, label: name }))];
+  }
+  get brandOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'All Brands' }, ...this.brands.map(name => ({ value: name, label: name }))];
+  }
+  sortOptions: ThemedSelectOption[] = [
+    { value: 'stock_desc', label: 'Stock: High to Low' },
+    { value: 'stock_asc', label: 'Stock: Low to High' },
+    { value: 'price_desc', label: 'Price: High to Low' },
+    { value: 'price_asc', label: 'Price: Low to High' },
+    { value: 'name_asc', label: 'Name: A to Z' },
+  ];
+
   // Filtered products
   get filteredProducts(): ProductType[] {
     const term = this.searchTerm.trim().toLowerCase();
@@ -142,7 +163,6 @@ export class ProductListComponent implements OnInit {
       const matchesCategory = this.selectedCategory === 'all' || item.category === this.selectedCategory;
       const matchesSubCategory = this.selectedSubCategory === 'all' || item.subCategory === this.selectedSubCategory;
       const matchesBrand = this.selectedBrand === 'all' || item.brand === this.selectedBrand;
-      const matchesStorage = this.selectedStorage === 'all' || item.storageType === this.selectedStorage;
 
       let matchesStock = true;
       if (this.stockFilter === 'in_stock') {
@@ -157,7 +177,7 @@ export class ProductListComponent implements OnInit {
         matchesBranch = !!branchStock && branchStock.inStock;
       }
 
-      return matchesSearch && matchesCategory && matchesSubCategory && matchesBrand && matchesStock && matchesBranch && matchesStorage;
+      return matchesSearch && matchesCategory && matchesSubCategory && matchesBrand && matchesStock && matchesBranch;
     });
 
     result = [...result].sort((a, b) => {
@@ -268,7 +288,6 @@ export class ProductListComponent implements OnInit {
     this.selectedCategory = 'all';
     this.selectedSubCategory = 'all';
     this.selectedBrand = 'all';
-    this.selectedStorage = 'all';
     this.stockFilter = 'all';
     this.sortBy = 'stock_desc';
     this.currentPage = 1;

@@ -92,7 +92,7 @@
           }
         </div>
 
-        <select [ngModel]="pageSize" (ngModelChange)="pageSize = $event; currentPage = 1"
+        <select appThemedDropdown [ngModel]="pageSize" (ngModelChange)="pageSize = $event; currentPage = 1"
                 class="form-select page-select-input shadow-none" title="Rows per page">
           <option [ngValue]="8">8 / page</option>
           <option [ngValue]="16">16 / page</option>
@@ -114,7 +114,7 @@
             <span>{{ currentBranchDisplayName }}</span>
           </div>
         } @else {
-          <select [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
+          <select appThemedDropdown [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
             @for (b of branches; track b.id) {
               <option [value]="b.id">{{ b.name }}</option>
             }
@@ -125,7 +125,7 @@
       <!-- Reason Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Return Reason:</span>
-        <select [(ngModel)]="selectedReason" class="filter-dropdown" (change)="currentPage = 1">
+        <select appThemedDropdown [(ngModel)]="selectedReason" class="filter-dropdown" (change)="currentPage = 1">
           @for (r of reasons; track r) {
             <option [value]="r">{{ r }}</option>
           }
@@ -135,7 +135,7 @@
       <!-- Refund Channel Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Refund Destination:</span>
-        <select [(ngModel)]="selectedRefundChannel" class="filter-dropdown" (change)="currentPage = 1">
+        <select appThemedDropdown [(ngModel)]="selectedRefundChannel" class="filter-dropdown" (change)="currentPage = 1">
           <option value="all">All Channels</option>
           <option value="Rainbow Wallet">Rainbow Wallet</option>
           <option value="Original Payment (Cash/COD)">Original Payment</option>

@@ -86,87 +86,54 @@
         </div>
 
         <!-- Page Size Selector -->
-        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
-          <option [ngValue]="10">10 / page</option>
-          <option [ngValue]="20">20 / page</option>
-          <option [ngValue]="50">50 / page</option>
-        </select>
+        <div class="page-size-dropdown" ngbDropdown>
+          <button type="button" class="page-size-trigger" ngbDropdownToggle aria-label="Products per page">
+            <span>{{ pageSize }} / page</span>
+            <iconify-icon icon="solar:alt-arrow-down-linear" aria-hidden="true"></iconify-icon>
+          </button>
+          <div class="page-size-menu" ngbDropdownMenu aria-label="Products per page">
+            @for (size of [10, 20, 50]; track size) {
+              <button type="button" ngbDropdownItem class="page-size-option" [class.selected]="pageSize === size" (click)="onPageSizeChange(size)">
+                <span>{{ size }} / page</span>
+                @if (pageSize === size) { <iconify-icon icon="solar:check-circle-bold" aria-hidden="true"></iconify-icon> }
+              </button>
+            }
+          </div>
+        </div>
       </div>
 
     </div>
 
     <!-- Secondary Filter Bar: Branch, Category, Sub Category, Brand, Sort & Reset -->
-    <div class="filter-bar-strip d-flex flex-wrap align-items-center gap-2 gap-sm-3 mt-3 rounded-2">
+    <div class="filter-bar-strip product-filter-bar mt-3 rounded-2">
       
       <!-- Branch Selector -->
       <div class="filter-control-wrap">
-        <span class="filter-title">Branch:</span>
-        <select [(ngModel)]="selectedBranchId" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 200px; max-width: 260px;">
-          <option value="all">Consolidated (All 10 Superstores)</option>
-          @for(branch of branches; track branch.id){
-            <option [value]="branch.id">{{ branch.name }}</option>
-          }
-        </select>
+        <app-themed-select ariaLabel="Branch" [options]="branchOptions" [(ngModel)]="selectedBranchId" (ngModelChange)="onFilterChange()" />
       </div>
 
       <!-- Category Selector -->
       <div class="filter-control-wrap">
-        <span class="filter-title">Category:</span>
-        <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="form-select filter-dropdown shadow-none" style="min-width: 160px;">
-          <option value="all">All Categories</option>
-          @for(cat of categories; track cat){
-            <option [value]="cat">{{ cat }}</option>
-          }
-        </select>
+        <app-themed-select ariaLabel="Category" [options]="categoryOptions" [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()" />
       </div>
 
       <!-- Sub Category Selector -->
       <div class="filter-control-wrap">
-        <span class="filter-title">Sub Category:</span>
-        <select [(ngModel)]="selectedSubCategory" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
-          <option value="all">All Sub Categories</option>
-          @for(sub of availableSubCategories; track sub){
-            <option [value]="sub">{{ sub }}</option>
-          }
-        </select>
+        <app-themed-select ariaLabel="Sub category" [options]="subCategoryOptions" [(ngModel)]="selectedSubCategory" (ngModelChange)="onFilterChange()" />
       </div>
 
       <!-- Brand Selector -->
       <div class="filter-control-wrap">
-        <span class="filter-title">Brand:</span>
-        <select [(ngModel)]="selectedBrand" (change)="onFilterChange()" class="form-select filter-dropdown shadow-none" style="min-width: 160px;">
-          <option value="all">All Brands</option>
-          @for(b of brands; track b){
-            <option [value]="b">{{ b }}</option>
-          }
-        </select>
-      </div>
-
-      <!-- Storage Classification Filter -->
-      <div class="filter-control-wrap">
-        <span class="filter-title">Storage:</span>
-        <select [(ngModel)]="selectedStorage" (change)="currentPage = 1" class="form-select filter-dropdown shadow-none" style="min-width: 140px;">
-          <option value="all">All Storage</option>
-          <option value="Freezed">Freezed (-18°C)</option>
-          <option value="Chilled">Chilled (0-4°C)</option>
-          <option value="Ambient">Ambient</option>
-        </select>
+        <app-themed-select ariaLabel="Brand" [options]="brandOptions" [(ngModel)]="selectedBrand" (ngModelChange)="onFilterChange()" />
       </div>
 
       <!-- Sort By Dropdown -->
       <div class="filter-control-wrap">
-        <span class="filter-title">Sort:</span>
-        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
-          <option value="stock_desc">Stock: High to Low</option>
-          <option value="stock_asc">Stock: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="name_asc">Name: A to Z</option>
-        </select>
+        <app-themed-select ariaLabel="Sort products" [options]="sortOptions" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()" />
       </div>
 
       <!-- Reset Filters Button -->
-      <button type="button" class="btn btn-sm btn-light border text-muted fs-12 ms-auto d-inline-flex align-items-center gap-1.5 px-2.5 py-1 cursor-pointer btn-reset-filters"
+      <button type="button" class="btn btn-sm btn-light border text-muted fs-12 d-inline-flex align-items-center gap-1.5 px-2.5 py-1 cursor-pointer btn-reset-filters"
               (click)="resetAllFilters()">
         <iconify-icon icon="solar:restart-linear" class="fs-14"></iconify-icon>
         <span>Reset Filters</span>
@@ -196,11 +163,11 @@
 
   <!-- Products Table (Order: Product, Barcode, Category, Sub Category, Brand, Price, Stock, Actions) -->
   <div class="table-responsive">
-    <table class="table table-clean table-hover align-middle mb-0">
+    <table class="table table-clean product-table table-hover align-middle mb-0">
       <thead>
         <tr>
-          <!-- Expand/Collapse Control Column: Visible only on < 992px -->
-          <th class="dtr-control-col d-lg-none" style="width: 36px;"></th>
+          <!-- Expand/Collapse Control Column: Visible below 1400px -->
+          <th class="dtr-control-col d-xxl-none" style="width: 36px;"></th>
 
           <th style="width: 38px;" class="text-center">
             <div class="form-check m-0 d-flex justify-content-center">
@@ -209,15 +176,14 @@
                      (change)="toggleSelectAll($event)">
             </div>
           </th>
-          <th style="min-width: 180px;">Product</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Barcode</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 120px;">Category</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 120px;">Sub Category</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 110px;">Brand</th>
-          <th class="d-none d-md-table-cell" style="min-width: 90px;">Price</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 100px;">Storage</th>
-          <th class="d-none d-lg-table-cell" style="min-width: 140px;">Branch Stock</th>
-          <th class="d-none d-lg-table-cell text-end" style="width: 90px;">Actions</th>
+          <th class="product-name-column">Product</th>
+          <th class="d-none d-xxl-table-cell">Barcode</th>
+          <th class="d-none d-lg-table-cell">Category</th>
+          <th class="d-none d-xxl-table-cell">Sub Category</th>
+          <th class="d-none d-xxl-table-cell">Brand</th>
+          <th class="d-none d-md-table-cell product-price-column">Price</th>
+          <th class="d-none d-lg-table-cell">Branch Stock</th>
+          <th class="d-none d-lg-table-cell text-end product-actions-column">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -225,7 +191,7 @@
           <tr class="cat-row" [class.table-light]="isSelected(item.id)" [class.dtr-row-expanded]="isRowExpanded(item.id)">
             
             <!-- Mobile Expand Toggle (+) / (-) -->
-            <td class="dtr-control-col d-lg-none text-center">
+            <td class="dtr-control-col d-xxl-none text-center">
               <button type="button" class="dtr-control-btn"
                       [class.expanded]="isRowExpanded(item.id)"
                       (click)="toggleRowExpand(item.id); $event.stopPropagation()"
@@ -261,7 +227,7 @@
             </td>
 
             <!-- 2. Barcode (Desktop) -->
-            <td class="d-none d-lg-table-cell">
+            <td class="d-none d-xxl-table-cell">
               <span class="badge bg-light text-secondary border font-monospace fs-11" [title]="'Barcode: ' + (item.barcode || item.sku)">
                 {{ item.barcode || item.sku }}
               </span>
@@ -275,37 +241,20 @@
             </td>
 
             <!-- 4. Sub Category (Desktop) -->
-            <td class="d-none d-lg-table-cell">
+            <td class="d-none d-xxl-table-cell">
               <span class="text-dark fs-12 fw-medium d-block text-truncate" [title]="item.subCategory">
                 {{ item.subCategory || '—' }}
               </span>
             </td>
 
             <!-- 5. Brand (Desktop) -->
-            <td class="d-none d-lg-table-cell">
+            <td class="d-none d-xxl-table-cell">
               <span class="fw-semibold text-dark fs-13 d-block">{{ item.brand }}</span>
             </td>
 
             <!-- 6. Price (Desktop / Tablet) -->
             <td class="d-none d-md-table-cell">
               <span class="text-dark fw-bold fs-14 font-jost">Rs. {{ (item.discountPrice || item.sellingPrice || item.price) | number }}</span>
-            </td>
-
-            <!-- 6.5 Storage Classification (Desktop) -->
-            <td class="d-none d-lg-table-cell">
-              @if (item.storageType === 'Freezed') {
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11 fw-semibold">
-                  <iconify-icon icon="solar:snowflake-bold" class="align-middle me-1"></iconify-icon>Freezed
-                </span>
-              } @else if (item.storageType === 'Chilled') {
-                <span class="badge bg-info-subtle text-info border border-info-subtle fs-11 fw-semibold">
-                  <iconify-icon icon="solar:temperature-bold" class="align-middle me-1"></iconify-icon>Chilled
-                </span>
-              } @else {
-                <span class="badge bg-light text-muted border fs-11">
-                  Ambient
-                </span>
-              }
             </td>
 
             <!-- 7. Branch Stock (Geo Fulfillment) (Desktop) -->
@@ -342,7 +291,7 @@
 
           <!-- Child Details Row (Mobile / Small Screens: Rendered when expanded) -->
           @if (isRowExpanded(item.id)) {
-            <tr class="dtr-child-row d-lg-none">
+            <tr class="dtr-child-row d-xxl-none">
               <td colspan="100%" class="p-0 border-0">
                 <div class="dtr-child-box">
                   <table class="table dtr-child-table mb-0">
@@ -355,7 +304,7 @@
                           </span>
                         </td>
                       </tr>
-                      <tr>
+                      <tr class="d-lg-none">
                         <th class="dtr-child-title">Category</th>
                         <td class="dtr-child-data">
                           <span class="text-dark fs-12 fw-medium">{{ item.category }}</span>
@@ -373,7 +322,7 @@
                           <span class="fw-semibold text-dark fs-13">{{ item.brand }}</span>
                         </td>
                       </tr>
-                      <tr>
+                      <tr class="d-lg-none">
                         <th class="dtr-child-title">Price</th>
                         <td class="dtr-child-data">
                           <span class="fw-bold text-dark fs-13 font-jost">
@@ -381,7 +330,7 @@
                           </span>
                         </td>
                       </tr>
-                      <tr>
+                      <tr class="d-lg-none">
                         <th class="dtr-child-title">Branch Stock</th>
                         <td class="dtr-child-data">
                           @let stockStatusM = getBranchStockForProduct(item);
@@ -392,7 +341,7 @@
                           </div>
                         </td>
                       </tr>
-                      <tr>
+                      <tr class="d-lg-none">
                         <th class="dtr-child-title">Action</th>
                         <td class="dtr-child-data">
                           <div class="d-flex align-items-center gap-1.5 flex-wrap">
@@ -422,7 +371,7 @@
           }
         } @empty {
           <tr>
-            <td colspan="10" class="text-center py-5">
+            <td colspan="9" class="text-center py-5">
               <div class="d-flex flex-column align-items-center justify-content-center">
                 <div class="rounded-circle p-3 bg-light text-muted mb-2">
                   <iconify-icon icon="solar:box-minimalistic-linear" class="fs-32"></iconify-icon>

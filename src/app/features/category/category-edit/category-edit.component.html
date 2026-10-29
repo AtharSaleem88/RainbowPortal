@@ -35,10 +35,7 @@
           <!-- Status -->
           <div class="col-md-4 col-12">
             <label class="form-label fs-12 fw-semibold text-dark mb-1">Status</label>
-            <select class="form-select form-select-sm fs-12" [(ngModel)]="category.status" name="status">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+            <app-themed-select ariaLabel="Status" [options]="statusOptions" [(ngModel)]="category.status" name="status" />
             <small class="text-muted fs-11">Visibility in catalog</small>
           </div>
 

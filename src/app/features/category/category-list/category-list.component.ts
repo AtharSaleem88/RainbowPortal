@@ -8,6 +8,7 @@ import { MASTER_CATEGORIES, SUB_CATEGORIES, MasterCategory, SubCategory } from '
 import { Categories } from './components/categories/categories';
 import { CategoryAddComponent } from '../category-add/category-add.component';
 import { CategoryEditComponent } from '../category-edit/category-edit.component';
+import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed-select/themed-select.component';
 
 @Component({
   selector: 'app-category-list',
@@ -22,12 +23,20 @@ import { CategoryEditComponent } from '../category-edit/category-edit.component'
     NgbDropdownModule,
     NgbPaginationModule,
     NgbTooltipModule,
+    ThemedSelectComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './category-list.component.html',
   styleUrl: './category-list.component.scss',
 })
 export class CategoryListComponent implements OnInit {
+  pageSizeOptions: ThemedSelectOption[] = [10, 20, 50].map(size => ({ value: size, label: `${size} / pg` }));
+  sortOptions: ThemedSelectOption[] = [
+    { value: 'skus_desc', label: 'Products: High to Low' },
+    { value: 'skus_asc', label: 'Products: Low to High' },
+    { value: 'subcats_desc', label: 'Subcategories Count' },
+    { value: 'name_asc', label: 'Name: A to Z' },
+  ];
   title = 'MASTER CATEGORIES';
   private modalService = inject(NgbModal);
 

@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgbModal, NgbModalModule, NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, SUB_CATEGORIES, SUB_SUB_CATEGORIES, SubSubCategory, SubCategory, MasterCategory } from '../data';
 import { SubSubCategoryMetricsComponent } from './components/sub-sub-category-metrics/sub-sub-category-metrics.component';
+import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed-select/themed-select.component';
 
 @Component({
   selector: 'app-sub-sub-category',
@@ -19,6 +20,7 @@ import { SubSubCategoryMetricsComponent } from './components/sub-sub-category-me
     NgbModalModule,
     NgbPaginationModule,
     NgbTooltipModule,
+    ThemedSelectComponent,
     SubSubCategoryMetricsComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -26,6 +28,24 @@ import { SubSubCategoryMetricsComponent } from './components/sub-sub-category-me
   styleUrl: './sub-sub-category.component.scss',
 })
 export class SubSubCategoryComponent implements OnInit {
+  pageSizeOptions: ThemedSelectOption[] = [10, 20, 50].map(size => ({ value: size, label: `${size} / pg` }));
+  sortOptions: ThemedSelectOption[] = [
+    { value: 'skus_desc', label: 'Products: High to Low' },
+    { value: 'skus_asc', label: 'Products: Low to High' },
+    { value: 'name_asc', label: 'Name: A to Z' },
+  ];
+  statusOptions: ThemedSelectOption[] = [
+    { value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },
+  ];
+  get categoryOptions(): ThemedSelectOption[] {
+    return this.masterCategories.map(category => ({ value: category.id, label: category.name }));
+  }
+  get subCategoryOptions(): ThemedSelectOption[] {
+    return this.modalSubCategories.map(category => ({ value: category.id, label: category.name }));
+  }
+  get subCategoryFilterOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'All Subcategories' }, ...this.subCategories.map(category => ({ value: category.id, label: `${category.name} (${category.parentCategoryName})` }))];
+  }
   title = 'Sub-Sub Categories';
   private route = inject(ActivatedRoute);
   private modalService = inject(NgbModal);

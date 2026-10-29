@@ -7,11 +7,12 @@ import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTo
 import { PushNotificationCampaign, MOCK_PUSH_NOTIFICATIONS } from '../data';
 import { RainbowCustomer, RAINBOW_CUSTOMERS_LIST } from '../../customer/customer-list/data';
 import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-push-notifications',
   standalone: true,
-  imports: [CommonModule, FormsModule, DecimalPipe, RouterModule, NgbDropdownModule, NgbModalModule, NgbPaginationModule, NgbTooltipModule],
+  imports: [CommonModule, FormsModule, DecimalPipe, RouterModule, NgbDropdownModule, NgbModalModule, NgbPaginationModule, NgbTooltipModule, ThemedNativeSelectDirective],
   templateUrl: './push-notifications.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: [`
@@ -479,6 +480,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
       flex: 0 0 32px;
       width: 32px;
       height: 32px;

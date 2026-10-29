@@ -5,6 +5,7 @@ import { CategoryAddComponent } from './category-add/category-add.component';
 import { SubCategoryComponent } from './sub-category/sub-category.component';
 import { SubSubCategoryComponent } from './sub-sub-category/sub-sub-category.component';
 import { BrandsComponent } from './brands/brands.component';
+import { LandingSectionsComponent } from './landing-sections/landing-sections.component';
 
 export const CATEGORY_ROUTES: Route[] = [
   {
@@ -26,6 +27,11 @@ export const CATEGORY_ROUTES: Route[] = [
     path: 'brands',
     component: BrandsComponent,
     data: { title: 'Supermarket Brands' },
+  },
+  {
+    path: 'landing-sections',
+    component: LandingSectionsComponent,
+    data: { title: 'Landing Page Sections' },
   },
   {
     path: 'edit',

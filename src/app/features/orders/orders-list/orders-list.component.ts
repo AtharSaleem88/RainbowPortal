@@ -12,6 +12,7 @@ import { OrdersWorkflowService } from '@core/services/orders-workflow.service';
 import { WorkflowConfigService } from '@core/services/workflow-config.service';
 import { TimeLogService, DerivedProductivityMetrics } from '@core/services/time-log.service';
 import { AuditService } from '@core/services/audit.service';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 import {
   OrderLifecycleStatus,
   PriorityTier,
@@ -22,7 +23,7 @@ import {
 @Component({
   selector: 'app-orders-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, DecimalPipe, RouterModule, NgbDropdownModule, NgbPaginationModule, NgbModalModule, NgbTooltipModule],
+  imports: [CommonModule, FormsModule, DecimalPipe, RouterModule, NgbDropdownModule, NgbPaginationModule, NgbModalModule, NgbTooltipModule, ThemedNativeSelectDirective],
   templateUrl: './orders-list.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: [`

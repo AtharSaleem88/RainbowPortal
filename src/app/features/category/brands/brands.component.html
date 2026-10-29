@@ -85,11 +85,7 @@
           }
         </div>
 
-        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
-          <option [ngValue]="10">10 / pg</option>
-          <option [ngValue]="20">20 / pg</option>
-          <option [ngValue]="50">50 / pg</option>
-        </select>
+        <app-themed-select class="themed-page-size" ariaLabel="Brands per page" [options]="pageSizeOptions" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" />
       </div>
 
     </div>
@@ -100,22 +96,13 @@
       <!-- Master Category Filter -->
       <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Category:</span>
-        <select [(ngModel)]="selectedCategoryFilter" (change)="onCategoryFilterChange()" class="form-select filter-dropdown shadow-none">
-          <option value="all">All Categories</option>
-          @for(cat of masterCategories; track cat.id){
-            <option [value]="cat.id">{{ cat.name }}</option>
-          }
-        </select>
+        <app-themed-select class="themed-filter" ariaLabel="Brand category filter" [options]="categoryFilterOptions" [(ngModel)]="selectedCategoryFilter" (ngModelChange)="onCategoryFilterChange()" />
       </div>
 
       <!-- Sort By -->
       <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Sort:</span>
-        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none">
-          <option value="skus_desc">Products: High to Low</option>
-          <option value="skus_asc">Products: Low to High</option>
-          <option value="name_asc">Name: A to Z</option>
-        </select>
+        <app-themed-select class="themed-filter" ariaLabel="Sort brands" [options]="sortOptions" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()" />
       </div>
 
       <!-- Reset Action Button -->
@@ -393,10 +380,7 @@
         <!-- Status -->
         <div class="mb-3">
           <label class="form-label fs-12 fw-semibold text-dark mb-1">Status</label>
-          <select [(ngModel)]="newBrand.status" class="form-select form-select-sm fs-12">
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
+          <app-themed-select ariaLabel="Status" [options]="statusOptions" [(ngModel)]="newBrand.status" />
         </div>
 
         <!-- Logo URL & Live Preview -->
@@ -425,11 +409,7 @@
         <!-- Master Category -->
         <div class="mb-3">
           <label class="form-label fs-12 fw-semibold text-dark mb-1">Associated Master Category <span class="text-danger">*</span></label>
-          <select [(ngModel)]="modalSelectedCategoryId" (ngModelChange)="modalSelectedSubCategoryIds = []" class="form-select form-select-sm fs-12">
-            @for(cat of masterCategories; track cat.id){
-              <option [value]="cat.id">{{ cat.name }}</option>
-            }
-          </select>
+          <app-themed-select ariaLabel="Associated master category" [options]="categoryOptions" [(ngModel)]="modalSelectedCategoryId" (ngModelChange)="modalSelectedSubCategoryIds = []" />
         </div>
 
         <!-- Associated Subcategories Box -->

@@ -78,11 +78,7 @@
           }
         </div>
 
-        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
-          <option [ngValue]="10">10 / pg</option>
-          <option [ngValue]="20">20 / pg</option>
-          <option [ngValue]="50">50 / pg</option>
-        </select>
+        <app-themed-select class="themed-page-size" ariaLabel="Sub-subcategories per page" [options]="pageSizeOptions" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" />
       </div>
 
     </div>
@@ -93,22 +89,13 @@
       <!-- Parent Subcategory Filter -->
       <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Subcategory:</span>
-        <select [(ngModel)]="selectedSubCategoryId" (change)="onSubCategoryFilterChange()" class="form-select filter-dropdown shadow-none">
-          <option value="all">All Subcategories</option>
-          @for(sub of subCategories; track sub.id){
-            <option [value]="sub.id">{{ sub.name }} ({{ sub.parentCategoryName }})</option>
-          }
-        </select>
+        <app-themed-select class="themed-filter" ariaLabel="Subcategory filter" [options]="subCategoryFilterOptions" [(ngModel)]="selectedSubCategoryId" (ngModelChange)="onSubCategoryFilterChange()" />
       </div>
 
       <!-- Sort By -->
       <div class="filter-control-wrap flex-grow-1 flex-sm-grow-0">
         <span class="filter-title">Sort:</span>
-        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-select filter-dropdown shadow-none">
-          <option value="skus_desc">Products: High to Low</option>
-          <option value="skus_asc">Products: Low to High</option>
-          <option value="name_asc">Name: A to Z</option>
-        </select>
+        <app-themed-select class="themed-filter" ariaLabel="Sort sub-subcategories" [options]="sortOptions" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()" />
       </div>
 
       <!-- Reset Action Button -->
@@ -354,21 +341,13 @@
     <!-- Master Category -->
     <div class="mb-3">
       <label class="form-label fs-12 fw-semibold text-dark mb-1">Master Category <span class="text-danger">*</span></label>
-      <select [(ngModel)]="modalCategoryId" (change)="onModalCategoryChange()" class="form-select form-select-sm fs-12">
-        @for(cat of masterCategories; track cat.id){
-          <option [value]="cat.id">{{ cat.name }}</option>
-        }
-      </select>
+      <app-themed-select ariaLabel="Master category" [options]="categoryOptions" [(ngModel)]="modalCategoryId" (ngModelChange)="onModalCategoryChange()" />
     </div>
 
     <!-- Sub Category -->
     <div class="mb-3">
       <label class="form-label fs-12 fw-semibold text-dark mb-1">Sub Category <span class="text-danger">*</span></label>
-      <select [(ngModel)]="subSubForm.subCategoryId" class="form-select form-select-sm fs-12">
-        @for(sub of modalSubCategories; track sub.id){
-          <option [value]="sub.id">{{ sub.name }}</option>
-        }
-      </select>
+      <app-themed-select ariaLabel="Sub category" [options]="subCategoryOptions" [(ngModel)]="subSubForm.subCategoryId" />
     </div>
 
     <!-- Sub-Sub Category Name & Status -->
@@ -380,10 +359,7 @@
       </div>
       <div class="col-4">
         <label class="form-label fs-12 fw-semibold text-dark mb-1">Status</label>
-        <select [(ngModel)]="subSubForm.status" class="form-select form-select-sm fs-12">
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
+        <app-themed-select ariaLabel="Status" [options]="statusOptions" [(ngModel)]="subSubForm.status" />
       </div>
     </div>
   </div>

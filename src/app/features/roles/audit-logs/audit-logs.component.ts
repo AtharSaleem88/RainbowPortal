@@ -6,11 +6,12 @@ import { NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstra
 import { AuditService } from '@core/services/audit.service';
 import { AuthenticationService } from '@core/services/auth.service';
 import { AuditLogEntry } from '@core/models/workflow.model';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-audit-logs',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NgbPaginationModule, NgbTooltipModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgbPaginationModule, NgbTooltipModule, ThemedNativeSelectDirective],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './audit-logs.component.html',
   styles: [`

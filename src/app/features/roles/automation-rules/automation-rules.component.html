@@ -64,7 +64,7 @@
           <span>{{ selectedBranch?.name }} (Assigned Store)</span>
         </div>
       } @else {
-        <select [(ngModel)]="selectedBranchCode" (ngModelChange)="onSelectBranch($event)" class="form-select form-select-sm shadow-none" style="min-width: 320px; font-weight: 600;">
+        <select appThemedDropdown [(ngModel)]="selectedBranchCode" (ngModelChange)="onSelectBranch($event)" class="form-select form-select-sm shadow-none" style="min-width: 320px; font-weight: 600;">
           @for (b of branches; track b.branchCode) {
             <option [value]="b.branchCode">{{ b.name }} ({{ b.branchCode }} &bull; {{ b.city }})</option>
           }

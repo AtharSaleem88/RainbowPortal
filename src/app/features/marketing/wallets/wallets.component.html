@@ -289,7 +289,7 @@
       <!-- Branch Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Branch:</span>
-        <select class="filter-dropdown" [(ngModel)]="selectedBranch" (change)="currentPage = 1">
+        <select appThemedDropdown class="filter-dropdown" [(ngModel)]="selectedBranch" (change)="currentPage = 1">
           <option value="all">All Branches</option>
           <option value="Clifton">Clifton Superstore</option>
           <option value="Valencia">Valencia Cash &amp; Carry</option>
@@ -303,7 +303,7 @@
       <!-- Balance Range Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Balance:</span>
-        <select class="filter-dropdown" [(ngModel)]="selectedBalanceRange" (change)="currentPage = 1">
+        <select appThemedDropdown class="filter-dropdown" [(ngModel)]="selectedBalanceRange" (change)="currentPage = 1">
           <option value="all">All Balances</option>
           <option value="positive">Has Balance (&gt; Rs. 0)</option>
           <option value="high">High Balance (&gt; Rs. 3,000)</option>
@@ -573,7 +573,7 @@
     <div class="row g-2 mb-3">
       <div class="col-md-5">
         <label class="form-label fw-semibold fs-12 text-dark mb-1">Source / Channel</label>
-        <select class="form-select form-control-sleek" [(ngModel)]="adjustChannel">
+        <select appThemedDropdown class="form-select form-control-sleek" [(ngModel)]="adjustChannel">
           <option value="Customer Care">Customer Care</option>
           <option value="POS Counter">POS Counter Cash</option>
           <option value="App Online">App Online Gateway</option>
@@ -581,7 +581,7 @@
       </div>
       <div class="col-md-7">
         <label class="form-label fw-semibold fs-12 text-dark mb-1">Category / Reason</label>
-        <select class="form-select form-control-sleek" [(ngModel)]="adjustReason">
+        <select appThemedDropdown class="form-select form-control-sleek" [(ngModel)]="adjustReason">
           <option value="Customer Care Goodwill Refund">Customer Care Goodwill Refund</option>
           <option value="Damaged Item Return Compensation">Damaged Item Return Compensation</option>
           <option value="Promotional Cashback / Bonus">Promotional Cashback / Bonus</option>
@@ -717,7 +717,7 @@
     <!-- Target Audience -->
     <div class="mb-3">
       <label class="form-label fw-semibold fs-12 text-dark mb-1">Select Target Cohort <span class="text-danger">*</span></label>
-      <select class="form-select form-control-sleek" [(ngModel)]="bulkTarget">
+      <select appThemedDropdown class="form-select form-control-sleek" [(ngModel)]="bulkTarget">
         <option value="VIP Customers">All VIP Customers (700 Shoppers)</option>
         <option value="Valencia Branch Customers">Valencia Branch Customers (4,850 Shoppers)</option>
         <option value="Clifton Branch Customers">Clifton Superstore Customers (8,250 Shoppers)</option>

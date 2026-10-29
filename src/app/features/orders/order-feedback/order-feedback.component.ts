@@ -6,6 +6,7 @@ import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTo
 import { RAINBOW_FEEDBACK, RainbowOrderFeedback } from '../data';
 import { AuthenticationService } from '@core/services/auth.service';
 import { FeedbackMetricsComponent } from './components/feedback-metrics/feedback-metrics.component';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-order-feedback',
@@ -18,7 +19,8 @@ import { FeedbackMetricsComponent } from './components/feedback-metrics/feedback
     NgbPaginationModule,
     NgbModalModule,
     NgbTooltipModule,
-    FeedbackMetricsComponent
+    FeedbackMetricsComponent,
+    ThemedNativeSelectDirective
   ],
   templateUrl: './order-feedback.component.html',
   styleUrl: './order-feedback.component.scss',

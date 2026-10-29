@@ -7,11 +7,12 @@ import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTo
 import { ProductPromotion, RAINBOW_PROMOTIONS, RAINBOW_BRANCH_OPTIONS, BranchOption } from '../data';
 import { ProductList, ProductType } from '../../products/data';
 import { MASTER_CATEGORIES, SUB_CATEGORIES, SUB_SUB_CATEGORIES, BRANDS, MasterCategory, SubCategory, SubSubCategory, Brand, getBrandsForCategoryAndSubCategory } from '../../category/data';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-promotions-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, DecimalPipe, NgbDropdownModule, NgbPaginationModule, NgbModalModule, NgbTooltipModule],
+  imports: [CommonModule, FormsModule, DecimalPipe, NgbDropdownModule, NgbPaginationModule, NgbModalModule, NgbTooltipModule, ThemedNativeSelectDirective],
   templateUrl: './promotions-list.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: [`

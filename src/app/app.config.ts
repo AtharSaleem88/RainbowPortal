@@ -4,7 +4,7 @@ import {
   isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core'
-import { provideRouter } from '@angular/router'
+import { provideRouter, withInMemoryScrolling } from '@angular/router'
 
 import { DecimalPipe } from '@angular/common'
 import {
@@ -30,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     FakeBackendProvider,
     DecimalPipe,
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideStore(rootReducer, { metaReducers: [localStorageSyncReducer] }),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideEffects(CalendarEffects, AuthenticationEffects),

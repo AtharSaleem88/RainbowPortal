@@ -73,6 +73,13 @@ export const MENU: MenuItem[] = [
     roles: ['Admin'],
   },
   {
+    key: 'landing-sections',
+    icon: 'solar:sort-vertical-bold-duotone',
+    label: 'Landing Page Sections',
+    link: '/category/landing-sections',
+    roles: ['Admin'],
+  },
+  {
     key: 'products-title',
     label: 'PRODUCTS',
     isTitle: true,

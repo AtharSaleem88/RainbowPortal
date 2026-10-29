@@ -14,6 +14,7 @@ import {
   permissionState,
 } from './data';
 import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-permissions',
@@ -25,7 +26,8 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
     NgbDropdownModule,
     NgbModalModule,
     NgbPaginationModule,
-    NgbTooltipModule
+    NgbTooltipModule,
+    ThemedNativeSelectDirective
   ],
   templateUrl: './permissions.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

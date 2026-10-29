@@ -1,0 +1,93 @@
+<div class="landing-sections-page">
+  @if (message) { <div class="alert alert-success py-2" role="status">{{ message }}</div> }
+  @if (error) { <div class="alert alert-danger py-2" role="alert">{{ error }}</div> }
+
+  <div class="workspace-grid">
+  <section class="sections-panel" aria-label="Product sections">
+    <div class="panel-heading">
+      <div>
+        <h3>Product sections</h3>
+        <p>Drag a handle or use the arrows to change the order.</p>
+      </div>
+      <div class="panel-actions">
+        <span class="section-count"><iconify-icon icon="solar:layers-minimalistic-bold-duotone" aria-hidden="true"></iconify-icon> {{ sections.length }} sections</span>
+        @if (isDirty) { <button type="button" class="btn discard-button" (click)="discardChanges()">Discard</button> }
+        <button type="button" class="btn btn-primary save-button" (click)="save()" [disabled]="!isDirty">
+          <iconify-icon icon="solar:diskette-bold" aria-hidden="true"></iconify-icon>
+          Save changes
+        </button>
+      </div>
+    </div>
+
+    <div class="column-headings" aria-hidden="true">
+      <span>Order</span><span>Product category</span><span>Section heading</span><span>Arrange</span>
+    </div>
+    <div cdkDropList [cdkDropListData]="sections" (cdkDropListDropped)="drop($event)" class="sections-list">
+      @for (section of sections; track section.id; let index = $index) {
+        <div class="section-row" cdkDrag>
+          <div class="order-cell">
+            <button type="button" class="drag-handle" cdkDragHandle [attr.aria-label]="'Drag ' + section.displayName + ' to reorder'" title="Drag to reorder">
+              <iconify-icon icon="solar:hamburger-menu-linear" aria-hidden="true"></iconify-icon>
+            </button>
+            <span class="order-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
+          </div>
+          <label class="mobile-label" [for]="'category-' + section.id">Category</label>
+          <app-themed-select class="section-category-select" [id]="'category-' + section.id" [ariaLabel]="'Category for ' + section.displayName" [options]="categoryOptions" [(ngModel)]="section.categoryId" [name]="'category-' + section.id" />
+          <label class="mobile-label" [for]="'name-' + section.id">Display name</label>
+          <input class="form-control" [id]="'name-' + section.id" [(ngModel)]="section.displayName" [name]="'name-' + section.id" maxlength="80" placeholder="Section heading">
+          <div class="row-actions">
+            <button type="button" class="move-button" (click)="moveSection(index, -1)" [disabled]="index === 0" [attr.aria-label]="'Move ' + section.displayName + ' up'" title="Move up"><iconify-icon icon="solar:alt-arrow-up-linear" aria-hidden="true"></iconify-icon></button>
+            <button type="button" class="move-button" (click)="moveSection(index, 1)" [disabled]="index === sections.length - 1" [attr.aria-label]="'Move ' + section.displayName + ' down'" title="Move down"><iconify-icon icon="solar:alt-arrow-down-linear" aria-hidden="true"></iconify-icon></button>
+            <button type="button" class="remove-button" (click)="removeSection(section.id)" [attr.aria-label]="'Remove ' + section.displayName" title="Remove section">
+              <iconify-icon icon="solar:trash-bin-trash-linear" aria-hidden="true"></iconify-icon>
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">No product sections yet. Add one below.</div>
+      }
+    </div>
+  </section>
+
+  <aside class="preview-panel" aria-label="Section outline preview">
+    <div class="preview-head">
+      <span class="preview-icon"><iconify-icon icon="solar:widget-2-bold-duotone" aria-hidden="true"></iconify-icon></span>
+      <div><h3>Homepage outline</h3><p>Headings and order update as you edit.</p></div>
+    </div>
+    <div class="preview-content">
+      @for (section of sections; track section.id; let index = $index) {
+        <div class="preview-section">
+          <span class="preview-index">{{ (index + 1).toString().padStart(2, '0') }}</span>
+          <div class="preview-section-text">
+            <strong>{{ section.displayName.trim() || 'Untitled section' }}</strong>
+            <span>{{ getCategoryName(section.categoryId) }}</span>
+          </div>
+        </div>
+      } @empty { <p class="preview-empty">Add a section to see its place here.</p> }
+    </div>
+  </aside>
+  </div>
+
+  <section class="sections-panel add-panel" aria-labelledby="add-section-title">
+    <div class="panel-heading">
+      <div>
+        <h3 id="add-section-title">Add a product section</h3>
+        <p>Choose from all 20 master categories, or use “All categories” for a mixed product section.</p>
+      </div>
+    </div>
+    <div class="add-fields">
+      <div>
+        <label for="new-section-category">Category</label>
+        <app-themed-select class="section-category-select" id="new-section-category" ariaLabel="Category for new section" [options]="newCategoryOptions" [(ngModel)]="newCategoryId" (ngModelChange)="onNewCategoryChange()" />
+      </div>
+      <div>
+        <label for="new-section-name">Display name</label>
+        <input id="new-section-name" class="form-control" [(ngModel)]="newDisplayName" maxlength="80" placeholder="Heading shown on the landing page">
+      </div>
+      <button type="button" class="btn btn-outline-primary add-button" (click)="addSection()">
+        <iconify-icon icon="solar:add-circle-linear" aria-hidden="true"></iconify-icon>
+        Add section
+      </button>
+    </div>
+  </section>
+</div>

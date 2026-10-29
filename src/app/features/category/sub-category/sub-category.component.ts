@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgbModal, NgbModalModule, NgbPaginationModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, SUB_CATEGORIES, SubCategory, MasterCategory } from '../data';
 import { SubCategoryMetricsComponent } from './components/sub-category-metrics/sub-category-metrics.component';
+import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed-select/themed-select.component';
 
 @Component({
   selector: 'app-sub-category',
@@ -19,6 +20,7 @@ import { SubCategoryMetricsComponent } from './components/sub-category-metrics/s
     NgbModalModule,
     NgbPaginationModule,
     NgbTooltipModule,
+    ThemedSelectComponent,
     SubCategoryMetricsComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -26,6 +28,21 @@ import { SubCategoryMetricsComponent } from './components/sub-category-metrics/s
   styleUrl: './sub-category.component.scss',
 })
 export class SubCategoryComponent implements OnInit {
+  pageSizeOptions: ThemedSelectOption[] = [10, 20, 50].map(size => ({ value: size, label: `${size} / pg` }));
+  sortOptions: ThemedSelectOption[] = [
+    { value: 'skus_desc', label: 'Products: High to Low' },
+    { value: 'skus_asc', label: 'Products: Low to High' },
+    { value: 'name_asc', label: 'Name: A to Z' },
+  ];
+  statusOptions: ThemedSelectOption[] = [
+    { value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },
+  ];
+  get categoryOptions(): ThemedSelectOption[] {
+    return this.masterCategories.map(category => ({ value: category.id, label: category.name }));
+  }
+  get categoryFilterOptions(): ThemedSelectOption[] {
+    return [{ value: 'all', label: 'All Master Categories (20)' }, ...this.masterCategories.map(category => ({ value: category.id, label: `${category.name} (${category.subCategoryCount})` }))];
+  }
   title = 'Sub Categories';
   private route = inject(ActivatedRoute);
   private modalService = inject(NgbModal);

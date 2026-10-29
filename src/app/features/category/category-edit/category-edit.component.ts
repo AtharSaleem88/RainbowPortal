@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, MasterCategory } from '../data';
+import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed-select/themed-select.component';
 
 @Component({
   selector: 'app-category-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ThemedSelectComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './category-edit.component.html',
   styles: [`
@@ -38,6 +39,9 @@ import { MASTER_CATEGORIES, MasterCategory } from '../data';
   `]
 })
 export class CategoryEditComponent implements OnInit {
+  statusOptions: ThemedSelectOption[] = [
+    { value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },
+  ];
   title = 'Edit Master Category';
   private route = inject(ActivatedRoute);
   private router = inject(Router);

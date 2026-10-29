@@ -36,6 +36,115 @@ import { StoreCapacity } from '@core/models/workflow.model';
       transition: all 0.2s ease-in-out;
     }
 
+    .dashboard-controls {
+      display: grid;
+      grid-template-columns: minmax(230px, 1fr) max-content max-content max-content;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 22px;
+      overflow: visible;
+      border-color: #e4e8f0;
+      box-shadow: 0 8px 30px rgba(25, 35, 80, .045);
+    }
+    .dashboard-controls-top {
+      display: contents;
+    }
+    .dashboard-branch-section { order: 1; min-width: 0; }
+    .dashboard-field-label {
+      display: none;
+    }
+    .dashboard-controls .btn-branch-pill {
+      height: 46px;
+      width: 100%;
+      max-width: none;
+      border-color: #dfe4ed;
+      background: #fff;
+      font-size: 13px;
+    }
+    .dashboard-controls .btn-branch-pill:hover { border-color: #9da6d0; }
+    .dashboard-filter-bar {
+      display: contents;
+    }
+    .dashboard-filter-field { min-width: 0; }
+    .dashboard-period-field { order: 2; }
+    .dashboard-range-field { order: 3; }
+    .dashboard-periods { min-height: 46px; padding: 4px !important; background: #f3f5f9 !important; border: 0 !important; border-radius: 10px !important; }
+    .dashboard-periods .period-pill { min-height: 38px; padding: 7px 11px; background: transparent; color: #62718a; }
+    .dashboard-periods .period-pill.active { background: #fff; color: #2e3192; box-shadow: 0 1px 5px rgba(30, 40, 90, .12); }
+    .dashboard-controls .date-range-capsule { height: 46px !important; border-color: #dfe4ed !important; border-radius: 10px !important; }
+    .dashboard-refresh-top {
+      order: 4;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      height: 46px;
+      padding: 0 18px;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 650;
+      border: 1px solid #dfe4ed;
+      border-radius: 10px;
+      background: #fff;
+      color: #2e3192;
+    }
+    .dashboard-refresh-top:hover { border-color: #2e3192; background: #f7f7fc; color: #2e3192; }
+
+    .dashboard-filter-bar { min-width: 0; }
+
+    .dashboard-priority-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .dashboard-priority-item { min-width: 0; }
+
+    .dashboard-priority-item .kpi-card {
+      min-width: 0;
+      height: 100%;
+    }
+
+    .dashboard-priority-item .kpi-card > .d-flex:first-child {
+      flex-wrap: wrap;
+      gap: 4px 8px;
+    }
+
+    @media (max-width: 1399.98px) {
+      .dashboard-priority-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .dashboard-controls { grid-template-columns: minmax(0, 1fr) max-content; }
+      .dashboard-branch-section { max-width: none; }
+    }
+
+    @media (max-width: 767.98px) {
+      .dashboard-priority-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dashboard-filter-bar > * { max-width: 100%; }
+      .dashboard-periods { flex-wrap: wrap; }
+      .btn-branch-pill { width: 100%; max-width: 100%; }
+      .branch-dropdown-menu { min-width: 0; max-width: min(420px, calc(100vw - 48px)); }
+      .dashboard-controls { padding: 16px; }
+      .dashboard-controls { grid-template-columns: minmax(0, 1fr); }
+      .dashboard-branch-section { max-width: none; }
+    }
+
+    @media (max-width: 575.98px) {
+      .dashboard-controls { display: grid; grid-template-columns: minmax(0, 1fr); }
+      .dashboard-refresh-top { width: 100%; }
+      .dashboard-filter-bar { display: contents !important; }
+      .dashboard-period-field, .dashboard-range-field { min-width: 0; width: 100%; }
+      .dashboard-periods {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+      }
+      .dashboard-periods .period-pill { white-space: normal !important; }
+      .dashboard-filter-bar .date-range-capsule { min-width: 0; }
+    }
+
+    @media (max-width: 399.98px) {
+      .dashboard-priority-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
     .date-range-capsule {
       border: 1px solid #cbd5e1;
       border-radius: 8px;
@@ -203,6 +312,8 @@ import { StoreCapacity } from '@core/models/workflow.model';
         box-shadow: 0 8px 24px rgba(46, 49, 146, 0.09) !important;
       }
     }
+
+    .dashboard-overview-grid .kpi-card { min-height: 140px; }
 
     .kpi-heading {
       gap: 12px;

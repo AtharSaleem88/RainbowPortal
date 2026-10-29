@@ -479,3 +479,24 @@
     background-color: #fafbfc;
   }
 }
+.category-header-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.category-header-action iconify-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.category-header-action span { line-height: 1; }

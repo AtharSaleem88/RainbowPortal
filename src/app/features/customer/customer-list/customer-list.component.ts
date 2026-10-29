@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { RainbowCustomer, RAINBOW_CUSTOMERS_LIST } from './data';
 import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-customer-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, DecimalPipe, NgbDropdownModule, NgbPaginationModule, NgbModalModule],
+  imports: [CommonModule, FormsModule, DecimalPipe, NgbDropdownModule, NgbPaginationModule, NgbModalModule, ThemedNativeSelectDirective],
   templateUrl: './customer-list.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

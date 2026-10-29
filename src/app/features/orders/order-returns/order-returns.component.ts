@@ -6,6 +6,7 @@ import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTo
 import { RAINBOW_RETURNS, RainbowOrderReturn } from '../data';
 import { AuthenticationService } from '@core/services/auth.service';
 import { ReturnMetricsComponent } from './components/return-metrics/return-metrics.component';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-order-returns',
@@ -19,7 +20,8 @@ import { ReturnMetricsComponent } from './components/return-metrics/return-metri
     NgbPaginationModule,
     NgbModalModule,
     NgbTooltipModule,
-    ReturnMetricsComponent
+    ReturnMetricsComponent,
+    ThemedNativeSelectDirective
   ],
   templateUrl: './order-returns.component.html',
   styleUrl: './order-returns.component.scss',

@@ -11,11 +11,12 @@ import {
   MOCK_CUSTOMER_WALLETS,
 } from '../data';
 import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-customer-wallets',
   standalone: true,
-  imports: [CommonModule, FormsModule, DecimalPipe, RouterModule, NgbModalModule, NgbPaginationModule, NgbTooltipModule],
+  imports: [CommonModule, FormsModule, DecimalPipe, RouterModule, NgbModalModule, NgbPaginationModule, NgbTooltipModule, ThemedNativeSelectDirective],
   templateUrl: './wallets.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: [`

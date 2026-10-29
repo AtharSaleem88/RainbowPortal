@@ -3,9 +3,10 @@
   <!-- ========================================================
        Top Operations Control Bar: Branch & Date Range Filter
        ======================================================== -->
-  <div class="op-card p-3 p-md-3.5 mb-4">
-    <!-- Top: Branch Selector Dropdown -->
-    <div class="mb-3">
+  <div class="op-card dashboard-controls mb-4">
+    <div class="dashboard-controls-top">
+      <div class="dashboard-branch-section">
+      <div class="dashboard-field-label">Branch</div>
       @if(isBranchLocked){
         <div class="btn-branch-pill d-flex align-items-center gap-2 bg-light">
           <iconify-icon icon="solar:lock-keyhole-bold" class="text-primary fs-17 flex-shrink-0"></iconify-icon>
@@ -50,12 +51,21 @@
           </div>
         </div>
       }
+      </div>
+      <button type="button" class="btn refresh-btn dashboard-refresh-top"
+              (click)="refreshStats()" [class.refreshing]="isRefreshing"
+              ngbTooltip="Reload real-time store metrics">
+        <iconify-icon icon="solar:restart-bold" class="fs-15" [class.spin-refresh]="isRefreshing"></iconify-icon>
+        <span>Refresh data</span>
+      </button>
     </div>
 
     <!-- Below: Date Filter Bar & Refresh Button -->
-    <div class="d-flex align-items-center gap-2 flex-wrap">
+    <div class="dashboard-filter-bar">
       <!-- Date Preset Pills -->
-      <div class="d-inline-flex align-items-center gap-1 bg-light p-1 rounded-2 border">
+      <div class="dashboard-filter-field dashboard-period-field">
+        <div class="dashboard-field-label">Time period</div>
+        <div class="dashboard-periods d-inline-flex align-items-center gap-1 bg-light p-1 rounded-2 border">
         <button type="button" class="period-pill border-0" 
                 [class.active]="selectedDatePreset === 'today'" 
                 (click)="setDatePreset('today')">Today</button>
@@ -71,9 +81,12 @@
         <button type="button" class="period-pill border-0" 
                 [class.active]="selectedDatePreset === 'this_month'" 
                 (click)="setDatePreset('this_month')">This Month</button>
+        </div>
       </div>
 
       <!-- Custom 2-Dates Range Bar (Native Calendar with Months & Years Navigation) -->
+      <div class="dashboard-filter-field dashboard-range-field">
+        <div class="dashboard-field-label">Custom dates</div>
       <div class="date-range-capsule d-inline-flex align-items-center bg-white border rounded-2 shadow-none"
            style="height: 38px;">
         <!-- Calendar Lead Icon (properly padded, never touching border or text) -->
@@ -104,23 +117,17 @@
                  title="Select End Date">
         </div>
       </div>
+      </div>
 
-      <!-- Refresh Action Button -->
-      <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5 px-3 rounded-2 refresh-btn" 
-              style="height: 38px;" (click)="refreshStats()" [class.refreshing]="isRefreshing"
-              ngbTooltip="Reload real-time store metrics">
-        <iconify-icon icon="solar:restart-bold" class="fs-15" [class.spin-refresh]="isRefreshing"></iconify-icon>
-        <span class="fs-12 fw-semibold">Refresh</span>
-      </button>
     </div>
   </div>
 
   <!-- ========================================================
        Operational Priority & Branch Capacity Status Strip
        ======================================================== -->
-  <div class="row g-3 mb-3">
-    <!-- Urgent (ASAP) Orders -->
-    <div class="col-6 col-md-4 col-xl-2">
+  <!-- Priority cards are hidden for now.
+  <div class="dashboard-priority-grid mb-3">
+    <div class="dashboard-priority-item">
       <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #dc3545 !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="fs-11 fw-bold text-danger text-uppercase">Urgent (ASAP)</span>
@@ -131,8 +138,7 @@
       </a>
     </div>
 
-    <!-- Standard Orders -->
-    <div class="col-6 col-md-4 col-xl-2">
+    <div class="dashboard-priority-item">
       <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #2e3192 !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="fs-11 fw-bold text-primary text-uppercase">Standard</span>
@@ -143,8 +149,7 @@
       </a>
     </div>
 
-    <!-- Scheduled Orders -->
-    <div class="col-6 col-md-4 col-xl-2">
+    <div class="dashboard-priority-item">
       <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #64748b !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="fs-11 fw-bold text-secondary text-uppercase">Scheduled</span>
@@ -155,8 +160,7 @@
       </a>
     </div>
 
-    <!-- Flagged Issues Queue -->
-    <div class="col-6 col-md-6 col-xl-3">
+    <div class="dashboard-priority-item">
       <a routerLink="/orders/list" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #ef4444 !important; background: #fffbfb;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="fs-11 fw-bold text-danger text-uppercase">Needs Attention</span>
@@ -167,8 +171,7 @@
       </a>
     </div>
 
-    <!-- Store Capacity Utilization -->
-    <div class="col-12 col-md-6 col-xl-3">
+    <div class="dashboard-priority-item">
       <a routerLink="/role/branches" class="kpi-card text-decoration-none h-100 p-3" style="min-height: auto; border-left: 3px solid #10b981 !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="fs-11 fw-bold text-dark text-uppercase">Store Capacity Load</span>
@@ -186,6 +189,7 @@
       </a>
     </div>
   </div>
+  -->
 
   <!-- ========================================================
        Row 1: Catalog Scale & Core Volume (4 KPI Cards)
@@ -193,7 +197,7 @@
   <div class="kpi-heading d-flex align-items-center justify-content-between px-1">
     <span class="section-label">Catalog Overview & Volume Metrics</span>
   </div>
-  <div class="row g-3 mb-3">
+  <div class="row g-3 mb-3 dashboard-overview-grid">
     <!-- Card 1: Total Products (Required) -->
     <div class="col-xl-3 col-md-6 col-12">
       <a routerLink="/product/list" class="kpi-card h-100">
@@ -205,11 +209,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalProducts | number }}</h2>
-          <span class="fs-12 fw-semibold text-muted">SKUs</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">{{ catalogStats.inStockProducts | number }} In Stock &bull; {{ catalogStats.lowStockProducts }} Low</span>
-          <span class="text-primary fw-semibold d-inline-flex align-items-center">Manage &rarr;</span>
         </div>
       </a>
     </div>
@@ -225,11 +224,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalCategories }}</h2>
-          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">100% Active</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">{{ catalogStats.totalCategories }} Master Departments</span>
-          <span class="text-primary fw-semibold d-inline-flex align-items-center">Explore &rarr;</span>
         </div>
       </a>
     </div>
@@ -245,11 +239,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ catalogStats.totalSubCategories }}</h2>
-          <span class="badge bg-primary-subtle text-primary fs-11 fw-semibold py-1 px-2">Mapped</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">Across {{ catalogStats.totalCategories }} Departments</span>
-          <span class="text-primary fw-semibold d-inline-flex align-items-center">Configure &rarr;</span>
         </div>
       </a>
     </div>
@@ -265,11 +254,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">PKR {{ kpiStats.sales | number }}</h2>
-          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">{{ kpiStats.salesGrowth }}</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">{{ kpiStats.orders | number }} Total Orders</span>
-          <span class="text-muted">AOV: PKR {{ kpiStats.avgOrderValue | number }}</span>
         </div>
       </div>
     </div>
@@ -278,7 +262,7 @@
   <!-- ========================================================
        Row 2: Operational Health, New Customers & Exceptions (4 Cards)
        ======================================================== -->
-  <div class="row g-3 mb-3">
+  <div class="row g-3 mb-3 dashboard-overview-grid">
     <!-- Card 1: New Customers -->
     <div class="col-xl-3 col-md-6 col-12">
       <div class="kpi-card h-100">
@@ -290,11 +274,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.newCustomers | number }}</h2>
-          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">{{ exceptionStats.newCustomerGrowth }}</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">Acquisition Pace</span>
-          <span class="fw-semibold text-dark">{{ exceptionStats.repeatRate }} Repeat</span>
         </div>
       </div>
     </div>
@@ -310,11 +289,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.rejectedOrders | number }}</h2>
-          <span class="badge bg-danger-subtle text-danger fs-11 fw-semibold py-1 px-2">{{ exceptionStats.rejectedRate }} Rate</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">Primary Reason:</span>
-          <span class="fw-semibold text-danger" [title]="exceptionStats.rejectedTopReason">{{ exceptionStats.rejectedTopReason }}</span>
         </div>
       </div>
     </div>
@@ -330,11 +304,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ exceptionStats.cancelledOrders | number }}</h2>
-          <span class="badge bg-warning-subtle text-warning fs-11 fw-semibold py-1 px-2">{{ exceptionStats.cancelledRate }} Rate</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">Top Driver:</span>
-          <span class="fw-semibold text-dark" [title]="exceptionStats.cancelledTopReason">{{ exceptionStats.cancelledTopReason }}</span>
         </div>
       </div>
     </div>
@@ -350,11 +319,6 @@
         </div>
         <div class="kpi-value d-flex align-items-center gap-2 flex-wrap">
           <h2 class="fs-26 fw-bold text-dark mb-0 font-jost">{{ kpiStats.fulfillmentRate }}</h2>
-          <span class="badge bg-success-subtle text-success fs-11 fw-semibold py-1 px-2">Optimal</span>
-        </div>
-        <div class="kpi-footer d-flex align-items-center justify-content-between border-top border-light-subtle fs-12">
-          <span class="text-muted">Dispatch: {{ exceptionStats.avgDispatchMinutes }}</span>
-          <span class="fw-semibold text-primary">{{ kpiStats.activeRiders }} Active Riders</span>
         </div>
       </div>
     </div>

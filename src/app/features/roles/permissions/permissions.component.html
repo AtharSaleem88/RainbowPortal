@@ -293,7 +293,7 @@
         <!-- Branch Filter -->
         <div class="filter-control-wrap">
           <span class="filter-title">Branch:</span>
-          <select [(ngModel)]="userFilterBranch" class="filter-dropdown" (change)="userCurrentPage = 1">
+          <select appThemedDropdown [(ngModel)]="userFilterBranch" class="filter-dropdown" (change)="userCurrentPage = 1">
             <option value="all">All Branches</option>
             @for (b of branches; track b.id) {
               <option [value]="b.name">{{ b.name }}</option>
@@ -304,7 +304,7 @@
         <!-- Role Filter -->
         <div class="filter-control-wrap">
           <span class="filter-title">Role:</span>
-          <select [(ngModel)]="userFilterRole" class="filter-dropdown" (change)="userCurrentPage = 1">
+          <select appThemedDropdown [(ngModel)]="userFilterRole" class="filter-dropdown" (change)="userCurrentPage = 1">
             <option value="all">All Roles</option>
             @for (r of roles; track r.role) {
               <option [value]="r.role">{{ r.label }}</option>
@@ -516,7 +516,7 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label fs-12 fw-semibold text-dark mb-1">Select Staff Member</label>
-                <select [(ngModel)]="selectedUserId" class="form-select form-select-sm shadow-none">
+                <select appThemedDropdown [(ngModel)]="selectedUserId" class="form-select form-select-sm shadow-none">
                   @for (u of userProfiles; track u.staffId) {
                     <option [value]="u.staffId">{{ u.staffName }} ({{ u.role }} &bull; {{ u.branchCode }})</option>
                   }
@@ -525,7 +525,7 @@
 
               <div class="col-md-6">
                 <label class="form-label fs-12 fw-semibold text-dark mb-1">Target Action</label>
-                <select #testActionSelect class="form-select form-select-sm shadow-none">
+                <select appThemedDropdown #testActionSelect class="form-select form-select-sm shadow-none">
                   <option value="orders.cancel">Cancel Customer Orders (Critical)</option>
                   <option value="orders.returns_approve">Approve Returns &amp; Issue Refunds (Critical)</option>
                   <option value="products.override_price">Override POS Selling Price (Critical)</option>

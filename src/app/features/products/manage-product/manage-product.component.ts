@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductList, ProductType, RAINBOW_SUPERSTORE_BRANCHES, BranchStock, SUPERSTORE_COMPETITORS } from '../data';
 import { MASTER_CATEGORIES, SUB_CATEGORIES, BRANDS, MasterCategory, SubCategory, Brand, getBrandsForCategoryAndSubCategory } from '../../category/data';
+import { ThemedSelectComponent, ThemedSelectOption } from '../themed-select/themed-select.component';
 
 @Component({
   selector: 'app-manage-product',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ThemedSelectComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './manage-product.component.html',
   styleUrl: './manage-product.component.scss',
@@ -112,6 +113,16 @@ export class ManageProductComponent implements OnInit {
     const selectedCat = this.masterCategories.find(c => c.name === this.product.category);
     if (!selectedCat) return [];
     return this.allSubCategories.filter(s => s.parentCategoryId === selectedCat.id);
+  }
+
+  get categoryOptions(): ThemedSelectOption[] {
+    return this.masterCategories.map(category => ({ value: category.name, label: category.name }));
+  }
+  get subCategoryOptions(): ThemedSelectOption[] {
+    return this.filteredSubCategories.map(category => ({ value: category.name, label: category.name }));
+  }
+  get brandOptions(): ThemedSelectOption[] {
+    return this.availableBrands.map(brand => ({ value: brand.name, label: `${brand.name}${brand.isInHouse ? ' (In-House)' : ''}` }));
   }
 
   // Cascading Category + Sub Category -> Associated Brands

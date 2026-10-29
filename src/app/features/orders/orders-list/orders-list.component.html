@@ -157,7 +157,7 @@
         </div>
 
         <!-- Page Size Selector Above -->
-        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
+        <select appThemedDropdown [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
           <option [ngValue]="10">10 / page</option>
           <option [ngValue]="20">20 / page</option>
           <option [ngValue]="50">50 / page</option>
@@ -178,7 +178,7 @@
             <span>{{ currentBranchDisplayName }}</span>
           </div>
         } @else {
-          <select [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
+          <select appThemedDropdown [(ngModel)]="selectedBranch" class="filter-dropdown" (change)="currentPage = 1">
             @for (b of branches; track b.id) {
               <option [value]="b.id">{{ b.name }}</option>
             }
@@ -1280,7 +1280,7 @@
       <!-- Reason Selection -->
       <div class="mb-3">
         <label class="form-label fs-12 fw-bold text-dark text-uppercase">Reason for Priority Adjustment:</label>
-        <select [(ngModel)]="overrideReason" class="form-select form-select-sm">
+        <select appThemedDropdown [(ngModel)]="overrideReason" class="form-select form-select-sm">
           <option value="Customer requested expedited / priority dispatch">Customer requested expedited / priority dispatch</option>
           <option value="Contains frozen / fresh meat / ice cream items">Contains frozen / fresh meat / ice cream items</option>
           <option value="Store supervisor adjusted picking sequence for capacity">Store supervisor adjusted picking sequence for capacity</option>
@@ -1341,7 +1341,7 @@
       <div class="row g-3 mb-3">
         <div class="col-sm-6">
           <label class="form-label fs-12 fw-bold text-dark">Resolution Action Strategy:</label>
-          <select [(ngModel)]="selectedResolutionAction" class="form-select form-select-sm shadow-none">
+          <select appThemedDropdown [(ngModel)]="selectedResolutionAction" class="form-select form-select-sm shadow-none">
             <option value="reroute_store">Re-route Order to Next Available Branch</option>
             <option value="widen_rider_radius">Widen Rider Radius &amp; Manual Dispatch</option>
             <option value="partial_refund">Issue Partial Item Refund</option>
@@ -1353,7 +1353,7 @@
         @if(selectedResolutionAction === 'reroute_store'){
           <div class="col-sm-6">
             <label class="form-label fs-12 fw-bold text-dark">Select Target Branch:</label>
-            <select [(ngModel)]="selectedRerouteBranchCode" class="form-select form-select-sm shadow-none">
+            <select appThemedDropdown [(ngModel)]="selectedRerouteBranchCode" class="form-select form-select-sm shadow-none">
               @for(b of branches; track b.id){
                 @if(b.id !== 'all' && b.id !== targetOrderForException.branchCode){
                   <option [value]="b.id">{{ b.name }}</option>
@@ -1501,7 +1501,7 @@
         <label class="form-label fs-12 fw-bold text-dark">
           Cancellation Category <span class="text-danger">*</span>
         </label>
-        <select [(ngModel)]="cancelReasonCategory" class="form-select form-select-sm shadow-none">
+        <select appThemedDropdown [(ngModel)]="cancelReasonCategory" class="form-select form-select-sm shadow-none">
           @for(cat of cancellationCategories; track cat){
             <option [value]="cat">{{ cat }}</option>
           }
@@ -1813,7 +1813,7 @@
         <label class="form-label fs-12 fw-bold text-dark">
           Select Store Dispatcher <span class="text-danger">*</span>
         </label>
-        <select [(ngModel)]="selectedDispatcherStaffId" class="form-select form-select-sm shadow-none">
+        <select appThemedDropdown [(ngModel)]="selectedDispatcherStaffId" class="form-select form-select-sm shadow-none">
           @for(disp of getBranchDispatchers(targetOrderForDispatcher); track disp.id){
             <option [value]="disp.id">
               {{ disp.name }} &bull; {{ disp.phone }} ({{ disp.status }})

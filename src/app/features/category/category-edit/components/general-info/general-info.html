@@ -14,11 +14,7 @@
       <div class="col-lg-6">
         <div class="mb-3">
           <label for="crater" class="form-label fw-semibold">Created By</label>
-          <select class="form-select" id="crater">
-            <option value="Admin" selected>Admin</option>
-            <option value="Moderator">Moderator</option>
-            <option value="Super Admin">Super Admin</option>
-          </select>
+          <app-themed-select id="crater" ariaLabel="Created by" [options]="creatorOptions" [(ngModel)]="createdBy" />
         </div>
       </div>
       <div class="col-lg-6">

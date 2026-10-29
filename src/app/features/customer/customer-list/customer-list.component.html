@@ -297,7 +297,7 @@
         </div>
 
         <!-- Page Size Selector Above -->
-        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none" style="width: auto; min-width: 95px; height: 31px;">
+        <select appThemedDropdown [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none" style="width: auto; min-width: 95px; height: 31px;">
           <option [ngValue]="8">8 / page</option>
           <option [ngValue]="16">16 / page</option>
           <option [ngValue]="32">32 / page</option>
@@ -312,7 +312,7 @@
             <span>Rainbow Valencia (Assigned)</span>
           </div>
         } @else {
-          <select class="form-select form-select-sm bg-light" [(ngModel)]="selectedBranch" (ngModelChange)="currentPage = 1">
+          <select appThemedDropdown class="form-select form-select-sm bg-light" [(ngModel)]="selectedBranch" (ngModelChange)="currentPage = 1">
             <option value="all">All Branches</option>
             <option value="Clifton">Rainbow Clifton</option>
             <option value="Valencia">Rainbow Valencia</option>
@@ -759,7 +759,7 @@
     <!-- Reason Dropdown -->
     <div class="mb-3">
       <label class="form-label fw-bold small text-dark">Reason / Category <span class="text-danger">*</span></label>
-      <select class="form-select" [(ngModel)]="walletAdjustReason">
+      <select appThemedDropdown class="form-select" [(ngModel)]="walletAdjustReason">
         <option value="Customer Care Goodwill Refund">Customer Care Goodwill Refund</option>
         <option value="Damaged Item Return Compensation">Damaged Item Return Compensation</option>
         <option value="Promotional Cashback / Bonus">Promotional Cashback / Bonus</option>

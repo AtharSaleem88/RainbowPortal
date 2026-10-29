@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MASTER_CATEGORIES, MasterCategory } from '../data';
+import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed-select/themed-select.component';
 
 @Component({
   selector: 'app-category-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ThemedSelectComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './category-add.component.html',
   styles: [`
@@ -38,6 +39,9 @@ import { MASTER_CATEGORIES, MasterCategory } from '../data';
   `]
 })
 export class CategoryAddComponent {
+  statusOptions: ThemedSelectOption[] = [
+    { value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' },
+  ];
   title = 'Create Master Category';
   private router = inject(Router);
   activeModal = inject(NgbActiveModal, { optional: true });

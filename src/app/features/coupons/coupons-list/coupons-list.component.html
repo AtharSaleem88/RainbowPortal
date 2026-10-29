@@ -78,7 +78,7 @@
           }
         </div>
 
-        <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
+        <select appThemedDropdown [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)" class="form-select page-select-input shadow-none">
           <option [ngValue]="8">8 / page</option>
           <option [ngValue]="16">16 / page</option>
           <option [ngValue]="32">32 / page</option>
@@ -93,7 +93,7 @@
       <!-- Branch Selector -->
       <div class="filter-control-wrap">
         <span class="filter-title">Branch:</span>
-        <select [(ngModel)]="selectedBranch" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 230px; max-width: 270px;">
+        <select appThemedDropdown [(ngModel)]="selectedBranch" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 230px; max-width: 270px;">
           <option value="all">Consolidated (All 10 Superstores)</option>
           @for (b of branches; track b.id) {
             <option [value]="b.id">{{ b.name }}</option>
@@ -104,7 +104,7 @@
       <!-- Discount Type Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Discount:</span>
-        <select [(ngModel)]="selectedDiscountType" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
+        <select appThemedDropdown [(ngModel)]="selectedDiscountType" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
           <option value="all">All Discount Types</option>
           <option value="percentage">Percentage</option>
           <option value="fixed_amount">Fixed Amount</option>
@@ -115,7 +115,7 @@
       <!-- Customer Segment Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Customer:</span>
-        <select [(ngModel)]="selectedSegment" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
+        <select appThemedDropdown [(ngModel)]="selectedSegment" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 170px;">
           <option value="all">All Customer Types</option>
           <option value="All Customers">All Shoppers</option>
           <option value="New Customers (First Order)">New Customers</option>
@@ -493,7 +493,7 @@
       <div class="row g-3 align-items-center">
         <div class="col-md-4">
           <label class="form-label fs-11 text-muted mb-1">Discount Type</label>
-          <select [(ngModel)]="formCoupon.discountType" class="form-select form-select-sm form-control-sleek">
+          <select appThemedDropdown [(ngModel)]="formCoupon.discountType" class="form-select form-select-sm form-control-sleek">
             <option value="percentage">Percentage Discount</option>
             <option value="fixed_amount">Fixed Amount Discount</option>
             <option value="free_delivery">Free Delivery</option>
@@ -582,7 +582,7 @@
     <div class="row g-3 mb-3">
       <div class="col-md-4">
         <label class="form-label fs-11 text-muted mb-1">Customer Eligibility</label>
-        <select [(ngModel)]="formCoupon.customerSegment" class="form-select form-select-sm form-control-sleek">
+        <select appThemedDropdown [(ngModel)]="formCoupon.customerSegment" class="form-select form-select-sm form-control-sleek">
           <option value="All Customers">All Customers</option>
           <option value="New Customers (First Order)">New Customers (First Order)</option>
           <option value="Repeat Customers (3+ Orders)">Repeat VIP Customers</option>

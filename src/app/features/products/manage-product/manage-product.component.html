@@ -32,31 +32,19 @@
           <!-- Master Category -->
           <div class="col-md-4">
             <label class="form-label fs-12 fw-semibold text-dark mb-1">Master Category <span class="text-danger">*</span></label>
-            <select [(ngModel)]="product.category" (change)="onCategoryChange()" class="form-select form-select-sm form-control-sleek">
-              @for(cat of masterCategories; track cat.id){
-                <option [value]="cat.name">{{ cat.name }}</option>
-              }
-            </select>
+            <app-themed-select ariaLabel="Master category" [options]="categoryOptions" [(ngModel)]="product.category" (ngModelChange)="onCategoryChange()" />
           </div>
 
           <!-- Sub Category -->
           <div class="col-md-4">
             <label class="form-label fs-12 fw-semibold text-dark mb-1">Sub Category <span class="text-danger">*</span></label>
-            <select [(ngModel)]="product.subCategory" (change)="onSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
-              @for(sub of filteredSubCategories; track sub.id){
-                <option [value]="sub.name">{{ sub.name }}</option>
-              }
-            </select>
+            <app-themed-select ariaLabel="Sub category" [options]="subCategoryOptions" [(ngModel)]="product.subCategory" (ngModelChange)="onSubCategoryChange()" />
           </div>
 
           <!-- Associated Brand -->
           <div class="col-md-4">
             <label class="form-label fs-12 fw-semibold text-dark mb-1">Associated Brand <span class="text-danger">*</span></label>
-            <select [(ngModel)]="product.brand" class="form-select form-select-sm form-control-sleek fw-semibold text-primary">
-              @for(b of availableBrands; track b.id){
-                <option [value]="b.name">{{ b.name }} {{ b.isInHouse ? '(In-House)' : '' }}</option>
-              }
-            </select>
+            <app-themed-select ariaLabel="Associated brand" [options]="brandOptions" [(ngModel)]="product.brand" />
           </div>
         </div>
       </div>

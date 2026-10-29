@@ -361,7 +361,7 @@
       <!-- Branch Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Branch:</span>
-        <select class="filter-dropdown" [(ngModel)]="selectedBranch" (change)="currentPage = 1">
+        <select appThemedDropdown class="filter-dropdown" [(ngModel)]="selectedBranch" (change)="currentPage = 1">
           <option value="all">All Branches</option>
           <option value="Clifton">Clifton Superstore</option>
           <option value="Valencia">Valencia Cash &amp; Carry</option>
@@ -607,7 +607,7 @@
     <!-- Reason -->
     <div class="mb-3">
       <label class="form-label fw-semibold fs-12 text-dark mb-1">Reason / Description <span class="text-danger">*</span></label>
-      <select class="form-select form-control-sleek" [(ngModel)]="adjustReason">
+      <select appThemedDropdown class="form-select form-control-sleek" [(ngModel)]="adjustReason">
         <option value="Supermarket Promotion Bonus">Supermarket Promotion Bonus</option>
         <option value="Special Store Visit Goodwill Reward">Special Store Visit Goodwill Reward</option>
         <option value="Branch Opening Celebration Bonus">Branch Opening Celebration Bonus</option>

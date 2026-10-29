@@ -6,11 +6,12 @@ import { WorkflowConfigService } from '@core/services/workflow-config.service';
 import { AuthenticationService } from '@core/services/auth.service';
 import { BranchAutomationRule, RainbowBranch } from '@core/models/workflow.model';
 import { showSaveSuccess, showSaveValidation } from '@shared/utils/save-alert';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-automation-rules',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ThemedNativeSelectDirective],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './automation-rules.component.html',
   styles: [`

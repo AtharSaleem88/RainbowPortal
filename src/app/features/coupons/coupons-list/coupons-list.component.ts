@@ -7,6 +7,7 @@ import { NgbDropdownModule, NgbModal, NgbModalModule, NgbPaginationModule, NgbTo
 import { CustomerCoupon, RAINBOW_COUPONS } from './data';
 import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
 import { CouponMetricsComponent } from './components/coupon-metrics/coupon-metrics.component';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-coupons-list',
@@ -19,7 +20,8 @@ import { CouponMetricsComponent } from './components/coupon-metrics/coupon-metri
     NgbPaginationModule,
     NgbModalModule,
     NgbTooltipModule,
-    CouponMetricsComponent
+    CouponMetricsComponent,
+    ThemedNativeSelectDirective
   ],
   templateUrl: './coupons-list.component.html',
   styleUrl: './coupons-list.component.scss',

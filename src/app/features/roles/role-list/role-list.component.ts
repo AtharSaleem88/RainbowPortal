@@ -10,6 +10,7 @@ import { RAINBOW_BRANCH_OPTIONS, BranchOption } from '../../promotions/data';
 import { AuthenticationService } from '@core/services/auth.service';
 import { TimeLogService } from '@core/services/time-log.service';
 import { TimeLogRecord, TimeLogEventType } from '@core/models/workflow.model';
+import { ThemedNativeSelectDirective } from '../../products/themed-select/themed-native-select.directive';
 
 @Component({
   selector: 'app-role-list',
@@ -21,7 +22,8 @@ import { TimeLogRecord, TimeLogEventType } from '@core/models/workflow.model';
     NgbDropdownModule,
     NgbPaginationModule,
     NgbModalModule,
-    NgbTooltipModule
+    NgbTooltipModule,
+    ThemedNativeSelectDirective
   ],
   templateUrl: './role-list.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

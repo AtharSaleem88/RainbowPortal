@@ -157,7 +157,7 @@
       <!-- Branch Selector -->
       <div class="filter-control-wrap">
         <span class="filter-title">Branch:</span>
-        <select [(ngModel)]="selectedBranch" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 230px; max-width: 280px;">
+        <select appThemedDropdown [(ngModel)]="selectedBranch" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 230px; max-width: 280px;">
           <option value="all">Consolidated (All 10 Superstores)</option>
           @for (b of branches; track b.id) {
             <option [value]="b.id">{{ b.name }}</option>
@@ -168,7 +168,7 @@
       <!-- Discount Type Filter -->
       <div class="filter-control-wrap">
         <span class="filter-title">Discount Type:</span>
-        <select [(ngModel)]="selectedDiscountType" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 180px;">
+        <select appThemedDropdown [(ngModel)]="selectedDiscountType" (change)="onSearchChange()" class="form-select filter-dropdown shadow-none" style="min-width: 180px;">
           <option value="all">All Discount Types</option>
           <option value="percentage">Percentage</option>
           <option value="fixed_amount">Fixed Amount</option>
@@ -504,7 +504,7 @@
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label class="form-label fs-11 text-muted mb-1">1. Master Category</label>
-            <select [(ngModel)]="individualCategory" (change)="onIndividualCategoryChange()" class="form-select form-select-sm form-control-sleek">
+            <select appThemedDropdown [(ngModel)]="individualCategory" (change)="onIndividualCategoryChange()" class="form-select form-select-sm form-control-sleek">
               @for (cat of masterCategories; track cat.id) {
                 <option [value]="cat.name">{{ cat.name }}</option>
               }
@@ -512,7 +512,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label fs-11 text-muted mb-1">2. Sub Category</label>
-            <select [(ngModel)]="individualSubCategory" (change)="onIndividualSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+            <select appThemedDropdown [(ngModel)]="individualSubCategory" (change)="onIndividualSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
               @for (sub of individualFilteredSubCategories; track sub.id) {
                 <option [value]="sub.name">{{ sub.name }}</option>
               }
@@ -524,7 +524,7 @@
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label class="form-label fs-11 text-muted mb-1">3. Sub-Sub Category</label>
-            <select [(ngModel)]="individualSubSubCategory" (change)="onIndividualSubSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+            <select appThemedDropdown [(ngModel)]="individualSubSubCategory" (change)="onIndividualSubSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
               @for (ssc of individualFilteredSubSubCategories; track ssc.id) {
                 <option [value]="ssc.name">{{ ssc.name }}</option>
               }
@@ -532,7 +532,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label fs-11 text-muted mb-1">4. Brand</label>
-            <select [(ngModel)]="individualBrand" (change)="onIndividualBrandChange()" class="form-select form-select-sm form-control-sleek">
+            <select appThemedDropdown [(ngModel)]="individualBrand" (change)="onIndividualBrandChange()" class="form-select form-select-sm form-control-sleek">
               @for (b of individualFilteredBrands; track b.id) {
                 <option [value]="b.name">{{ b.name }}</option>
               }
@@ -546,7 +546,7 @@
             <label class="form-label fs-11 text-muted mb-1">
               5. Select Product (SKU) <span class="badge bg-white text-muted border font-monospace ms-1">{{ individualFilteredProducts.length }} available</span>
             </label>
-            <select [(ngModel)]="formPromo.productId" (change)="onProductSelectChange()" class="form-select form-select-sm form-control-sleek">
+            <select appThemedDropdown [(ngModel)]="formPromo.productId" (change)="onProductSelectChange()" class="form-select form-select-sm form-control-sleek">
               @for (prod of individualFilteredProducts; track prod.id) {
                 <option [value]="prod.id">{{ prod.name }} &bull; Rs. {{ (prod.sellingPrice || prod.price) | number }}</option>
               }
@@ -587,7 +587,7 @@
         <div class="row g-3 mb-3">
           <div class="col-12">
             <label class="form-label fs-11 text-muted mb-1">1. Apply Bulk Promotion To</label>
-            <select [(ngModel)]="formPromo.bulkTargetType" (change)="onBulkTargetTypeChange()" class="form-select form-select-sm form-control-sleek">
+            <select appThemedDropdown [(ngModel)]="formPromo.bulkTargetType" (change)="onBulkTargetTypeChange()" class="form-select form-select-sm form-control-sleek">
               <option value="category">Category Level</option>
               <option value="subcategory">Sub Category Level</option>
               <option value="subsubcategory">Sub Sub Category Level</option>
@@ -601,7 +601,7 @@
           <div class="row g-3">
             <div class="col-12">
               <label class="form-label fs-11 text-muted mb-1">2. Select Target Category</label>
-              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (cat of masterCategories; track cat.id) {
                   <option [value]="cat.name">{{ cat.name }} ({{ cat.totalProducts }} items)</option>
                 }
@@ -612,7 +612,7 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label fs-11 text-muted mb-1">2. Parent Category</label>
-              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (cat of masterCategories; track cat.id) {
                   <option [value]="cat.name">{{ cat.name }}</option>
                 }
@@ -620,7 +620,7 @@
             </div>
             <div class="col-md-6">
               <label class="form-label fs-11 text-muted mb-1">3. Select Target Sub Category</label>
-              <select [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (sub of bulkFilteredSubCategories; track sub.id) {
                   <option [value]="sub.name">{{ sub.name }} ({{ sub.totalProducts }} items)</option>
                 }
@@ -631,7 +631,7 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label fs-11 text-muted mb-1">2. Parent Category</label>
-              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (cat of masterCategories; track cat.id) {
                   <option [value]="cat.name">{{ cat.name }}</option>
                 }
@@ -639,7 +639,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fs-11 text-muted mb-1">3. Sub Category</label>
-              <select [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (sub of bulkFilteredSubCategories; track sub.id) {
                   <option [value]="sub.name">{{ sub.name }}</option>
                 }
@@ -647,7 +647,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fs-11 text-muted mb-1">4. Select Target Sub-Sub Category</label>
-              <select [(ngModel)]="bulkSubSubCategory" (change)="onBulkSubSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkSubSubCategory" (change)="onBulkSubSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (ssc of bulkFilteredSubSubCategories; track ssc.id) {
                   <option [value]="ssc.name">{{ ssc.name }}</option>
                 }
@@ -658,7 +658,7 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label fs-11 text-muted mb-1">2. Category Filter</label>
-              <select [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkCategory" (change)="onBulkCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (cat of masterCategories; track cat.id) {
                   <option [value]="cat.name">{{ cat.name }}</option>
                 }
@@ -666,7 +666,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fs-11 text-muted mb-1">3. Sub Category Filter</label>
-              <select [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkSubCategory" (change)="onBulkSubCategoryChange()" class="form-select form-select-sm form-control-sleek">
                 @for (sub of bulkFilteredSubCategories; track sub.id) {
                   <option [value]="sub.name">{{ sub.name }}</option>
                 }
@@ -674,7 +674,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fs-11 text-muted mb-1">4. Select Target Brand</label>
-              <select [(ngModel)]="bulkBrand" (change)="onBulkBrandChange()" class="form-select form-select-sm form-control-sleek">
+              <select appThemedDropdown [(ngModel)]="bulkBrand" (change)="onBulkBrandChange()" class="form-select form-select-sm form-control-sleek">
                 @for (b of bulkFilteredBrands; track b.id) {
                   <option [value]="b.name">{{ b.name }} ({{ b.totalProducts }} items)</option>
                 }
@@ -691,7 +691,7 @@
       <div class="row g-3 align-items-end">
         <div class="col-md-4">
           <label class="form-label fs-11 text-muted mb-1">Discount Type</label>
-          <select [(ngModel)]="formPromo.discountType" (change)="calculatePromoPrice()" class="form-select form-select-sm form-control-sleek">
+          <select appThemedDropdown [(ngModel)]="formPromo.discountType" (change)="calculatePromoPrice()" class="form-select form-select-sm form-control-sleek">
             <option value="percentage">Percentage Discount</option>
             <option value="fixed_amount">Fixed Amount Discount</option>
           </select>

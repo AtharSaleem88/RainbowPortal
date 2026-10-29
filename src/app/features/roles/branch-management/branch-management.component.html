@@ -138,7 +138,7 @@
 
       <div class="d-flex align-items-center gap-1.5" *ngIf="!isBranchLocked">
         <span class="text-muted fs-11 fw-bold text-uppercase">City:</span>
-        <select [(ngModel)]="selectedCity" class="form-select form-select-sm shadow-none" style="width: 140px; height: 34px; font-size: 12.5px;">
+        <select appThemedDropdown [(ngModel)]="selectedCity" class="form-select form-select-sm shadow-none" style="width: 140px; height: 34px; font-size: 12.5px;">
           <option value="all">All Cities</option>
           @for (c of cities; track c) {
             <option [value]="c">{{ c }}</option>
@@ -148,7 +148,7 @@
 
       <div class="d-flex align-items-center gap-1.5">
         <span class="text-muted fs-11 fw-bold text-uppercase">Status:</span>
-        <select [(ngModel)]="selectedStatus" class="form-select form-select-sm shadow-none" style="width: 130px; height: 34px; font-size: 12.5px;">
+        <select appThemedDropdown [(ngModel)]="selectedStatus" class="form-select form-select-sm shadow-none" style="width: 130px; height: 34px; font-size: 12.5px;">
           <option value="all">All Statuses</option>
           <option value="Active">Active</option>
           <option value="Paused">Paused</option>
@@ -325,7 +325,7 @@
 
       <div class="col-md-4">
         <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">City</label>
-        <select [(ngModel)]="activeModalBranch.city" class="form-select form-select-sm">
+        <select appThemedDropdown [(ngModel)]="activeModalBranch.city" class="form-select form-select-sm">
           <option value="Lahore">Lahore</option>
           <option value="Karachi">Karachi</option>
           <option value="Sheikhupura">Sheikhupura</option>
@@ -365,7 +365,7 @@
       </div>
       <div class="col-md-4">
         <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Status</label>
-        <select [(ngModel)]="activeModalBranch.status" class="form-select form-select-sm">
+        <select appThemedDropdown [(ngModel)]="activeModalBranch.status" class="form-select form-select-sm">
           <option value="Active">Active</option>
           <option value="Paused">Paused</option>
           <option value="Inactive">Inactive</option>
@@ -416,7 +416,7 @@
 
     <div class="mb-3">
       <label class="form-label fs-12 fw-bold text-muted text-uppercase mb-1">Reason for {{ pauseActionType }} (Mandatory Audit Requirement)</label>
-      <select [(ngModel)]="pauseReason" class="form-select form-select-sm">
+      <select appThemedDropdown [(ngModel)]="pauseReason" class="form-select form-select-sm">
         <option value="Store Capacity Overload (>80%)">Store Capacity Overload (&gt; 80% quota reached)</option>
         <option value="Heavy Rain / Severe Weather Surge">Heavy Rain / Severe Weather Surge</option>
         <option value="Shelf Stock Audit / Synchronization">Shelf Stock Audit / POS Inventory Sync</option>

@@ -68,7 +68,7 @@
   <div class="p-3 border-bottom bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
     <div class="d-flex align-items-center gap-2 flex-wrap">
       <span class="fs-12 fw-semibold text-muted text-uppercase">Filter Entity:</span>
-      <select [(ngModel)]="selectedEntityType" class="form-select form-select-sm shadow-none" style="width: 170px;">
+      <select appThemedDropdown [(ngModel)]="selectedEntityType" class="form-select form-select-sm shadow-none" style="width: 170px;">
         <option value="all">All Audit Events</option>
         <option value="Priority">Priority Overrides</option>
         <option value="Rider">Rider Assignments</option>
