@@ -50,7 +50,7 @@ import { MASTER_CATEGORIES, MasterCategory } from '../../../data';
       font-size: 11px;
     }
     .font-jost {
-      font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     @media (max-width: 767.98px) {

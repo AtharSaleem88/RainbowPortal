@@ -28,7 +28,7 @@ import {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: [`
     .font-jost {
-      font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     /* Console Container Card */

@@ -418,7 +418,7 @@ import { StoreCapacity } from '@core/models/workflow.model';
     }
 
     .font-jost {
-      font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
     }
   `]
 })
@@ -799,7 +799,7 @@ export class DashboardComponent implements OnInit {
         type: 'line',
         toolbar: { show: false },
         zoom: { enabled: false },
-        fontFamily: 'Open Sans, sans-serif'
+        fontFamily: 'Poppins, sans-serif'
       },
       stroke: {
         curve: 'smooth',
@@ -898,7 +898,7 @@ export class DashboardComponent implements OnInit {
         height: 290,
         type: 'heatmap',
         toolbar: { show: false },
-        fontFamily: 'Open Sans, sans-serif'
+        fontFamily: 'Poppins, sans-serif'
       },
       dataLabels: { enabled: false },
       colors: ['#2e3192'],

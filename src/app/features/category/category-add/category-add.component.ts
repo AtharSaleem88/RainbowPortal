@@ -28,7 +28,7 @@ import { ThemedSelectComponent, ThemedSelectOption } from '../../products/themed
       cursor: pointer;
     }
     .font-jost {
-      font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     .preview-box {
       border: 1px dashed #cbd5e1;

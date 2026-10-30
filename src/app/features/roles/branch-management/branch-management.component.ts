@@ -25,7 +25,7 @@ import { ThemedNativeSelectDirective } from '../../products/themed-select/themed
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: [`
     .font-jost {
-      font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     .cat-main-card {
       border: 1px solid #e2e8f0;

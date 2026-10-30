@@ -15,7 +15,7 @@ import { ThemedNativeSelectDirective } from '../../products/themed-select/themed
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './audit-logs.component.html',
   styles: [`
-    .font-jost { font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .font-jost { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif; }
     .cat-main-card {
       border: 1px solid #e2e8f0;
       border-radius: 12px;
